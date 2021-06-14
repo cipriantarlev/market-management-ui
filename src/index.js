@@ -1,12 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+// import { Provider } from 'react-redux';
+// import { createStore, applyMidleware, combineReducers } from 'redux';
+// import { createLogger } from 'redux-logger';
+// import { ThunkMiddleware } from 'redux-thunk';
+
+import App from './container/App/App';
 import reportWebVitals from './reportWebVitals';
+
+import './index.css';
+//import 'tachyons';
+
+// const logger = createLogger();
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* <Provider store={}> */}
+      <App />
+    {/* </Provider> */}
   </React.StrictMode>,
   document.getElementById('root')
 );
