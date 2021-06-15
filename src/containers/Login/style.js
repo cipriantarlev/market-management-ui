@@ -5,10 +5,7 @@ export const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    border: '1px grey solid',
-    padding: '20px',
-    boxShadow: '5px 5px 5px 5px grey'
+    alignItems: 'center'
   },
   avatar: {
     margin: theme.spacing(1),

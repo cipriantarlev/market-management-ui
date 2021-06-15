@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+import { connect } from 'react-redux';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -9,8 +10,50 @@ import Container from '@material-ui/core/Container';
 
 import { useStyles } from './style';
 
-const Login = () => {
+import { handleLogin } from '../actions';
+
+const mapStateToProps = (state) => {
+  return {
+    isPeding: state.requestLogin.isPeding,
+    response: state.requestLogin.response,
+    error: state.requestLogin.error,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onHandleLogin: (username, password) => dispatch(handleLogin(username, password))
+  }
+}
+
+const Login = (props) => {
   const classes = useStyles();
+  
+  const { 
+    onHandleLogin
+  } = props;
+
+  const [ username, setUsername ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ error, setError ] = useState(false);
+
+  const handleUsername = (event) => {
+    setUsername(event.target.value);
+  }
+
+  const handlePassword = (event) => {
+    setPassword(event.target.value);
+  }
+
+  const handleSignin = () => {
+    if(username && password){
+      console.log(`username ${username} with password ${password}`);
+      onHandleLogin(username, password)
+      setError(false);
+    } else {
+      setError(true);
+    }
+  }
 
   return (
       <Container component="main" maxWidth="xs">
@@ -26,30 +69,34 @@ const Login = () => {
             <TextField
               variant="outlined"
               margin="normal"
-              required
+              required={true}
               fullWidth
               id="username"
               label="Username"
               name="username"
               autoComplete="username"
               autoFocus
+              error={error}
+              onChange={handleUsername}
             />
             <TextField
               variant="outlined"
               margin="normal"
-              required
+              required={true}
               fullWidth
               name="password"
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
+              error={error}
+              onChange={handlePassword}
             />
             <Button
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
+              onClick={handleSignin}
             >
               Sign In
             </Button>
@@ -59,4 +106,4 @@ const Login = () => {
   );
 }
 
-export default Login;
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
