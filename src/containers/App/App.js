@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import {
   BrowserRouter as Router,
-
   Redirect,
-
   Route,
   Switch
 } from 'react-router-dom';
@@ -21,12 +19,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const App = (props) => {
-
-  const { loggedIn } = props;
-
-  console.log('loggedIn ', loggedIn)
-
+const App = ({ loggedIn }) => {
   return (
     <Router>
       <Switch>
