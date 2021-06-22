@@ -8,8 +8,8 @@ import {
 const initialStateLogin = {
   isPeding: false,
   response: {},
-  error: {},
-  user: localStorage.getItem('user')
+  error: false,
+  user: localStorage.getItem('user') ? true : false
 }
 
 export const requestLogin = (state = initialStateLogin, action = {}) => {
