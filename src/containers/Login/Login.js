@@ -53,10 +53,8 @@ const Login = (props) => {
       setCredentialsError(false);
       setPassword('');
       setUsername('');
-      console.log('error', loginError);
     } else {
       setCredentialsError(true);
-      console.log('error', loginError);
     }
   }
 
