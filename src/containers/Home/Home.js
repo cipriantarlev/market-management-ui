@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { handleLogout } from '../actions';
 
+import Button from '@material-ui/core/Button';
+
 const mapStateToProps = (state) => {
   return {
     user: state.requestLogout.user
@@ -22,11 +24,16 @@ const Home = (props) => {
     onHandleLogout();
     window.location.reload();
   }
-
-  return(
+  return (
     <div>
       Home
-      <button onClick={onLogout}>Log out</button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onLogout}
+      >
+        Log out
+      </Button>
     </div>
   )
 }

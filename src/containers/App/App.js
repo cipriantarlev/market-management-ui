@@ -1,47 +1,53 @@
 import React from "react";
 import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
+import {
+  BrowserRouter as Router,
+
+  Redirect,
+
+  Route,
+  Switch
+} from 'react-router-dom';
 
 import Login from '../Login/Login';
 import Home from '../Home/Home';
+import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
-
-import './App.css';
 
 const mapStateToProps = (state) => {
   return {
-    userAuthenticationStatus: state.requestLogin.user
+    loggedIn: state.requestLogin.user
   }
 }
 
 const App = (props) => {
 
-  const { userAuthenticationStatus } = props;
+  const { loggedIn } = props;
 
-  console.log('userAuthenticationStatus',userAuthenticationStatus)
+  console.log('loggedIn ', loggedIn)
 
-  return !userAuthenticationStatus ? 
-  (
-    <div>
-      <Login />
-      <div className="footerCopyright">
-        <Box >
-          <Copyright />
-        </Box>
-      </div>
-    </div> 
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/" >
+          {loggedIn ? <Home /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/login">
+          {!loggedIn ? <Login /> : <Redirect to="/" />}
+        </Route>
+        <Route component={NotFound} />
+      </Switch>
+      <Box style={{
+        position: "fixed",
+        bottom: "20px",
+        left: 0,
+        right: 0
+      }}>
+        <Copyright />
+      </Box>
+    </Router>
   )
-  : 
-  (
-    <div>
-      <Home />
-      <div className="footerCopyright">
-        <Box >
-          <Copyright />
-        </Box>
-      </div>
-    </div>
-  );
 }
 
 export default connect(mapStateToProps)(App);
