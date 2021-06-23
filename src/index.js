@@ -10,7 +10,8 @@ import reportWebVitals from './reportWebVitals';
 
 import { requestLogin, requestLogout } from './containers/reducers';
 import './index.css';
-//import 'tachyons';
+import 'tachyons';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const logger = createLogger();
 const rootReducer = combineReducers({requestLogin, requestLogout});
@@ -18,11 +19,9 @@ const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger))
 
 
 ReactDOM.render(
-  <React.StrictMode>
     <Provider store={store}>
       <App />
-    </Provider>
-  </React.StrictMode>,
+    </Provider>,
   document.getElementById('root')
 );
 

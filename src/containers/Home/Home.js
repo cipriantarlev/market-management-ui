@@ -1,41 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { handleLogout } from '../actions';
 
-import Button from '@material-ui/core/Button';
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.requestLogout.user
-  }
-}
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onHandleLogout: () => dispatch(handleLogout())
-  }
-}
-
-const Home = (props) => {
-
-  const { onHandleLogout } = props;
-
-  const onLogout = () => {
-    onHandleLogout();
-    window.location.reload();
-  }
+const Home = () => {
   return (
     <div>
-      Home
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onLogout}
-      >
-        Log out
-      </Button>
+      <h3 className="pa3 baskerville">Welcome to market management app</h3>
     </div>
   )
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;
