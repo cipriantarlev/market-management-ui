@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 import { useStyles } from './style';
+import './login.css';
 
 import { handleLogin } from '../actions';
 
