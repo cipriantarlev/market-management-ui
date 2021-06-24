@@ -69,7 +69,7 @@ const Login = (props) => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        {loginError ? <h2 style={{color: 'red'}}>Incorrect Username or password!!!</h2> : null}
+        {loginError ? <h4 style={{color: 'red', marginTop: 15, marginBottom: -5}}>Incorrect Username or password</h4> : null}
         <form className={classes.form} noValidate>
           <TextField
             variant="outlined"
