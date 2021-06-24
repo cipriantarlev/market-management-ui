@@ -38,7 +38,7 @@ const NavigationBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <NavDropdown title="Settings" id="basic-nav-dropdown">
+          <NavDropdown title="Settings" id="basic-nav-dropdown" className="hover-dark-gray">
             <NavDropdown.Item><Link className="black hover-dark-gray no-underline" to="/users">Users</Link></NavDropdown.Item>
           </NavDropdown>
         </Nav>
