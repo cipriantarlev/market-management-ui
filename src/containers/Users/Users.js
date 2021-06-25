@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,8 +10,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-
-import NavigationBar from '../NavBar/NavigationBar';
 
 import { fetchUsers } from '../actions';
 
@@ -52,50 +51,52 @@ const Users = (props) => {
   }, [onFetchUsers])
 
   return (
-    <div>
-      <NavigationBar />
-
-      <div style={{ width: 'auto', margin: 100, }}>
-        {!isPending ?
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell align="center">Username</TableCell>
-                  <TableCell align="center">Email</TableCell>
-                  <TableCell align="center">Roles</TableCell>
-                  <TableCell align="center">Delete</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell component="th" scope="row">
+    <div style={{ width: 'auto', margin: 100, }}>
+      {!isPending ?
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell align="center">Username</TableCell>
+                <TableCell align="center">Email</TableCell>
+                <TableCell align="center">Roles</TableCell>
+                <TableCell align="center">Delete</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell component="th" scope="row">
+                    <Link className="no-underline" to={`/users/${user.id}`}>
                       {user.id}
-                    </TableCell>
-                    <TableCell align="center">{user.username}</TableCell>
-                    <TableCell align="center">{user.email}</TableCell>
-                    <TableCell align="center">
-                      {user.roles.reduce((acc, role) => {
-                        const result = `${role.role}, ${acc}`
-                        return result.replace(/[, ]+$/, "");
-                      }, '')}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button variant="contained" color="secondary">
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          :
-          <h3>Loading data ...</h3>}
-        {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
-      </div>
+                    </Link>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Link className="no-underline" to={`/users/${user.id}`}>
+                      {user.username}
+                    </Link>
+                  </TableCell>
+                  <TableCell align="center">{user.email}</TableCell>
+                  <TableCell align="center">
+                    {user.roles.reduce((acc, role) => {
+                      const result = `${role.role}, ${acc}`
+                      return result.replace(/[, ]+$/, "");
+                    }, '')}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button variant="contained" color="secondary">
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        :
+        <h3>Loading data ...</h3>}
+      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
     </div>
   );
 }

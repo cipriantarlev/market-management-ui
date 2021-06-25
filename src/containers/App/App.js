@@ -11,8 +11,10 @@ import {
 import Login from '../Login/Login';
 import Home from '../Home/Home';
 import Users from '../Users/Users';
+import User from '../Users/User';
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
+import NavigationBar from '../NavBar/NavigationBar';
 
 const mapStateToProps = (state) => {
   return {
@@ -23,12 +25,16 @@ const mapStateToProps = (state) => {
 const App = ({ loggedIn }) => {
   return (
     <Router>
+      {loggedIn ? <NavigationBar /> : null }
       <Switch>
         <Route exact path="/" >
           {loggedIn ? <Home /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/users" >
           {loggedIn ? <Users /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/users/:id" >
+          {loggedIn ? <User /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
