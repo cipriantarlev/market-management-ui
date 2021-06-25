@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav';
@@ -26,10 +26,22 @@ const mapDispatchToProps = (dispatch) => {
 const NavigationBar = (props) => {
 
   const { onHandleLogout } = props;
+  let history = useHistory();
 
   const onLogout = () => {
     onHandleLogout();
     window.location.reload();
+  }
+
+  const onClickDropdownList = (event) => {
+    switch(event.target.id) {
+      case "users":
+        history.push("/users");
+        break;
+      default:
+        history.push("/");
+        break;
+    }
   }
 
   return (
@@ -39,7 +51,7 @@ const NavigationBar = (props) => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <NavDropdown title="Settings" id="basic-nav-dropdown" className="hover-dark-gray">
-            <NavDropdown.Item><Link className="black hover-dark-gray no-underline" to="/users">Users</Link></NavDropdown.Item>
+            <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>
