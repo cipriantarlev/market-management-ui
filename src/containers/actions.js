@@ -1,4 +1,5 @@
 import { 
+  authorizationData,
   ROOT_CONTEXT_PATH,
   REQUEST_LOGIN_PENDING,
   REQUEST_LOGIN_SUCCESS,
@@ -6,7 +7,13 @@ import {
   REQUEST_LOG_OUT,
   REQUEST_USERS_PENDING,
   REQUEST_USERS_SUCCESS,
-  REQUEST_USERS_FAILED
+  REQUEST_USERS_FAILED,
+  REQUEST_USER_PENDING,
+  REQUEST_USER_SUCCESS,
+  REQUEST_USER_FAILED,
+  REQUEST_ROLES_PENDING,
+  REQUEST_ROLES_SUCCESS,
+  REQUEST_ROLES_FAILED
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -31,10 +38,24 @@ export const handleLogout = () => (dispatch) => {
 
 export const fetchUsers = () => (dispatch) => {
   dispatch({ type: REQUEST_USERS_PENDING});
-  fetch(`${ROOT_CONTEXT_PATH}/users`, {
-    headers: {'Authorization': localStorage.getItem('user')}
-  })
+  fetch(`${ROOT_CONTEXT_PATH}/users`, authorizationData())
   .then(response => response.json())
   .then(data => dispatch({ type: REQUEST_USERS_SUCCESS, payload: data}))
   .catch(error => dispatch({ type: REQUEST_USERS_FAILED, payload: error}))
+}
+
+export const fetchUser = (id) => (dispatch) => {
+  dispatch({ type: REQUEST_USER_PENDING});
+  fetch(`${ROOT_CONTEXT_PATH}/users/${id}`, authorizationData())
+  .then(respone => respone.json())
+  .then(data => dispatch({ type: REQUEST_USER_SUCCESS, payload: data}))
+  .catch(error => dispatch({ type: REQUEST_USER_FAILED, payload: error }))
+}
+
+export const fetchRoles = () => (dispatch) => {
+  dispatch({ type: REQUEST_ROLES_PENDING});
+  fetch(`${ROOT_CONTEXT_PATH}/roles`, authorizationData())
+  .then(respone => respone.json())
+  .then(data => dispatch({ type: REQUEST_ROLES_SUCCESS, payload: data}))
+  .catch(error => dispatch({ type: REQUEST_ROLES_FAILED, payload: error}))
 }
