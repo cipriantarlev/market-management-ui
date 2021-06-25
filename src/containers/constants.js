@@ -1,4 +1,7 @@
 export const ROOT_CONTEXT_PATH = 'http://localhost:8080/api'
+export const authorizationData = () => {
+  return {headers: {'Authorization': localStorage.getItem('user')}}
+}
 
 export const REQUEST_LOGIN_PENDING = 'REQUEST_LOGIN_PENDING';
 export const REQUEST_LOGIN_SUCCESS = 'REQUEST_LOGIN_SUCCESS';
@@ -9,3 +12,10 @@ export const REQUEST_LOG_OUT = 'REQUEST_LOG_OUT';
 export const REQUEST_USERS_PENDING = 'REQUEST_USERS_PENDING';
 export const REQUEST_USERS_SUCCESS = 'REQUEST_USERS_SUCCESS';
 export const REQUEST_USERS_FAILED = 'REQUEST_USERS_FAILED';
+export const REQUEST_USER_PENDING = 'REQUEST_USER_PENDING';
+export const REQUEST_USER_SUCCESS = 'REQUEST_USER_SUCCESS';
+export const REQUEST_USER_FAILED = 'REQUEST_USER_FAILED';
+
+export const REQUEST_ROLES_PENDING = 'REQUEST_ROLES_PENDING';
+export const REQUEST_ROLES_SUCCESS = 'REQUEST_ROLES_SUCCESS';
+export const REQUEST_ROLES_FAILED = 'REQUEST_ROLES_FAILED';
