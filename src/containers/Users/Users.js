@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,7 +11,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { fetchUsers } from '../actions';
+import { 
+  fetchUsers,
+  deleteUser,
+ } from '../actions';
 
 import './style.css';
 
@@ -25,13 +28,14 @@ const mapStateToProps = (state) => {
   return {
     isPending: state.fetchUsers.isPending,
     users: state.fetchUsers.users,
-    error: state.fetchUsers.error
+    error: state.fetchUsers.error,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchUsers: () => dispatch(fetchUsers())
+    onFetchUsers: () => dispatch(fetchUsers()),
+    onDeleteUser: (id) => dispatch(deleteUser(id)),
   }
 }
 
@@ -43,19 +47,42 @@ const Users = (props) => {
     onFetchUsers,
     isPending,
     users,
-    error
+    error,
+    onDeleteUser,
   } = props;
+
+  const history = useHistory();
 
   useEffect(() => {
     onFetchUsers();
   }, [onFetchUsers])
 
+  const onAddNewUser = () => {
+    history.push("/users/0")
+  }
+
+  const removeUser = (id) => {
+    const answer = window.confirm(`Are you sure you want to delete the user with id: ${id}?`);
+    if (answer === true) {
+      onDeleteUser(id);
+      history.go(0);
+    }
+  }
+
   return (
     <div style={{ width: 'auto', margin: 100, }}>
+      <Button
+        variant="contained"
+        className="mb-4"
+        style={{ backgroundColor: '#2aa839', color: 'white' }}
+        onClick={onAddNewUser}
+      >
+        Add new User
+      </Button>
       {!isPending ?
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
-            <TableHead>
+            <TableHead style={{ backgroundColor: "#808080ad" }}>
               <TableRow>
                 <TableCell>ID</TableCell>
                 <TableCell align="center">Username</TableCell>
@@ -85,7 +112,11 @@ const Users = (props) => {
                     }, '')}
                   </TableCell>
                   <TableCell align="center">
-                    <Button variant="contained" color="secondary">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => removeUser(user.id)}
+                    >
                       Delete
                     </Button>
                   </TableCell>
