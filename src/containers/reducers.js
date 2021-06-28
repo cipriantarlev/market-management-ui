@@ -11,7 +11,16 @@ import {
   REQUEST_USER_FAILED,
   REQUEST_ROLES_PENDING,
   REQUEST_ROLES_SUCCESS,
-  REQUEST_ROLES_FAILED
+  REQUEST_ROLES_FAILED,
+  CREATE_USER_PENDING,
+  CREATE_USER_SUCCESS,
+  CREATE_USER_FAILED,
+  UPDATE_USER_PENDING,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_FAILED,
+  DELETE_USER_PENDING,
+  DELETE_USER_SUCCESS,
+  DELETE_USER_FAILED,
 } from './constants';
 
 const initialStateLogin = {
@@ -52,7 +61,8 @@ const initialStateUsers = {
   users: [],
   error: false,
   user: {},
-  roles: []
+  roles: [],
+  status: ''
 }
 
 export const fetchUsers = (state = initialStateUsers, action = {}) => {
@@ -66,7 +76,7 @@ export const fetchUsers = (state = initialStateUsers, action = {}) => {
     case REQUEST_USER_PENDING:
       return Object.assign({}, state, { isPeding: true });
     case REQUEST_USER_SUCCESS:
-      return Object.assign({}, state, { user: action.payload, isPeding: false })
+      return Object.assign({}, state, { user: action.payload, isPeding: false });
     case REQUEST_USER_FAILED:
       return Object.assign({}, state, { error: action.payload, isPeding: false });
     case REQUEST_ROLES_PENDING:
@@ -74,7 +84,25 @@ export const fetchUsers = (state = initialStateUsers, action = {}) => {
     case REQUEST_ROLES_SUCCESS:
       return Object.assign({}, state, { roles: action.payload, isPeding: false });
     case REQUEST_ROLES_FAILED:
-      return Object.assign({}, state, { error: action.payload, isPeding: false })
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
+    case CREATE_USER_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case CREATE_USER_SUCCESS:
+      return Object.assign({}, state, { user: action.payload, isPeding: false });
+    case CREATE_USER_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
+    case UPDATE_USER_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case UPDATE_USER_SUCCESS:
+      return Object.assign({}, state, { user: action.payload, isPeding: false });
+    case UPDATE_USER_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
+    case DELETE_USER_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case DELETE_USER_SUCCESS:
+      return Object.assign({}, state, { status: action.payload, isPeding: false });
+    case DELETE_USER_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
     default:
       return state;
   }

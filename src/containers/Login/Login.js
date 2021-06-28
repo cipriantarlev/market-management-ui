@@ -49,7 +49,6 @@ const Login = (props) => {
 
   const handleSignin = () => {
     if (username && password) {
-      console.log(`username ${username} with password ${password}`);
       onHandleLogin(username, password)
       setCredentialsError(false);
       setPassword('');
