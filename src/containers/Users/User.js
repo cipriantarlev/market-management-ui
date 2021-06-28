@@ -5,13 +5,20 @@ import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import { useHistory } from 'react-router-dom';
+import bcrypt from 'bcryptjs';
 
-import { fetchUser, fetchRoles } from '../actions';
+import { 
+  fetchUser, 
+  fetchRoles, 
+  createUser, 
+  updateUser,
+  fetchUsers
+} from '../actions';
 
 const mapStateToProps = (state) => {
   return {
     isPending: state.fetchUsers.isPending,
-    user: state.fetchUsers.user,
+    initialUser: state.fetchUsers.user,
     error: state.fetchUsers.error,
     roles: state.fetchUsers.roles,
   }
@@ -21,6 +28,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchUser: (id) => dispatch(fetchUser(id)),
     onFetchRoles: () => dispatch(fetchRoles()),
+    onCreateUser: (user) => dispatch(createUser(user)),
+    onUpdateUser: (user) => dispatch(updateUser(user)),
+    onFetchUsers: () => dispatch(fetchUsers())
   }
 }
 
@@ -28,27 +38,47 @@ const User = (props) => {
 
   const {
     onFetchUser,
-    user,
+    initialUser,
     roles,
-    onFetchRoles
+    onFetchRoles,
+    onCreateUser,
+    onUpdateUser,
+    onFetchUsers
   } = props;
 
-  const [selectedRoles, setSelectedRoles] = useState([])
+  const [selectedRoles, setSelectedRoles] = useState([]);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [user, setUser] = useState({});
+  const [invalidPassword, setInvalidPassword] = useState(false);
 
   const { id } = useParams();
   const history = useHistory();
 
+  const salt = bcrypt.genSaltSync(10);
+
   useEffect(() => {
-    onFetchUser(id);
     onFetchRoles();
-  }, [onFetchUser, onFetchRoles, id]);
+  }, [onFetchRoles]);
 
+  useEffect(() => {
+    if (id !== "0") {
+      onFetchUser(id);
+    }
+  }, [id, onFetchUser])
 
-  // const onSetSelectedValue = () => {
-  //   debugger;
-  //   let roless = user.roles.map(role => role.id);
-  //   setSelectedRoles(roless);
-  // }
+  useEffect(() => {
+    initializeRolesValue();
+    if (id !== "0") {
+      setUser(initialUser)
+    } else {
+      setSelectedRoles([]);
+    }
+  }, [initialUser, id])
+
+  const initializeRolesValue = () => {
+    let tempRoles = initialUser.roles !== undefined ? initialUser.roles.map(role => role.id) : [];
+    setSelectedRoles(tempRoles);
+  }
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
@@ -56,7 +86,60 @@ const User = (props) => {
   }
 
   const onSelectValue = (event) => {
-     setSelectedRoles([].slice.call(event.target.selectedOptions).map(item => item.value))
+    setSelectedRoles([].slice.call(event.target.selectedOptions).map(item => Number(item.value)));
+    setUserRoler();
+  }
+
+  const setUserRoler = () => {
+    let tempRole = [];
+    selectedRoles.forEach(roleId => {
+      roles.forEach(role => {
+        if (role.id === roleId) {
+          tempRole.push(role);
+        }
+      })
+    })
+    setUser(Object.assign(user, user, { roles: tempRole }));
+  }
+
+
+  const onChangeUserValues = (event) => {
+    switch (event.target.id) {
+      case "formGridUsername":
+        setUser({ ...user, username: event.target.value });
+        break;
+      case "formGridPassword":
+        setUser({ ...user, password: event.target.value });
+        break;
+      case "formGridConfirmPassword":
+        setConfirmPassword(event.target.value);
+        break;
+      case "formGridEmail":
+        setUser({ ...user, email: event.target.value });
+        break;
+      default:
+        setUser({ ...user });
+        break;
+    }
+  }
+
+  const onSubmitUser = () => {
+    if (user.password && confirmPassword && user.password === confirmPassword) {
+      const hashPassword = bcrypt.hashSync(user.password, salt);
+      setUser(Object.assign(user, user, { password: hashPassword }));
+      setUserRoler();
+      if(id !== "0") {
+        onUpdateUser(user);
+      } else {
+        onCreateUser(user);
+      }
+      console.log("user", user);
+      onFetchUsers();
+      history.push("/users");
+    } else {
+      setInvalidPassword(true);
+      setConfirmPassword('');
+    }
   }
 
   return (
@@ -68,6 +151,7 @@ const User = (props) => {
             type="text"
             placeholder="Username"
             value={user.username}
+            onChange={onChangeUserValues}
           />
         </Form.Group>
         <Form.Group as={Col} controlId="formGridPassword">
@@ -76,6 +160,8 @@ const User = (props) => {
             type="password"
             placeholder="Password"
             value={user.password}
+            onChange={onChangeUserValues}
+            isInvalid={invalidPassword}
           />
         </Form.Group>
         <Form.Group as={Col} controlId="formGridConfirmPassword">
@@ -83,7 +169,17 @@ const User = (props) => {
           <Form.Control
             type="password"
             placeholder="Confirm Password"
+            value={confirmPassword}
+            isInvalid={invalidPassword}
+            onChange={onChangeUserValues}
+            aria-describedby="passwordHelpBlock"
           />
+          {invalidPassword ?
+            <Form.Text id="passwordHelpBlock" style={{color: 'red'}}>
+              Passwords don't match
+            </Form.Text>
+            : null
+          }
         </Form.Group>
         <Form.Group as={Col} controlId="formGridEmail">
           <Form.Label>Email</Form.Label>
@@ -91,6 +187,7 @@ const User = (props) => {
             type="email"
             placeholder="Enter email"
             value={user.email}
+            onChange={onChangeUserValues}
           />
         </Form.Group>
         <Form.Group as={Col} controlId="formGridMultipleOptions">
@@ -109,13 +206,17 @@ const User = (props) => {
           </Form.Control>
         </Form.Group>
         <div>
-          <Button className="ml3 w4" variant="primary" type="submit">
+          <Button
+            className="ml3 w4"
+            variant="primary"
+            onClick={onSubmitUser}
+          >
             Submit
           </Button>
-          <Button  
+          <Button
             className="btn btn-warning ml5 w4"
             onClick={onClickCancel}
-            >
+          >
             Cancel
           </Button>
         </div>
