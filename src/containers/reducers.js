@@ -21,6 +21,9 @@ import {
   DELETE_USER_PENDING,
   DELETE_USER_SUCCESS,
   DELETE_USER_FAILED,
+  REQUEST_MY_ORGANIZATIONS_PENDING,
+  REQUEST_MY_ORGANIZATIONS_SUCCESS,
+  REQUEST_MY_ORGANIZATIONS_FAILED,
 } from './constants';
 
 const initialStateLogin = {
@@ -103,6 +106,26 @@ export const fetchUsers = (state = initialStateUsers, action = {}) => {
       return Object.assign({}, state, { status: action.payload, isPeding: false });
     case DELETE_USER_FAILED:
       return Object.assign({}, state, { error: action.payload, isPeding: false });
+    default:
+      return state;
+  }
+}
+
+const initialStateMyOrganizations = {
+  isPending: false,
+  myOrganizations: [],
+  error: false,
+  myOrganization: {},
+}
+
+export const manageMyOrganizations = (state = initialStateMyOrganizations, action = {}) => {
+  switch (action.type) {
+    case REQUEST_MY_ORGANIZATIONS_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_MY_ORGANIZATIONS_SUCCESS:
+      return Object.assign({}, state, { myOrganizations: action.payload, isPending: false });
+    case REQUEST_MY_ORGANIZATIONS_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false })
     default:
       return state;
   }
