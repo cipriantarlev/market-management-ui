@@ -24,6 +24,9 @@ import {
   DELETE_USER_PENDING,
   DELETE_USER_SUCCESS,
   DELETE_USER_FAILED,
+  REQUEST_MY_ORGANIZATIONS_PENDING,
+  REQUEST_MY_ORGANIZATIONS_SUCCESS,
+  REQUEST_MY_ORGANIZATIONS_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -93,4 +96,11 @@ export const fetchRoles = () => (dispatch) => {
   .catch(error => dispatch({ type: REQUEST_ROLES_FAILED, payload: error}))
 }
 
+export const fetchMyOrganizations = () => (dispatch) => {
+  dispatch({ type: REQUEST_MY_ORGANIZATIONS_PENDING});
+  fetch(`${ROOT_CONTEXT_PATH}/my-organizations`, authorizationData())
+  .then(response => response.json())
+  .then(data => dispatch({ type: REQUEST_MY_ORGANIZATIONS_SUCCESS, payload: data}))
+  .catch(error => dispatch({ type: REQUEST_MY_ORGANIZATIONS_FAILED, payload: error}))
+}
 
