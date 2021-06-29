@@ -12,6 +12,8 @@ import Login from '../Login/Login';
 import Home from '../Home/Home';
 import Users from '../Users/Users';
 import User from '../Users/User';
+import MyOrganizations from "../MyOrganizations/MyOrganizations";
+import MyOrganization from"../MyOrganizations/MyOrganization";
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -35,6 +37,12 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route path="/users/:id" >
           {loggedIn ? <User /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/my-organizations" >
+          {loggedIn ? <MyOrganizations /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/my-organizations/:id" >
+          {loggedIn ? <MyOrganization /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}

@@ -34,9 +34,12 @@ const NavigationBar = (props) => {
   }
 
   const onClickDropdownList = (event) => {
-    switch(event.target.id) {
+    switch (event.target.id) {
       case "users":
         history.push("/users");
+        break;
+      case "myOrganization":
+        history.push("/my-organizations");
         break;
       default:
         history.push("/");
@@ -52,6 +55,7 @@ const NavigationBar = (props) => {
         <Nav className="mr-auto">
           <NavDropdown title="Settings" id="basic-nav-dropdown" className="hover-dark-gray">
             <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
+            <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>

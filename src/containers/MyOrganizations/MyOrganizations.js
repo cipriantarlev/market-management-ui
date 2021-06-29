@@ -11,12 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { 
-  fetchUsers,
-  deleteUser,
- } from '../actions';
-
-import './style.css';
+import { fetchMyOrganizations } from '../actions';
 
 const useStyles = makeStyles({
   table: {
@@ -26,50 +21,39 @@ const useStyles = makeStyles({
 
 const mapStateToProps = (state) => {
   return {
-    isPending: state.fetchUsers.isPending,
-    users: state.fetchUsers.users,
-    error: state.fetchUsers.error,
+    isPending: state.manageMyOrganizations.isPending,
+    myOrganizations: state.manageMyOrganizations.myOrganizations,
+    error: state.manageMyOrganizations.error,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchUsers: () => dispatch(fetchUsers()),
-    onDeleteUser: (id) => dispatch(deleteUser(id)),
+    onFetchMyOrganizations: () => dispatch(fetchMyOrganizations()),
   }
 }
 
-const Users = (props) => {
-
-  const classes = useStyles();
+const MyOrganizations = (props) => {
 
   const {
-    onFetchUsers,
+    myOrganizations,
     isPending,
-    users,
     error,
-    onDeleteUser,
+    onFetchMyOrganizations
   } = props;
 
+  const classes = useStyles();
   const history = useHistory();
 
   useEffect(() => {
-    onFetchUsers();
-  }, [onFetchUsers])
+    onFetchMyOrganizations();
+  }, [onFetchMyOrganizations])
 
   const onAddNewUser = () => {
-    history.push("/users/0")
+    history.push("/my-organizations/0")
   }
 
-  const removeUser = (id) => {
-    const answer = window.confirm(`Are you sure you want to delete the user with id: ${id}?`);
-    if (answer === true) {
-      onDeleteUser(id);
-      history.go(0);
-    }
-  }
-
-  return (
+  return(
     <div style={{ width: 'auto', margin: 100, }}>
       <Button
         variant="contained"
@@ -77,7 +61,7 @@ const Users = (props) => {
         style={{ backgroundColor: '#2aa839', color: 'white' }}
         onClick={onAddNewUser}
       >
-        Add new User
+        Add new Organization
       </Button>
       {!isPending ?
         <TableContainer component={Paper}>
@@ -85,37 +69,33 @@ const Users = (props) => {
             <TableHead style={{ backgroundColor: "#808080ad" }}>
               <TableRow>
                 <TableCell>ID</TableCell>
-                <TableCell align="center">Username</TableCell>
-                <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Roles</TableCell>
+                <TableCell align="center">Name</TableCell>
+                <TableCell align="center">Fiscal Code</TableCell>
+                <TableCell align="center">Bank Account</TableCell>
+                <TableCell align="center">City</TableCell>
                 <TableCell align="center">Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
+              {myOrganizations.map((element) => (
+                <TableRow key={element.id}>
                   <TableCell component="th" scope="row">
-                    <Link className="no-underline" to={`/users/${user.id}`}>
-                      {user.id}
+                    <Link className="no-underline" to={`/my-organizations/${element.id}`}>
+                      {element.id}
                     </Link>
                   </TableCell>
                   <TableCell align="center">
-                    <Link className="no-underline" to={`/users/${user.id}`}>
-                      {user.username}
+                    <Link className="no-underline" to={`/my-organizations/${element.id}`}>
+                      {element.name}
                     </Link>
                   </TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">
-                    {user.roles.reduce((acc, role) => {
-                      const result = `${role.role}, ${acc}`
-                      return result.replace(/[, ]+$/, "");
-                    }, '')}
-                  </TableCell>
+                  <TableCell align="center">{element.fiscalCode}</TableCell>
+                  <TableCell align="center">{element.bankAccount}</TableCell>
+                  <TableCell align="center">{element.city}</TableCell>
                   <TableCell align="center">
                     <Button
                       variant="contained"
                       color="secondary"
-                      onClick={() => removeUser(user.id)}
                     >
                       Delete
                     </Button>
@@ -132,4 +112,4 @@ const Users = (props) => {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Users);
+export default connect(mapStateToProps, mapDispatchToProps)(MyOrganizations);
