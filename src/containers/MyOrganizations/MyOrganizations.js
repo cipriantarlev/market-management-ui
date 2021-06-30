@@ -11,7 +11,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { fetchMyOrganizations } from '../actions';
+import {
+  fetchMyOrganizations,
+  deleteMyOrganization
+} from '../actions';
 
 const useStyles = makeStyles({
   table: {
@@ -30,6 +33,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onFetchMyOrganizations: () => dispatch(fetchMyOrganizations()),
+    onDeleteMyOrganization: (id) => dispatch(deleteMyOrganization(id)),
   }
 }
 
@@ -39,7 +43,8 @@ const MyOrganizations = (props) => {
     myOrganizations,
     isPending,
     error,
-    onFetchMyOrganizations
+    onFetchMyOrganizations,
+    onDeleteMyOrganization
   } = props;
 
   const classes = useStyles();
@@ -53,7 +58,15 @@ const MyOrganizations = (props) => {
     history.push("/my-organizations/0")
   }
 
-  return(
+  const removeMyOrg = (id) => {
+    const answer = window.confirm(`Are you sure you want to delete the user with id: ${id}?`);
+    if (answer === true) {
+      onDeleteMyOrganization(id);
+      history.go(0);
+    }
+  }
+
+  return (
     <div style={{ width: 'auto', margin: 100, }}>
       <Button
         variant="contained"
@@ -96,6 +109,7 @@ const MyOrganizations = (props) => {
                     <Button
                       variant="contained"
                       color="secondary"
+                      onClick={() => removeMyOrg(element.id)}
                     >
                       Delete
                     </Button>
