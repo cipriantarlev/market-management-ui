@@ -133,7 +133,6 @@ const User = (props) => {
       } else {
         onCreateUser(user);
       }
-      console.log("user", user);
       onFetchUsers();
       history.push("/users");
     } else {

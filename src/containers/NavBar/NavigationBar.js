@@ -53,7 +53,7 @@ const NavigationBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <NavDropdown title="Settings" id="basic-nav-dropdown" className="hover-dark-gray">
+          <NavDropdown title="Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
             <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
           </NavDropdown>
