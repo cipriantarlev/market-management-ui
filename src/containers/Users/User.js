@@ -66,19 +66,22 @@ const User = (props) => {
     }
   }, [id, onFetchUser])
 
+  
+  const initializeRolesValue = () => {
+    let tempRoles = initialUser.roles !== undefined ? initialUser.roles.map(role => role.id) : [];
+    setSelectedRoles(tempRoles);
+  }
+
   useEffect(() => {
     initializeRolesValue();
     if (id !== "0") {
       setUser(initialUser)
     } else {
       setSelectedRoles([]);
-    }
+    }// eslint-disable-next-line
   }, [initialUser, id])
 
-  const initializeRolesValue = () => {
-    let tempRoles = initialUser.roles !== undefined ? initialUser.roles.map(role => role.id) : [];
-    setSelectedRoles(tempRoles);
-  }
+  
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
