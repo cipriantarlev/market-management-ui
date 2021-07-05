@@ -39,6 +39,21 @@ import {
   DELETE_MY_ORGANIZATION_PENDING,
   DELETE_MY_ORGANIZATION_SUCCESS,
   DELETE_MY_ORGANIZATION_FAILED,
+  REQUEST_VENDORS_PENDING,
+  REQUEST_VENDORS_SUCCESS,
+  REQUEST_VENDORS_FAILED,
+  REQUEST_VENDOR_PENDING,
+  REQUEST_VENDOR_SUCCESS,
+  REQUEST_VENDOR_FAILED,
+  CREATE_VENDOR_PENDING,
+  CREATE_VENDOR_SUCCESS,
+  CREATE_VENDOR_FAILED,
+  UPDATE_VENDOR_PENDING,
+  UPDATE_VENDOR_SUCCESS,
+  UPDATE_VENDOR_FAILED,
+  DELETE_VENDOR_PENDING,
+  DELETE_VENDOR_SUCCESS,
+  DELETE_VENDOR_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -147,3 +162,41 @@ export const deleteMyOrganization = (id) => (dispatch) => {
     .catch(error => dispatch({ type: DELETE_MY_ORGANIZATION_FAILED, payload: error }))
 }
 
+export const fetchVendors = () => (dispatch) => {
+  dispatch({ type: REQUEST_VENDORS_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/vendors`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_VENDORS_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_VENDORS_FAILED, payload: error }))
+}
+
+export const fetchVendor = (id) => (dispatch) => {
+  dispatch({ type: REQUEST_VENDOR_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/vendors/${id}`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_VENDOR_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_VENDOR_FAILED, payload: error }))
+}
+
+export const createVendor = (vendor) => (dispatch) => {
+  dispatch({ type: CREATE_VENDOR_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/vendors`, dataApi('post', vendor))
+    .then(response => response.json())
+    .then(data => dispatch({ type: CREATE_VENDOR_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: CREATE_VENDOR_FAILED, payload: error }))
+}
+
+export const updateVendor = (vendor) => (dispatch) => {
+  dispatch({ type: UPDATE_VENDOR_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/vendors`, dataApi('put', vendor))
+    .then(response => response.json())
+    .then(data => dispatch({ type: UPDATE_VENDOR_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: UPDATE_VENDOR_FAILED, payload: error }))
+}
+
+export const deleteVendor = (id) => (dispatch) => {
+  dispatch({ type: DELETE_VENDOR_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/vendors/${id}`, dataApi('delete'))
+    .then(respone => dispatch({ type: DELETE_VENDOR_SUCCESS, payload: respone.status }))
+    .catch(error => dispatch({ type: DELETE_VENDOR_FAILED, payload: error }))
+}
