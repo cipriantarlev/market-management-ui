@@ -8,13 +8,25 @@ import thunkMiddleware from 'redux-thunk';
 import App from './containers/App/App';
 import reportWebVitals from './reportWebVitals';
 
-import { requestLogin, requestLogout, fetchUsers, manageMyOrganizations } from './containers/reducers';
+import { 
+  requestLogin, 
+  requestLogout, 
+  fetchUsers, 
+  manageMyOrganizations,
+  manageVendors
+ } from './containers/reducers';
 import './index.css';
 import 'tachyons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const logger = createLogger();
-const rootReducer = combineReducers({requestLogin, requestLogout, fetchUsers, manageMyOrganizations});
+const rootReducer = combineReducers({
+  requestLogin, 
+  requestLogout, 
+  fetchUsers, 
+  manageMyOrganizations,
+  manageVendors
+});
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 
 
