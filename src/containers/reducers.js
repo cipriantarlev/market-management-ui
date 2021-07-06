@@ -51,6 +51,9 @@ import {
   DELETE_VENDOR_PENDING,
   DELETE_VENDOR_SUCCESS,
   DELETE_VENDOR_FAILED,
+  REQUEST_REGIONS_PENDING,
+  REQUEST_REGIONS_SUCCESS,
+  REQUEST_REGIONS_FAILED,
 } from './constants';
 
 const initialStateLogin = {
@@ -188,11 +191,12 @@ const initialStateVendor = {
   vendors: [],
   error: false,
   vendor: {},
-  status: ''
+  status: '',
+  regions: []
 }
 
 export const manageVendors = (state = initialStateVendor, action = {}) => {
-  switch(action.type) {
+  switch (action.type) {
     case REQUEST_VENDORS_PENDING:
       return Object.assign({}, state, { isPending: true });
     case REQUEST_VENDORS_SUCCESS:
@@ -222,6 +226,12 @@ export const manageVendors = (state = initialStateVendor, action = {}) => {
     case DELETE_VENDOR_SUCCESS:
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_VENDOR_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_REGIONS_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_REGIONS_SUCCESS:
+      return Object.assign({}, state, { regions: action.payload, isPending: false });
+    case REQUEST_REGIONS_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     default:
       return state;

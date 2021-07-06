@@ -54,6 +54,9 @@ import {
   DELETE_VENDOR_PENDING,
   DELETE_VENDOR_SUCCESS,
   DELETE_VENDOR_FAILED,
+  REQUEST_REGIONS_PENDING,
+  REQUEST_REGIONS_SUCCESS,
+  REQUEST_REGIONS_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -199,4 +202,12 @@ export const deleteVendor = (id) => (dispatch) => {
   fetch(`${ROOT_CONTEXT_PATH}/vendors/${id}`, dataApi('delete'))
     .then(respone => dispatch({ type: DELETE_VENDOR_SUCCESS, payload: respone.status }))
     .catch(error => dispatch({ type: DELETE_VENDOR_FAILED, payload: error }))
+}
+
+export const fetchRegions = () => (dispatch) => {
+  dispatch({ type: REQUEST_REGIONS_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/regions`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_REGIONS_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_REGIONS_FAILED, payload: error }))
 }
