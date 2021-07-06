@@ -41,6 +41,9 @@ const NavigationBar = (props) => {
       case "myOrganization":
         history.push("/my-organizations");
         break;
+      case "vendors":
+        history.push("/vendors");
+        break;
       default:
         history.push("/");
         break;
@@ -56,6 +59,7 @@ const NavigationBar = (props) => {
           <NavDropdown title="Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
             <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
+            <NavDropdown.Item id="vendors" onClick={onClickDropdownList}>Vendors</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>
