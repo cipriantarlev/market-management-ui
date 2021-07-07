@@ -13,7 +13,8 @@ import {
   requestLogout, 
   fetchUsers, 
   manageMyOrganizations,
-  manageVendors
+  manageVendors,
+  manageCategories,
  } from './containers/reducers';
 import './index.css';
 import 'tachyons';
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
   requestLogout, 
   fetchUsers, 
   manageMyOrganizations,
-  manageVendors
+  manageVendors,
+  manageCategories,
 });
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 
