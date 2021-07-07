@@ -13,9 +13,11 @@ import Home from '../Home/Home';
 import Users from '../Users/Users';
 import User from '../Users/User';
 import MyOrganizations from "../MyOrganizations/MyOrganizations";
-import MyOrganization from"../MyOrganizations/MyOrganization";
+import MyOrganization from "../MyOrganizations/MyOrganization";
 import Vendors from "../Vendors/Vendors";
 import Vendor from "../Vendors/Vendor";
+import Categories from "../Categories/Categories";
+import Category from '../Categories/Category';
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -29,7 +31,7 @@ const mapStateToProps = (state) => {
 const App = ({ loggedIn }) => {
   return (
     <Router>
-      {loggedIn ? <NavigationBar /> : null }
+      {loggedIn ? <NavigationBar /> : null}
       <Switch>
         <Route exact path="/" >
           {loggedIn ? <Home /> : <Redirect to="/login" />}
@@ -51,6 +53,12 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route path="/vendors/:id" >
           {loggedIn ? <Vendor /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/categories" >
+          {loggedIn ? <Categories /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/categories/:id" >
+          {loggedIn ? <Category /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
