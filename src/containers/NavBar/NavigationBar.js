@@ -44,6 +44,9 @@ const NavigationBar = (props) => {
       case "vendors":
         history.push("/vendors");
         break;
+      case "categories":
+        history.push("/categories");
+        break;
       default:
         history.push("/");
         break;
@@ -60,6 +63,7 @@ const NavigationBar = (props) => {
             <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
             <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
             <NavDropdown.Item id="vendors" onClick={onClickDropdownList}>Vendors</NavDropdown.Item>
+            <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>
