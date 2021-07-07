@@ -131,7 +131,7 @@ const Vendors = (props) => {
       }
       history.go(0);
     } else {
-      alert("You didn't selected any vendors. Please select and try again.");
+      alert("You didn't select any vendors. Please select and try again.");
     }
   }
 
