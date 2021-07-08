@@ -15,8 +15,8 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchCategories, deleteCategory } from '../actions';
-import Category from './Category';
+import { fetchSubcategories, deleteSubcategory } from '../actions';
+import Subcategory from './Subcategory';
 
 const useStyles = makeStyles({
   table: {
@@ -26,27 +26,26 @@ const useStyles = makeStyles({
 
 const mapStateToProps = (state) => {
   return {
-    isPending: state.manageCategories.isPending,
-    categories: state.manageCategories.categories,
-    error: state.manageCategories.error,
+    isPending: state.manageSubcategories.isPending,
+    subcategories: state.manageSubcategories.subcategories,
+    error: state.manageSubcategories.error,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchCategories: () => dispatch(fetchCategories()),
-    onDeleteCategory: (id) => dispatch(deleteCategory(id)),
+    onFetchSubategories: () => dispatch(fetchSubcategories()),
+    onDeleteSubategory: (id) => dispatch(deleteSubcategory(id)),
   }
 }
 
-const Categories = (props) => {
-
+const Subcategories = (props) => {
   const {
     isPending,
-    categories,
+    subcategories,
     error,
-    onFetchCategories,
-    onDeleteCategory
+    onFetchSubategories,
+    onDeleteSubategory
   } = props;
 
   const classes = useStyles();
@@ -66,47 +65,47 @@ const Categories = (props) => {
   };
 
   useEffect(() => {
-    onFetchCategories();
-  }, [onFetchCategories])
+    onFetchSubategories();
+  }, [onFetchSubategories])
 
   useEffect(() => {
-    setTotalRows(categories.length);
-  }, [categories])
+    setTotalRows(subcategories.length);
+  }, [subcategories])
 
-  const onAddNewCategory = () => {
+  const onAddNewSubcategory = () => {
     setId(0);
     setOpenDialog(true);
   }
 
-  const onUpdateCategory = (elementId) => {
+  const onUpdateSubcategory = (elementId) => {
     setId(elementId);
     setOpenDialog(true);
   }
 
-  const removeCategory = (categoryId) => {
-    const answer = window.confirm(`Are you sure you want to delete the Category with id: ${categoryId}?`);
+  const removeSubcategory = (subcategoryId) => {
+    const answer = window.confirm(`Are you sure you want to delete the subcategory with id: ${subcategoryId}?`);
     if (answer === true) {
-      onDeleteCategory(categoryId);
+      onDeleteSubategory(subcategoryId);
       history.go(0);
     }
   }
 
   const changePage = (event, pageNr) => {
-    if(pageNr <= totalRows){
+    if (pageNr <= totalRows) {
       setPage(pageNr)
     }
   }
 
   return (
-    <div style={{ width: 500, margin: 'auto', marginTop: 30 }}>
+    <div style={{ width: 500, margin: 'auto', marginTop: 20 }}>
       <Button
         variant="contained"
-        className="mb-4"
+        className="mb-3"
         style={{ backgroundColor: '#2aa839', color: 'white' }}
         startIcon={<AddCircleOutlineIcon />}
-        onClick={onAddNewCategory}
+        onClick={onAddNewSubcategory}
       >
-        Add new Category
+        Add new Subcategory
       </Button>
       {!isPending ?
         <div>
@@ -115,38 +114,40 @@ const Categories = (props) => {
               <TableHead style={{ backgroundColor: "#808080ad" }}>
                 <TableRow>
                   <TableCell>ID</TableCell>
-                  <TableCell >Name</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Category Name</TableCell>
                   <TableCell align="center">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {categories
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((element) => (
-                  <TableRow key={element.id}>
-                    <TableCell component="th" scope="row">
-                      <Link className="no-underline" to="#" onClick={() => onUpdateCategory(element.id)} >
-                        {element.id}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link className="no-underline" to="#" onClick={() => onUpdateCategory(element.id)}>
-                        {element.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => removeCategory(element.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {subcategories
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((element) => (
+                    <TableRow key={element.id}>
+                      <TableCell component="th" scope="row">
+                        <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)} >
+                          {element.id}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)}>
+                          {element.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{element.category.name}</TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          startIcon={<DeleteIcon />}
+                          onClick={() => removeSubcategory(element.id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
               <TableFooter>
                 <TableRow>
@@ -162,7 +163,7 @@ const Categories = (props) => {
               </TableFooter>
             </Table>
           </TableContainer>
-          <Category
+          <Subcategory
             open={openDialog}
             handleClose={handleClose}
             id={id}
@@ -175,4 +176,4 @@ const Categories = (props) => {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Categories);
+export default connect(mapStateToProps, mapDispatchToProps)(Subcategories);
