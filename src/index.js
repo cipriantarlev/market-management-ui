@@ -15,6 +15,7 @@ import {
   manageMyOrganizations,
   manageVendors,
   manageCategories,
+  manageSubcategories,
  } from './containers/reducers';
 import './index.css';
 import 'tachyons';
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   manageMyOrganizations,
   manageVendors,
   manageCategories,
+  manageSubcategories,
 });
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 

@@ -79,7 +79,6 @@ const Category = (props) => {
     } else {
       onCreateCategory(category);
     }
-    console.log("category",category);
     handleClose();
     history.go(0);
   }
