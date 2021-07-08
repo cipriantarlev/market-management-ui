@@ -17,7 +17,7 @@ import MyOrganization from "../MyOrganizations/MyOrganization";
 import Vendors from "../Vendors/Vendors";
 import Vendor from "../Vendors/Vendor";
 import Categories from "../Categories/Categories";
-import Category from '../Categories/Category';
+import Subcategories from "../Subcategories/Subcategories";
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -57,8 +57,8 @@ const App = ({ loggedIn }) => {
         <Route exact path="/categories" >
           {loggedIn ? <Categories /> : <Redirect to="/login" />}
         </Route>
-        <Route path="/categories/:id" >
-          {loggedIn ? <Category /> : <Redirect to="/login" />}
+        <Route exact path="/subcategories" >
+          {loggedIn ? <Subcategories /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
