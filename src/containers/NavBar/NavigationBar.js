@@ -50,6 +50,9 @@ const NavigationBar = (props) => {
       case "subcategories":
         history.push("/subcategories");
         break;
+      case "vat":
+        history.push("/vat");
+        break;
       default:
         history.push("/");
         break;
@@ -68,6 +71,7 @@ const NavigationBar = (props) => {
             <NavDropdown.Item id="vendors" onClick={onClickDropdownList}>Vendors</NavDropdown.Item>
             <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
             <NavDropdown.Item id="subcategories" onClick={onClickDropdownList}>Subcategories</NavDropdown.Item>
+            <NavDropdown.Item id="vat" onClick={onClickDropdownList}>VAT Settings</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>
