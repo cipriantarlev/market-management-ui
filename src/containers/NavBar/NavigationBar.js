@@ -53,6 +53,9 @@ const NavigationBar = (props) => {
       case "vat":
         history.push("/vat");
         break;
+      case "measuringUnits":
+        history.push("/measuring-units");
+        break;
       default:
         history.push("/");
         break;
@@ -72,6 +75,7 @@ const NavigationBar = (props) => {
             <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
             <NavDropdown.Item id="subcategories" onClick={onClickDropdownList}>Subcategories</NavDropdown.Item>
             <NavDropdown.Item id="vat" onClick={onClickDropdownList}>VAT Settings</NavDropdown.Item>
+            <NavDropdown.Item id="measuringUnits" onClick={onClickDropdownList}>Measuring Units</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>

@@ -19,6 +19,7 @@ import Vendor from "../Vendors/Vendor";
 import Categories from "../Categories/Categories";
 import Subcategories from "../Subcategories/Subcategories";
 import VatList from "../Vat/VatList";
+import MeasuringUnits from '../MeasuringUnits/MeasuringUnits';
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -63,6 +64,9 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route exact path="/vat" >
           {loggedIn ? <VatList /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/measuring-units" >
+          {loggedIn ? <MeasuringUnits /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}

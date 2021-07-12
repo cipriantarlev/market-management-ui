@@ -17,6 +17,7 @@ import {
   manageCategories,
   manageSubcategories,
   manageVat,
+  manageMeasuringUnits,
  } from './containers/reducers';
 import './index.css';
 import 'tachyons';
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   manageCategories,
   manageSubcategories,
   manageVat,
+  manageMeasuringUnits,
 });
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 
