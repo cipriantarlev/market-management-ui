@@ -13,8 +13,8 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchVatList, deleteVat } from '../actions';
-import Vat from './Vat';
+import { fetchMeasuringUnits, deleteMeasuringUnit } from '../actions';
+import MeasuringUnit from './MeasuringUnit';
 
 const useStyles = makeStyles({
   table: {
@@ -24,27 +24,26 @@ const useStyles = makeStyles({
 
 const mapStateToProps = (state) => {
   return {
-    isPending: state.manageVat.isPending,
-    vatList: state.manageVat.vatList,
-    error: state.manageVat.error,
+    isPending: state.manageMeasuringUnits.isPending,
+    measuringUnits: state.manageMeasuringUnits.measuringUnits,
+    error: state.manageMeasuringUnits.error,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchVatList: () => dispatch(fetchVatList()),
-    onDeleteVat: (id) => dispatch(deleteVat(id)),
+    onFetchMeasuringUnits: () => dispatch(fetchMeasuringUnits()),
+    onDeleteMeasuringUnit: (id) => dispatch(deleteMeasuringUnit(id)),
   }
 }
 
-const VatList = (props) => {
-
+const MeasuringUnits = (props) => {
   const {
     isPending,
-    vatList,
+    measuringUnits,
     error,
-    onFetchVatList,
-    onDeleteVat
+    onFetchMeasuringUnits,
+    onDeleteMeasuringUnit
   } = props;
 
   const classes = useStyles();
@@ -60,23 +59,23 @@ const VatList = (props) => {
   };
 
   useEffect(() => {
-    onFetchVatList();
-  }, [onFetchVatList])
+    onFetchMeasuringUnits();
+  }, [onFetchMeasuringUnits])
 
-  const onAddNewVat = () => {
+  const onAddNewMeasuringUnit = () => {
     setId(0);
     setOpenDialog(true);
   }
 
-  const onUpdateVat = (elementId) => {
+  const onUpdateMeasuringUnit = (elementId) => {
     setId(elementId);
     setOpenDialog(true);
   }
 
-  const removeVat = (vatId) => {
-    const answer = window.confirm(`Are you sure you want to delete Vat with id: ${vatId}?`);
+  const removeMeasuringUnit = (measuringUnitId) => {
+    const answer = window.confirm(`Are you sure you want to delete Measuring Unit with id: ${measuringUnitId}?`);
     if (answer === true) {
-      onDeleteVat(vatId);
+      onDeleteMeasuringUnit(measuringUnitId);
       history.go(0);
     }
   }
@@ -88,9 +87,9 @@ const VatList = (props) => {
         className="mb-4"
         style={{ backgroundColor: '#2aa839', color: 'white' }}
         startIcon={<AddCircleOutlineIcon />}
-        onClick={onAddNewVat}
+        onClick={onAddNewMeasuringUnit}
       >
-        Add new Vat
+        Add new Measuring Unit
       </Button>
       {!isPending ?
         <div>
@@ -100,31 +99,29 @@ const VatList = (props) => {
                 <TableRow>
                   <TableCell>ID</TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Value</TableCell>
                   <TableCell align="center">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {vatList.map((element) => (
+                {measuringUnits.map((element) => (
                   <TableRow key={element.id}>
                     <TableCell component="th" scope="row">
-                      <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)} >
+                      <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)} >
                         {element.id}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)}>
+                      <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)}>
                         {element.name}
                       </Link>
                     </TableCell>
-                    <TableCell>{element.value}</TableCell>
                     <TableCell align="center">
                       <Button
                         variant="contained"
                         color="secondary"
                         size="small"
                         startIcon={<DeleteIcon />}
-                        onClick={() => removeVat(element.id)}
+                        onClick={() => removeMeasuringUnit(element.id)}
                       >
                         Delete
                       </Button>
@@ -134,7 +131,7 @@ const VatList = (props) => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Vat
+          <MeasuringUnit
             open={openDialog}
             handleClose={handleClose}
             id={id}
@@ -147,4 +144,5 @@ const VatList = (props) => {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(VatList);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MeasuringUnits);

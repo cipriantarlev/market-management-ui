@@ -10,66 +10,61 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import {
-  fetchVat,
-  createVat,
-  updateVat,
+  fetchMeasuringUnit,
+  createMeasuringUnit,
+  updateMeasuringUnit,
 } from '../actions';
 
 const mapStateToProps = (state) => {
   return {
-    isPending: state.manageVat.fetchVatPending,
-    initialVat: state.manageVat.vat,
-    error: state.manageVat.fetchVatError,
+    isPending: state.manageMeasuringUnits.fetchMeasuringUnitPending,
+    initialMeasuringUnit: state.manageMeasuringUnits.measuringUnit,
+    error: state.manageMeasuringUnits.fetchMeasuringUnitError,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchVat: (id) => dispatch(fetchVat(id)),
-    onCreateVat: (vat) => dispatch(createVat(vat)),
-    onUpdateVat: (vat) => dispatch(updateVat(vat)),
+    onFetchMeasuringUnit: (id) => dispatch(fetchMeasuringUnit(id)),
+    onCreateMeasuringUnit: (measuringUnit) => dispatch(createMeasuringUnit(measuringUnit)),
+    onUpdateMeasuringUnit: (measuringUnit) => dispatch(updateMeasuringUnit(measuringUnit)),
   }
 }
-
-const Vat = (props) => {
-
+const MeasuringUnit = (props) => {
   const {
     open,
     id,
     handleClose,
     isPending,
-    initialVat,
+    initialMeasuringUnit,
     error,
-    onFetchVat,
-    onCreateVat,
-    onUpdateVat,
+    onFetchMeasuringUnit,
+    onCreateMeasuringUnit,
+    onUpdateMeasuringUnit,
   } = props;
 
 
   const history = useHistory();
 
-  const [vat, setVat] = useState({});
+  const [measuringUnit, setMeasuringUnit] = useState({});
 
   useEffect(() => {
     if (id !== 0) {
-      onFetchVat(id);
+      onFetchMeasuringUnit(id);
     }
-  }, [id, onFetchVat])
+  }, [id, onFetchMeasuringUnit])
 
   useEffect(() => {
     if (id !== 0) {
-      setVat(initialVat);
+      setMeasuringUnit(initialMeasuringUnit);
     } else {
-      setVat({});
+      setMeasuringUnit({});
     }
-  }, [id, initialVat])
+  }, [id, initialMeasuringUnit])
 
-  const onChangeVatValues = (event) => {
+  const onChangeMeasuringUnitValues = (event) => {
     if (event.target.id === "name") {
-      setVat({ ...vat, name: event.target.value });
-    }
-    if (event.target.id === "value") {
-      setVat({ ...vat, value: event.target.value });
+      setMeasuringUnit({ ...measuringUnit, name: event.target.value });
     }
 }
 
@@ -78,11 +73,11 @@ const onCancel = () => {
   return answer === true ? handleClose() : null;
 }
 
-const onSubmitVat = () => {
+const onSubmitMeasuringUnit = () => {
   if (id !== 0) {
-    onUpdateVat(vat);
+    onUpdateMeasuringUnit(measuringUnit);
   } else {
-    onCreateVat(vat);
+    onCreateMeasuringUnit(measuringUnit);
   }
   handleClose();
   history.go(0);
@@ -95,39 +90,29 @@ return (
     aria-labelledby="form-dialog-title"
     disableEscapeKeyDown={true}
   >
-    {error ? <div className="tc red f3">Something went wrong during vat list fetching!</div> : null}
+    {error ? <div className="tc red f3">Something went wrong during measuring units featchin!</div> : null}
     {!isPending ?
-      <DialogTitle id="form-dialog-title">Add New Vat</DialogTitle>
+      <DialogTitle id="form-dialog-title">Add New Measuring Unit</DialogTitle>
       :
       <DialogTitle id="form-dialog-title">Loading data...</DialogTitle>}
     <DialogContent>
       <DialogContentText>
-        Please enter the values for a new vat.
+        Please enter the name for a new measuring unit.
       </DialogContentText>
       <TextField
         autoFocus
         margin="dense"
         id="name"
-        placeholder="Vat Name"
+        placeholder="Name"
         type="text"
         fullWidth
-        value={vat.name}
-        onChange={onChangeVatValues}
-      />
-      <TextField
-        autoFocus
-        margin="dense"
-        id="value"
-        placeholder="Vat Value"
-        type="text"
-        fullWidth
-        value={vat.value}
-        onChange={onChangeVatValues}
+        value={measuringUnit.name}
+        onChange={onChangeMeasuringUnitValues}
       />
     </DialogContent>
     <DialogActions>
       <Button
-        onClick={onSubmitVat}
+        onClick={onSubmitMeasuringUnit}
         className="mr5 w4"
         variant="contained"
         color="primary"
@@ -151,4 +136,4 @@ return (
 );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Vat);
+export default connect(mapStateToProps, mapDispatchToProps)(MeasuringUnit);
