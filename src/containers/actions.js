@@ -120,6 +120,21 @@ import {
   DELETE_MEASURING_UNIT_PENDING,
   DELETE_MEASURING_UNIT_SUCCESS,
   DELETE_MEASURING_UNIT_FAILED,
+  REQUEST_PRODUCTS_PENDING,
+  REQUEST_PRODUCTS_SUCCESS,
+  REQUEST_PRODUCTS_FAILED,
+  REQUEST_PRODUCT_PENDING,
+  REQUEST_PRODUCT_SUCCESS,
+  REQUEST_PRODUCT_FAILED,
+  CREATE_PRODUCT_PENDING,
+  CREATE_PRODUCT_SUCCESS,
+  CREATE_PRODUCT_FAILED,
+  UPDATE_PRODUCT_PENDING,
+  UPDATE_PRODUCT_SUCCESS,
+  UPDATE_PRODUCT_FAILED,
+  DELETE_PRODUCT_PENDING,
+  DELETE_PRODUCT_SUCCESS,
+  DELETE_PRODUCT_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -437,4 +452,43 @@ export const deleteMeasuringUnit = (id) => (dispatch) => {
   fetch(`${ROOT_CONTEXT_PATH}/measuring-units/${id}`, dataApi('delete'))
     .then(respone => dispatch({ type: DELETE_MEASURING_UNIT_SUCCESS, payload: respone.status }))
     .catch(error => dispatch({ type: DELETE_MEASURING_UNIT_FAILED, payload: error }))
+}
+
+export const fetchProducts = () => (dispatch) => {
+  dispatch({ type: REQUEST_PRODUCTS_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_PRODUCTS_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_PRODUCTS_FAILED, payload: error }))
+}
+
+export const fetchProduct = (id) => (dispatch) => {
+  dispatch({ type: REQUEST_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products/${id}`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_PRODUCT_FAILED, payload: error }))
+}
+
+export const createProduct = (product) => (dispatch) => {
+  dispatch({ type: CREATE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products`, dataApi('post', product))
+    .then(response => response.json())
+    .then(data => dispatch({ type: CREATE_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: CREATE_PRODUCT_FAILED, payload: error }))
+}
+
+export const updateProduct = (product) => (dispatch) => {
+  dispatch({ type: UPDATE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products`, dataApi('put', product))
+    .then(response => response.json())
+    .then(data => dispatch({ type: UPDATE_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: UPDATE_PRODUCT_FAILED, payload: error }))
+}
+
+export const deleteProduct = (id) => (dispatch) => {
+  dispatch({ type: DELETE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products/${id}`, dataApi('delete'))
+    .then(respone => dispatch({ type: DELETE_PRODUCT_SUCCESS, payload: respone.status }))
+    .catch(error => dispatch({ type: DELETE_PRODUCT_FAILED, payload: error }))
 }
