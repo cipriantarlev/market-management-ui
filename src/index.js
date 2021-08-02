@@ -19,6 +19,8 @@ import {
   manageVat,
   manageMeasuringUnits,
   manageProducts,
+  generateProductCode,
+  generatePlu,
  } from './containers/reducers';
 import './index.css';
 import 'tachyons';
@@ -36,6 +38,8 @@ const rootReducer = combineReducers({
   manageVat,
   manageMeasuringUnits,
   manageProducts,
+  generateProductCode,
+  generatePlu,
 });
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 

@@ -19,16 +19,29 @@ import {
   fetchProduct,
   createProduct,
   updateProduct,
-  fetchProducts
+  fetchProducts,
+  fetchCategories,
+  fetchSubcategoriesCategory,
+  fetchVatList,
+  fetchMeasuringUnits,
+  generateProductCode,
+  generatePlu,
 } from '../actions';
 
 import './style.css';
+import { InputGroup } from 'react-bootstrap';
 
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageProducts.isPending,
     initialProduct: state.manageProducts.product,
     error: state.manageProducts.error,
+    categories: state.manageCategories.categories,
+    subcategoriesInitial: state.manageSubcategories.subcategoriesByCategory,
+    vatList: state.manageVat.vatList,
+    measuringUnits: state.manageMeasuringUnits.measuringUnits,
+    productCode: state.generateProductCode.productCode,
+    plu: state.generatePlu.plu,
   }
 }
 
@@ -38,37 +51,45 @@ const mapDispatchToProps = (dispatch) => {
     onCreateProduct: (product) => dispatch(createProduct(product)),
     onUpdateProduct: (product) => dispatch(updateProduct(product)),
     onFetchProducts: () => dispatch(fetchProducts()),
+    onFetchCategories: () => dispatch(fetchCategories()),
+    onFetchSubcategoriesCategory: (categoryId) => dispatch(fetchSubcategoriesCategory(categoryId)),
+    onFetchVatList: () => dispatch(fetchVatList()),
+    onFetchMeasuringUnits: () => dispatch(fetchMeasuringUnits()),
+    onGenerateProductCode: () => dispatch(generateProductCode()),
+    onGeneratePlu: () => dispatch(generatePlu()),
   }
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(() => ({
   table: {
     minWidth: 100,
   },
-});
-
-function createData(name) {
-  return { name};
-}
-
-const rows = [
-  createData('Frozen yoghurt'),
-  createData('Ice cream sandwich'),
-  createData('Eclair'),
-  createData('Cupcake'),
-  createData('Gingerbread'),
-  
-];
+  header: {
+    fontWeight: 'bold'
+  }
+}));
 
 const Product = (props) => {
   const {
     isPending,
     initialProduct,
     error,
+    categories,
+    subcategoriesInitial,
+    vatList,
+    measuringUnits,
+    productCode,
+    plu,
     onFetchProduct,
     onCreateProduct,
     onUpdateProduct,
     onFetchProducts,
+    onFetchCategories,
+    onFetchSubcategoriesCategory,
+    onFetchVatList,
+    onFetchMeasuringUnits,
+    onGenerateProductCode,
+    onGeneratePlu,
   } = props;
 
   const classes = useStyles();
@@ -77,41 +98,50 @@ const Product = (props) => {
   const { id } = useParams();
 
   const [product, setProduct] = useState({});
+  const [barcodes, setBarcodes] = useState([]);
+  const [tradeMargin, setTradeMargin] = useState(0);
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     return answer === true ? history.push("/vendors") : null;
   }
 
-  const currencies = ['--Select Currency Value--', 'MDL', 'USD', 'EURO'];
-  const vendorTypes = ['--Select Vendor Type Value--', 'Supplier', 'Buyer'];
-  const vendorLegalTypes = ['--Select Vendor Legal Type Value--', 'Legal entity', 'Individual'];
+  useEffect(() => {
+    onFetchCategories();
+    onFetchVatList();
+    onFetchMeasuringUnits();
+  }, [onFetchCategories, onFetchVatList, onFetchMeasuringUnits])
 
   useEffect(() => {
     if (id !== "0") {
       onFetchProduct(id);
     }
-  }, [id, onFetchProduct])
+  }, [id, onFetchProduct]);
 
   useEffect(() => {
     if (id !== "0") {
-      setProduct(initialProduct)
+      setProduct(initialProduct);
+      setBarcodes(...product.barcodes);
     } else {
+      setProduct({})
       // setSelectedRegion(1);
     }// eslint-disable-next-line
   }, [initialProduct, id])
 
   const onChangeProductValues = (event) => {
     switch (event.target.id) {
-      case "formGridCompanyName":
-        setProduct({ ...product, name: event.target.value });
+      case "formGridCategory":
+        onFetchSubcategoriesCategory(Number(event.target.value));
+        setProduct({ ...product, category: event.target.value });
         break;
       case "formGridBankName":
         setProduct({ ...product, bank: event.target.value });
         break;
-      case "formGridPhoneNumber":
-        setProduct({ ...product, phoneNumber: event.target.value });
-        break;
+      // case "formGridProductCode":
+      //   console.log("product code", event.target.value)
+      //   console.log("generatedProductCode", generatedProductCode)
+      //   setProduct({ ...product, productCode: event.target.value });
+      //   break;
       case "formGridFiscalCode":
         setProduct({ ...product, fiscalCode: event.target.value });
         break;
@@ -148,6 +178,11 @@ const Product = (props) => {
     }
   }
 
+  const generateNewProductCode = () => {
+    onGenerateProductCode();
+    console.log("productCode", productCode);
+  }
+
   const onSubmitProduct = () => {
     if (id !== "0") {
       onUpdateProduct(product);
@@ -167,56 +202,71 @@ const Product = (props) => {
             <Form.Row>
               <Form.Group
                 as={Col}
-                controlId="formGridCategory"
               >
                 Category
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Category"
-                  className="mb-3"
+                  as="select"
                   size="sm"
-                  // value={vendor.name}
+                  className="mb-3"
+                  id="formGridCategory"
+                  // value={vendor.currency}
                   onChange={onChangeProductValues}
-                />
+                >
+                  <option>{"--Select Category Value--"}</option>
+                  {categories.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
+                </Form.Control>
                 Subcategory
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Subcategory"
-                  className="mb-3"
+                  as="select"
                   size="sm"
-                  // value={vendor.bank}
+                  className="mb-3"
+                  id="formGridSubcategory"
+                  // value={vendor.currency}
                   onChange={onChangeProductValues}
-                />
+                >
+                  <option>{"--Select Subcategory Value--"}</option>
+                  {subcategoriesInitial.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
+                </Form.Control>
                 Product Code
                 <Form.Control
                   type="text"
                   placeholder="Click to generate Product Code"
                   className="mb-3"
                   size="sm"
-                  // value={vendor.fiscalCode}
-                  onChange={onChangeProductValues}
+                  readOnly
+                  style={{
+                    cursor: 'pointer'
+                  }}
+                  id="formGridProductCode"
+                  value={productCode?.value}
+                  onClick={generateNewProductCode}
                 />
                 Name (Romanian)
                 <Form.Control
                   type="text"
                   placeholder="Enter Name (Romanian)"
                   size="sm"
+                  id="formGridNameRomanian"
                   // value={vendor.bankAccount}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
-              <TableContainer component={Paper} className="w-50 mt-4">
-                <Table className={classes.table} size="small" aria-label="a dense table">
+              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242 }}>
+                <Table className={classes.table} stickyHeader size="small" aria-label="a dense table sticky table">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Barcodes</TableCell>
+                      <TableCell className={classes.header}>Barcodes</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.map((row) => (
-                      <TableRow key={row.name}>
+                    {barcodes.map((barcode) => (
+                      <TableRow key={barcode.id}>
                         <TableCell component="th" scope="row">
-                          {row.name}
+                          {barcode.value}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -228,15 +278,12 @@ const Product = (props) => {
               <Form.Group as={Col} controlId="formGridNameRussian">
                 Name (Russian)
                 <Form.Control
-                  as="select"
+                  type="text"
+                  placeholder="Enter Name (Russian)"
                   size="sm"
-                  // value={vendor.currency}
+                  // value={vendor.bankAccount}
                   onChange={onChangeProductValues}
-                >
-                  {currencies.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
-                  ))}
-                </Form.Control>
+                />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridVendorType">
                 Measuring Unit
@@ -246,8 +293,9 @@ const Product = (props) => {
                   // value={vendor.vendorType}
                   onChange={onChangeProductValues}
                 >
-                  {vendorTypes.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
+                  <option>{"--Select Measuring Unit Value--"}</option>
+                  {measuringUnits.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
                   ))}
                 </Form.Control>
               </Form.Group>
@@ -271,8 +319,9 @@ const Product = (props) => {
                   // value={vendor.vendorLegalType}
                   onChange={onChangeProductValues}
                 >
-                  {vendorLegalTypes.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
+                  <option>{"--Select VAT Value--"}</option>
+                  {vatList.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
                   ))}
                 </Form.Control>
               </Form.Group>
@@ -290,13 +339,28 @@ const Product = (props) => {
               </Form.Group>
               <Form.Group as={Col} controlId="formGridNote">
                 PLU
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Note"
-                  size="sm"
-                  // value={vendor.note}
-                  onChange={onChangeProductValues}
-                />
+                <InputGroup>
+                  <Form.Control
+                    type="text"
+                    placeholder="Click '+' to generate new PLU"
+                    size="sm"
+                    readOnly
+                    disabled
+                    value={plu?.value}
+                    onChange={onChangeProductValues}
+                  />
+                  <InputGroup.Append>
+                    <InputGroup.Text
+                      style={{
+                        cursor: 'pointer',
+                        height: 31
+                      }}
+                      onClick={onGeneratePlu}
+                      >
+                      +
+                    </InputGroup.Text>
+                  </InputGroup.Append>
+                </InputGroup>
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -305,15 +369,16 @@ const Product = (props) => {
                 <Form.Control
                   type="text"
                   size="sm"
-                  // value={vendor.city}
-                  onChange={onChangeProductValues}
+                  value={`${Number(tradeMargin).toFixed(2)} %`}
+                  readOnly
+                  disabled
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridNote">
                 Stock
                 <Form.Control
                   type="text"
-                  placeholder="Enter Note"
+                  placeholder="Enter Stock"
                   size="sm"
                   // value={vendor.note}
                   onChange={onChangeProductValues}
