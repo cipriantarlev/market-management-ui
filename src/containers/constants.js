@@ -4,7 +4,7 @@ export const authorizationData = () => {
 }
 
 export const dataApi = (method, data) => {
-  if(method === 'delete') {
+  if(data === null || data === undefined) {
     return {
       method: method,
       headers: {
@@ -200,3 +200,11 @@ export const UPDATE_PRODUCT_FAILED = 'UPDATE_PRODUCT_FAILED';
 export const DELETE_PRODUCT_PENDING = 'DELETE_PRODUCT_PENDING';
 export const DELETE_PRODUCT_SUCCESS = 'DELETE_PRODUCT_SUCCESS';
 export const DELETE_PRODUCT_FAILED = 'DELETE_PRODUCT_FAILED';
+
+export const GENERATE_PRODUCT_CODE_PENDING = 'GENERATE_PRODUCT_CODE_PENDING';
+export const GENERATE_PRODUCT_CODE_SUCCESS = 'GENERATE_PRODUCT_CODE_SUCCESS';
+export const GENERATE_PRODUCT_CODE_FAILED = 'GENERATE_PRODUCT_CODE_FAILED';
+
+export const GENERATE_PLU_PENDING = 'GENERATE_PLU_PENDING';
+export const GENERATE_PLU_SUCCESS = 'GENERATE_PLU_SUCCESS';
+export const GENERATE_PLU_FAILED = 'GENERATE_PLU_FAILED';
