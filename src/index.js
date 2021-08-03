@@ -21,6 +21,7 @@ import {
   manageProducts,
   generateProductCode,
   generatePlu,
+  generateBarcode,
  } from './containers/reducers';
 import './index.css';
 import 'tachyons';
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   manageProducts,
   generateProductCode,
   generatePlu,
+  generateBarcode,
 });
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
 
