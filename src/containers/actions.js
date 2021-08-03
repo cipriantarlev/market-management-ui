@@ -141,6 +141,9 @@ import {
   GENERATE_PLU_PENDING,
   GENERATE_PLU_SUCCESS,
   GENERATE_PLU_FAILED,
+  GENERATE_BARCODE_PENDING,
+  GENERATE_BARCODE_SUCCESS,
+  GENERATE_BARCODE_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -507,10 +510,18 @@ export const generateProductCode = () => (dispatch) => {
     .catch(error => dispatch({ type: GENERATE_PRODUCT_CODE_FAILED, payload: error }))
 }
 
-export const generatePlu= () => (dispatch) => {
+export const generatePlu = () => (dispatch) => {
   dispatch({ type: GENERATE_PLU_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/plu`, dataApi('post'))
     .then(response => response.json())
     .then(data => dispatch({ type: GENERATE_PLU_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: GENERATE_PLU_FAILED, payload: error }))
+}
+
+export const generateBarcode = (barcode) => (dispatch) => {
+  dispatch({ type: GENERATE_BARCODE_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/barcodes`, dataApi('post', barcode))
+    .then(response => response.json())
+    .then(data => dispatch({ type: GENERATE_BARCODE_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: GENERATE_BARCODE_FAILED, payload: error }))
 }

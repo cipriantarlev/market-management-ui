@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
+import { Button as DeleteButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,6 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useHistory } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -26,6 +28,7 @@ import {
   fetchMeasuringUnits,
   generateProductCode,
   generatePlu,
+  generateBarcode,
 } from '../actions';
 
 import './style.css';
@@ -42,6 +45,7 @@ const mapStateToProps = (state) => {
     measuringUnits: state.manageMeasuringUnits.measuringUnits,
     productCode: state.generateProductCode.productCode,
     plu: state.generatePlu.plu,
+    barcode: state.generateBarcode.barcode,
   }
 }
 
@@ -57,6 +61,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchMeasuringUnits: () => dispatch(fetchMeasuringUnits()),
     onGenerateProductCode: () => dispatch(generateProductCode()),
     onGeneratePlu: () => dispatch(generatePlu()),
+    onGenerateBarcode: (barcode) => dispatch(generateBarcode(barcode)),
   }
 }
 
@@ -66,7 +71,10 @@ const useStyles = makeStyles(() => ({
   },
   header: {
     fontWeight: 'bold'
-  }
+  },
+  buttons: {
+    width: 109
+  },
 }));
 
 const Product = (props) => {
@@ -80,6 +88,7 @@ const Product = (props) => {
     measuringUnits,
     productCode,
     plu,
+    barcode,
     onFetchProduct,
     onCreateProduct,
     onUpdateProduct,
@@ -90,6 +99,7 @@ const Product = (props) => {
     onFetchMeasuringUnits,
     onGenerateProductCode,
     onGeneratePlu,
+    onGenerateBarcode,
   } = props;
 
   const classes = useStyles();
@@ -100,17 +110,15 @@ const Product = (props) => {
   const [product, setProduct] = useState({});
   const [barcodes, setBarcodes] = useState([]);
   const [tradeMargin, setTradeMargin] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(1);
+  const [selectedMeasuringUnit, setSelectedMeasuringUnit] = useState(null);
+  const [selectedVat, setSelectedVat] = useState(null);
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
-    return answer === true ? history.push("/vendors") : null;
+    return answer === true ? history.push("/products") : null;
   }
-
-  useEffect(() => {
-    onFetchCategories();
-    onFetchVatList();
-    onFetchMeasuringUnits();
-  }, [onFetchCategories, onFetchVatList, onFetchMeasuringUnits])
 
   useEffect(() => {
     if (id !== "0") {
@@ -119,12 +127,62 @@ const Product = (props) => {
   }, [id, onFetchProduct]);
 
   useEffect(() => {
+    onFetchCategories();
+    onFetchVatList();
+    onFetchMeasuringUnits();
+  }, [onFetchCategories, onFetchVatList, onFetchMeasuringUnits])
+
+  const intializeCategoryValue = () => {
+    if (initialProduct.category !== undefined) {
+      setSelectedCategory(initialProduct.category.id);
+    }
+  }
+
+  const intializeSubcategoryValue = () => {
+    if (initialProduct.subcategory !== undefined) {
+      setSelectedSubcategory(initialProduct.subcategory.id);
+      onFetchSubcategoriesCategory(initialProduct?.category?.id);
+    }
+  }
+
+  const intializeMeasuringUnitValue = () => {
+    if (initialProduct.measuringUnit !== undefined) {
+      setSelectedMeasuringUnit(initialProduct.measuringUnit.id);
+    }
+  }
+
+  const intializeVatValue = () => {
+    if (initialProduct.vat !== undefined) {
+      setSelectedVat(initialProduct.vat.id);
+    }
+  }
+
+  const intializeBarcodeValue = () => {
+    if (initialProduct.barcodes !== undefined) {
+      setBarcodes([...initialProduct.barcodes]);
+    }
+  }
+
+  const intializeTradeMarginValue = () => {
+    if (initialProduct.tradeMargin !== undefined) {
+      setTradeMargin(initialProduct.tradeMargin);
+    }
+  }
+
+  useEffect(() => {
+
     if (id !== "0") {
+      intializeCategoryValue();
+      intializeSubcategoryValue();
+      intializeMeasuringUnitValue();
+      intializeVatValue();
+      console.log("initialProduct", initialProduct)
       setProduct(initialProduct);
-      setBarcodes(...product.barcodes);
+      intializeBarcodeValue();
+      intializeTradeMarginValue();
     } else {
-      setProduct({})
-      // setSelectedRegion(1);
+      // setProduct({})
+      // setBarcodes([])
     }// eslint-disable-next-line
   }, [initialProduct, id])
 
@@ -142,11 +200,11 @@ const Product = (props) => {
       //   console.log("generatedProductCode", generatedProductCode)
       //   setProduct({ ...product, productCode: event.target.value });
       //   break;
-      case "formGridFiscalCode":
-        setProduct({ ...product, fiscalCode: event.target.value });
+      case "formGridNameRomanian":
+        setProduct({ ...product, nameRom: event.target.value });
         break;
-      case "formGridPostalCode":
-        setProduct({ ...product, postalCode: event.target.value });
+      case "formGridNameRussian":
+        setProduct({ ...product, nameRus: event.target.value });
         break;
       case "formGridBankAccount":
         setProduct({ ...product, bankAccount: event.target.value });
@@ -163,24 +221,80 @@ const Product = (props) => {
       case "formGridVatCode":
         setProduct({ ...product, vatCode: event.target.value });
         break;
-      case "formGridVendorLegalType":
-        setProduct({ ...product, vendorLegalType: event.target.value });
+      case "formGridRetailPrice":
+        if (product.discrountPrice !== null || product.discrountPrice !== undefined) {
+          setTradeMargin((Number(event.target.value) * 100) / product.discrountPrice - 100);
+        } else {
+          setTradeMargin(0);
+        }
+        setProduct({ ...product, retailPrice: Number(event.target.value) });
         break;
-      case "formGridCity":
-        setProduct({ ...product, city: event.target.value });
+      case "formGridDiscountPrice":
+        if (product.retailPrice !== null || product.retailPrice !== undefined) {
+          setTradeMargin((product.retailPrice * 100) / Number(event.target.value) - 100);
+        } else {
+          setTradeMargin(0);
+        }
+        setProduct({ ...product, discrountPrice: Number(event.target.value) });
         break;
-      case "formGridNote":
-        setProduct({ ...product, note: event.target.value });
+      case "formGridStock":
+        setProduct({ ...product, stock: Number(event.target.value) });
         break;
       default:
         setProduct(product);
         break;
     }
+
+    console.log("product", product);
   }
 
   const generateNewProductCode = () => {
     onGenerateProductCode();
-    console.log("productCode", productCode);
+  }
+
+  const getTradeMarging = () => {
+    if (Number.isNaN(tradeMargin)) {
+      return `${Number(0).toFixed(2)} %`;
+    } else {
+      return `${Number(tradeMargin).toFixed(2)} %`;
+    }
+  }
+
+  const getProductCode = () => {
+    if (product?.productCode === null || product?.productCode === undefined) {
+      return productCode.value;
+    } else {
+      return product.productCode.value;
+    }
+  }
+
+  const getPlu = () => {
+    if (product?.plu === null || product?.plu === undefined) {
+      return plu.value;
+    } else {
+      return product.plu.value;
+    }
+  }
+
+  useEffect(() => {
+    setBarcodes(oldValue => ([...oldValue, barcode]));
+  }, [barcode, setBarcodes])
+
+  const generateNewBarCode = () => {
+    if (product.measuringUnit.name === "kg") {
+      onGenerateBarcode({ value: "21" })
+    }
+    if (product.measuringUnit.name === "buc") {
+      onGenerateBarcode({ value: "22" })
+    }
+    console.log("barcodes", barcodes);
+  }
+
+  const deleteBarcode = (barcodeValue) => {
+    const answer = window.confirm(`Are you sure you want to delete the barcode with value: ${barcodeValue}?`);
+    if (answer) {
+      setBarcodes(barcodes.filter(item => item.value !== barcodeValue));
+    }
   }
 
   const onSubmitProduct = () => {
@@ -209,7 +323,7 @@ const Product = (props) => {
                   size="sm"
                   className="mb-3"
                   id="formGridCategory"
-                  // value={vendor.currency}
+                  value={selectedCategory}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Category Value--"}</option>
@@ -223,7 +337,7 @@ const Product = (props) => {
                   size="sm"
                   className="mb-3"
                   id="formGridSubcategory"
-                  // value={vendor.currency}
+                  value={selectedSubcategory}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Subcategory Value--"}</option>
@@ -242,7 +356,7 @@ const Product = (props) => {
                     cursor: 'pointer'
                   }}
                   id="formGridProductCode"
-                  value={productCode?.value}
+                  value={getProductCode()}
                   onClick={generateNewProductCode}
                 />
                 Name (Romanian)
@@ -251,7 +365,7 @@ const Product = (props) => {
                   placeholder="Enter Name (Romanian)"
                   size="sm"
                   id="formGridNameRomanian"
-                  // value={vendor.bankAccount}
+                  value={product.nameRom}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
@@ -260,13 +374,32 @@ const Product = (props) => {
                   <TableHead>
                     <TableRow>
                       <TableCell className={classes.header}>Barcodes</TableCell>
+                      <TableCell className={classes.buttons}>
+                        <Button style={{ marginRight: 2 }}>+</Button>
+                        <Button onClick={generateNewBarCode}>G</Button>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {barcodes.map((barcode) => (
-                      <TableRow key={barcode.id}>
+                    {barcodes.map((item, index) => (
+                      <TableRow key={`${item.value}_${index}`}>
                         <TableCell component="th" scope="row">
-                          {barcode.value}
+                          {item.value}
+                        </TableCell>
+                        <TableCell>
+                          <DeleteButton
+                            variant="contained"
+                            color="secondary"
+                            style={{
+                              height: 22,
+                              width: 80,
+                              fontSize: 'smaller'
+                            }}
+                            startIcon={<DeleteIcon style={{ fontSize: 17 }} />}
+                            onClick={() => deleteBarcode(item.value)}
+                          >
+                            Delete
+                          </DeleteButton>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -281,7 +414,7 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Name (Russian)"
                   size="sm"
-                  // value={vendor.bankAccount}
+                  value={product.nameRus}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
@@ -290,7 +423,7 @@ const Product = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
-                  // value={vendor.vendorType}
+                  value={selectedMeasuringUnit}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Measuring Unit Value--"}</option>
@@ -307,7 +440,7 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Retail Price"
                   size="sm"
-                  // value={vendor.vatCode}
+                  value={product.retailPrice}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
@@ -316,7 +449,7 @@ const Product = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
-                  // value={vendor.vendorLegalType}
+                  value={selectedVat}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select VAT Value--"}</option>
@@ -333,7 +466,7 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Discount Price"
                   size="sm"
-                  // value={vendor.city}
+                  value={product.discrountPrice}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
@@ -346,7 +479,7 @@ const Product = (props) => {
                     size="sm"
                     readOnly
                     disabled
-                    value={plu?.value}
+                    value={getPlu()}
                     onChange={onChangeProductValues}
                   />
                   <InputGroup.Append>
@@ -356,7 +489,7 @@ const Product = (props) => {
                         height: 31
                       }}
                       onClick={onGeneratePlu}
-                      >
+                    >
                       +
                     </InputGroup.Text>
                   </InputGroup.Append>
@@ -369,18 +502,18 @@ const Product = (props) => {
                 <Form.Control
                   type="text"
                   size="sm"
-                  value={`${Number(tradeMargin).toFixed(2)} %`}
+                  value={getTradeMarging()}
                   readOnly
                   disabled
                 />
               </Form.Group>
-              <Form.Group as={Col} controlId="formGridNote">
+              <Form.Group as={Col} controlId="formGridStock">
                 Stock
                 <Form.Control
                   type="text"
                   placeholder="Enter Stock"
                   size="sm"
-                  // value={vendor.note}
+                  value={product.stock}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
