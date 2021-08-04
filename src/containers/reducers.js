@@ -117,6 +117,30 @@ import {
   DELETE_MEASURING_UNIT_PENDING,
   DELETE_MEASURING_UNIT_SUCCESS,
   DELETE_MEASURING_UNIT_FAILED,
+  REQUEST_PRODUCTS_PENDING,
+  REQUEST_PRODUCTS_SUCCESS,
+  REQUEST_PRODUCTS_FAILED,
+  REQUEST_PRODUCT_PENDING,
+  REQUEST_PRODUCT_SUCCESS,
+  REQUEST_PRODUCT_FAILED,
+  CREATE_PRODUCT_PENDING,
+  CREATE_PRODUCT_SUCCESS,
+  CREATE_PRODUCT_FAILED,
+  UPDATE_PRODUCT_PENDING,
+  UPDATE_PRODUCT_SUCCESS,
+  UPDATE_PRODUCT_FAILED,
+  DELETE_PRODUCT_PENDING,
+  DELETE_PRODUCT_SUCCESS,
+  DELETE_PRODUCT_FAILED,
+  GENERATE_PRODUCT_CODE_PENDING,
+  GENERATE_PRODUCT_CODE_SUCCESS,
+  GENERATE_PRODUCT_CODE_FAILED,
+  GENERATE_PLU_PENDING,
+  GENERATE_PLU_SUCCESS,
+  GENERATE_PLU_FAILED,
+  GENERATE_BARCODE_PENDING,
+  GENERATE_BARCODE_SUCCESS,
+  GENERATE_BARCODE_FAILED,
 } from './constants';
 
 const initialStateLogin = {
@@ -493,6 +517,108 @@ export const manageMeasuringUnits = (state = initialStateMeasuringUnits, action 
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_MEASURING_UNIT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    default:
+      return state;
+  }
+}
+
+const initialStateProduct = {
+  isPending: false,
+  products: [],
+  error: false,
+  product: {},
+  status: '',
+}
+
+export const manageProducts = (state = initialStateProduct, action = {}) => {
+  switch (action.type) {
+    case REQUEST_PRODUCTS_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_PRODUCTS_SUCCESS:
+      return Object.assign({}, state, { products: action.payload, isPending: false });
+    case REQUEST_PRODUCTS_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_PRODUCT_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_PRODUCT_SUCCESS:
+      return Object.assign({}, state, { product: action.payload, isPending: false });
+    case REQUEST_PRODUCT_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case CREATE_PRODUCT_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case CREATE_PRODUCT_SUCCESS:
+      return Object.assign({}, state, { product: action.payload, isPending: false });
+    case CREATE_PRODUCT_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case UPDATE_PRODUCT_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case UPDATE_PRODUCT_SUCCESS:
+      return Object.assign({}, state, { product: action.payload, isPending: false });
+    case UPDATE_PRODUCT_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case DELETE_PRODUCT_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case DELETE_PRODUCT_SUCCESS:
+      return Object.assign({}, state, { status: action.payload, isPending: false });
+    case DELETE_PRODUCT_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    default:
+      return state;
+  }
+}
+
+const initialStateProductCode = {
+  isPeding: false,
+  productCode: {},
+  error: false,
+}
+
+export const generateProductCode = (state = initialStateProductCode, action = {}) => {
+  switch (action.type) {
+    case GENERATE_PRODUCT_CODE_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case GENERATE_PRODUCT_CODE_SUCCESS:
+      return Object.assign({}, state, { productCode: action.payload, isPeding: false});
+    case GENERATE_PRODUCT_CODE_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
+    default:
+      return state;
+  }
+}
+
+const initialStatePlu = {
+  isPeding: false,
+  plu: {},
+  error: false,
+}
+
+export const generatePlu = (state = initialStatePlu, action = {}) => {
+  switch (action.type) {
+    case GENERATE_PLU_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case GENERATE_PLU_SUCCESS:
+      return Object.assign({}, state, { plu: action.payload, isPeding: false});
+    case GENERATE_PLU_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
+    default:
+      return state;
+  }
+}
+
+const initialStateBarcode = {
+  isPeding: false,
+  barcode: {},
+  error: false,
+}
+
+export const generateBarcode = (state = initialStateBarcode, action = {}) => {
+  switch (action.type) {
+    case GENERATE_BARCODE_PENDING:
+      return Object.assign({}, state, { isPeding: true });
+    case GENERATE_BARCODE_SUCCESS:
+      return Object.assign({}, state, { barcode: action.payload, isPeding: false});
+    case GENERATE_BARCODE_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPeding: false });
     default:
       return state;
   }

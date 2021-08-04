@@ -56,6 +56,9 @@ const NavigationBar = (props) => {
       case "measuringUnits":
         history.push("/measuring-units");
         break;
+      case "products":
+        history.push("/products");
+        break;
       default:
         history.push("/");
         break;
@@ -68,21 +71,24 @@ const NavigationBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <NavDropdown title="Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
-            <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
-            <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
-            <NavDropdown.Item id="vendors" onClick={onClickDropdownList}>Vendors</NavDropdown.Item>
+          <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
+            <NavDropdown.Item id="products" onClick={onClickDropdownList}>Products</NavDropdown.Item>
             <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
             <NavDropdown.Item id="subcategories" onClick={onClickDropdownList}>Subcategories</NavDropdown.Item>
             <NavDropdown.Item id="vat" onClick={onClickDropdownList}>VAT Settings</NavDropdown.Item>
             <NavDropdown.Item id="measuringUnits" onClick={onClickDropdownList}>Measuring Units</NavDropdown.Item>
+          </NavDropdown>
+          <NavDropdown title="Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
+            <NavDropdown.Item id="users" onClick={onClickDropdownList}>Users</NavDropdown.Item>
+            <NavDropdown.Item id="myOrganization" onClick={onClickDropdownList}>My Organizations</NavDropdown.Item>
+            <NavDropdown.Item id="vendors" onClick={onClickDropdownList}>Vendors</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>
           <Button variant="secondary" onClick={onLogout}>Log out</Button>
         </Form>
       </Navbar.Collapse>
-    </Navbar>
+    </Navbar >
   );
 }
 
