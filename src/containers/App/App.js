@@ -20,6 +20,8 @@ import Categories from "../Categories/Categories";
 import Subcategories from "../Subcategories/Subcategories";
 import VatList from "../Vat/VatList";
 import MeasuringUnits from '../MeasuringUnits/MeasuringUnits';
+import Products from "../Products/Products";
+import Product from "../Products/Product";
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -67,6 +69,12 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route exact path="/measuring-units" >
           {loggedIn ? <MeasuringUnits /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/products" >
+          {loggedIn ? <Products /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/products/:id" >
+          {loggedIn ? <Product /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
