@@ -21,7 +21,6 @@ import {
   fetchProduct,
   createProduct,
   updateProduct,
-  fetchProducts,
   fetchCategories,
   fetchSubcategoriesCategory,
   fetchVatList,
@@ -34,6 +33,8 @@ import {
 import './style.css';
 import { InputGroup } from 'react-bootstrap';
 
+import Barcode from './Barcode';
+
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageProducts.isPending,
@@ -43,8 +44,8 @@ const mapStateToProps = (state) => {
     subcategoriesInitial: state.manageSubcategories.subcategoriesByCategory,
     vatList: state.manageVat.vatList,
     measuringUnits: state.manageMeasuringUnits.measuringUnits,
-    productCode: state.generateProductCode.productCode,
-    plu: state.generatePlu.plu,
+    initialProductCode: state.generateProductCode.productCode,
+    initialPlu: state.generatePlu.plu,
     barcode: state.generateBarcode.barcode,
   }
 }
@@ -54,7 +55,6 @@ const mapDispatchToProps = (dispatch) => {
     onFetchProduct: (id) => dispatch(fetchProduct(id)),
     onCreateProduct: (product) => dispatch(createProduct(product)),
     onUpdateProduct: (product) => dispatch(updateProduct(product)),
-    onFetchProducts: () => dispatch(fetchProducts()),
     onFetchCategories: () => dispatch(fetchCategories()),
     onFetchSubcategoriesCategory: (categoryId) => dispatch(fetchSubcategoriesCategory(categoryId)),
     onFetchVatList: () => dispatch(fetchVatList()),
@@ -86,13 +86,12 @@ const Product = (props) => {
     subcategoriesInitial,
     vatList,
     measuringUnits,
-    productCode,
-    plu,
+    initialProductCode,
+    initialPlu,
     barcode,
     onFetchProduct,
     onCreateProduct,
     onUpdateProduct,
-    onFetchProducts,
     onFetchCategories,
     onFetchSubcategoriesCategory,
     onFetchVatList,
@@ -109,15 +108,35 @@ const Product = (props) => {
 
   const [product, setProduct] = useState({});
   const [barcodes, setBarcodes] = useState([]);
+  const [plu, setPlu] = useState({});
+  const [productCode, setProductCode] = useState({});
   const [tradeMargin, setTradeMargin] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(1);
-  const [selectedMeasuringUnit, setSelectedMeasuringUnit] = useState(null);
-  const [selectedVat, setSelectedVat] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(0);
+  const [selectedMeasuringUnit, setSelectedMeasuringUnit] = useState(0);
+  const [selectedVat, setSelectedVat] = useState(0);
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick") {
+      setOpenDialog(false);
+    }
+  };
+
+  const onAddNewBarcode = () => {
+    setOpenDialog(true);
+  }
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
-    return answer === true ? history.push("/products") : null;
+    if (answer) {
+      setProduct({});
+      setBarcodes([]);
+      setPlu({});
+      setProductCode({});
+      history.push("/products")
+    }
   }
 
   useEffect(() => {
@@ -131,6 +150,14 @@ const Product = (props) => {
     onFetchVatList();
     onFetchMeasuringUnits();
   }, [onFetchCategories, onFetchVatList, onFetchMeasuringUnits])
+
+  useEffect(() => {
+    setPlu(initialPlu);
+  }, [initialPlu])
+
+  useEffect(() => {
+    setProductCode(initialProductCode);
+  }, [initialProductCode])
 
   const intializeCategoryValue = () => {
     if (initialProduct.category !== undefined) {
@@ -170,56 +197,38 @@ const Product = (props) => {
   }
 
   useEffect(() => {
-
     if (id !== "0") {
       intializeCategoryValue();
       intializeSubcategoryValue();
       intializeMeasuringUnitValue();
       intializeVatValue();
-      console.log("initialProduct", initialProduct)
       setProduct(initialProduct);
       intializeBarcodeValue();
       intializeTradeMarginValue();
     } else {
-      // setProduct({})
-      // setBarcodes([])
+      setProduct({});
+      setBarcodes([]);
+      setPlu({});
+      setProductCode({});
     }// eslint-disable-next-line
   }, [initialProduct, id])
 
   const onChangeProductValues = (event) => {
     switch (event.target.id) {
       case "formGridCategory":
+        let categoryObj = getDropDownValue(Number(event.target.value), categories, setSelectedCategory);
         onFetchSubcategoriesCategory(Number(event.target.value));
-        setProduct({ ...product, category: event.target.value });
+        setProduct({ ...product, category: categoryObj });
         break;
-      case "formGridBankName":
-        setProduct({ ...product, bank: event.target.value });
+      case "formGridSubcategory":
+        let subcategoryObj = getDropDownValue(Number(event.target.value), subcategoriesInitial, setSelectedSubcategory);
+        setProduct({ ...product, subcategory: subcategoryObj });
         break;
-      // case "formGridProductCode":
-      //   console.log("product code", event.target.value)
-      //   console.log("generatedProductCode", generatedProductCode)
-      //   setProduct({ ...product, productCode: event.target.value });
-      //   break;
       case "formGridNameRomanian":
         setProduct({ ...product, nameRom: event.target.value });
         break;
       case "formGridNameRussian":
         setProduct({ ...product, nameRus: event.target.value });
-        break;
-      case "formGridBankAccount":
-        setProduct({ ...product, bankAccount: event.target.value });
-        break;
-      case "formGridBusinessAddress":
-        setProduct({ ...product, businessAddress: event.target.value });
-        break;
-      case "formGridCurrency":
-        setProduct({ ...product, currency: event.target.value });
-        break;
-      case "formGridVendorType":
-        setProduct({ ...product, vendorType: event.target.value });
-        break;
-      case "formGridVatCode":
-        setProduct({ ...product, vatCode: event.target.value });
         break;
       case "formGridRetailPrice":
         if (product.discrountPrice !== null || product.discrountPrice !== undefined) {
@@ -227,7 +236,7 @@ const Product = (props) => {
         } else {
           setTradeMargin(0);
         }
-        setProduct({ ...product, retailPrice: Number(event.target.value) });
+        setProduct({ ...product, retailPrice: Number(event.target.value).toFixed(2) });
         break;
       case "formGridDiscountPrice":
         if (product.retailPrice !== null || product.retailPrice !== undefined) {
@@ -235,17 +244,28 @@ const Product = (props) => {
         } else {
           setTradeMargin(0);
         }
-        setProduct({ ...product, discrountPrice: Number(event.target.value) });
+        setProduct({ ...product, discrountPrice: Number(event.target.value).toFixed(2) });
+        break;
+      case "formGridMeasuringUnit":
+        let measuringUnitObj = getDropDownValue(Number(event.target.value), measuringUnits, setSelectedMeasuringUnit);
+        setProduct({ ...product, measuringUnit: measuringUnitObj });
+        break;
+      case "formGridVat":
+        let vatObj = getDropDownValue(Number(event.target.value), vatList, setSelectedVat);
+        setProduct({ ...product, vat: vatObj });
         break;
       case "formGridStock":
-        setProduct({ ...product, stock: Number(event.target.value) });
+        setProduct({ ...product, stock: Number(event.target.value).toFixed(4) });
         break;
       default:
         setProduct(product);
         break;
     }
+  }
 
-    console.log("product", product);
+  const getDropDownValue = (itemId, itemList, setItem) => {
+    setItem(itemId);
+    return itemList.find(item => item.id === itemId);
   }
 
   const generateNewProductCode = () => {
@@ -277,17 +297,22 @@ const Product = (props) => {
   }
 
   useEffect(() => {
-    setBarcodes(oldValue => ([...oldValue, barcode]));
+    if (Object.keys(barcode).length !== 0) {
+      setBarcodes(oldValue => ([...oldValue, barcode]));
+    }
   }, [barcode, setBarcodes])
 
   const generateNewBarCode = () => {
-    if (product.measuringUnit.name === "kg") {
-      onGenerateBarcode({ value: "21" })
+    if (selectedMeasuringUnit === 0) {
+      alert("Please select a measuring unit before generate a barcode!")
+    } else {
+      if (product.measuringUnit.name === "kg") {
+        onGenerateBarcode({ value: "21" })
+      }
+      if (product.measuringUnit.name === "buc") {
+        onGenerateBarcode({ value: "22" })
+      }
     }
-    if (product.measuringUnit.name === "buc") {
-      onGenerateBarcode({ value: "22" })
-    }
-    console.log("barcodes", barcodes);
   }
 
   const deleteBarcode = (barcodeValue) => {
@@ -298,13 +323,27 @@ const Product = (props) => {
   }
 
   const onSubmitProduct = () => {
+
+    if (product?.plu === null || product?.plu === undefined) {
+      Object.assign(product, product, { plu: plu })
+    }
+
+    if (product?.productCode === null || product?.productCode === undefined) {
+      Object.assign(product, product, { productCode: productCode })
+    }
+    
+    Object.assign(product, product, { barcodes: barcodes })
+    Object.assign(product, product, { tradeMargin: tradeMargin })
     if (id !== "0") {
       onUpdateProduct(product);
     } else {
       onCreateProduct(product);
     }
+    setProduct({});
+    setBarcodes([]);
+    setPlu({});
+    setProductCode({});
     history.push("/products");
-    onFetchProducts();
   }
 
   return (
@@ -375,7 +414,10 @@ const Product = (props) => {
                     <TableRow>
                       <TableCell className={classes.header}>Barcodes</TableCell>
                       <TableCell className={classes.buttons}>
-                        <Button style={{ marginRight: 2 }}>+</Button>
+                        <Button
+                          style={{ marginRight: 2 }}
+                          onClick={onAddNewBarcode}
+                        >+</Button>
                         <Button onClick={generateNewBarCode}>G</Button>
                       </TableCell>
                     </TableRow>
@@ -418,7 +460,7 @@ const Product = (props) => {
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
-              <Form.Group as={Col} controlId="formGridVendorType">
+              <Form.Group as={Col} controlId="formGridMeasuringUnit">
                 Measuring Unit
                 <Form.Control
                   as="select"
@@ -444,7 +486,7 @@ const Product = (props) => {
                   onChange={onChangeProductValues}
                 />
               </Form.Group>
-              <Form.Group as={Col} controlId="formGridVendorLegalType">
+              <Form.Group as={Col} controlId="formGridVat">
                 VAT
                 <Form.Control
                   as="select"
@@ -534,6 +576,11 @@ const Product = (props) => {
               </Button>
             </div>
           </Form>
+          <Barcode
+            open={openDialog}
+            handleClose={handleClose}
+            setBarcodes={setBarcodes}
+          />
         </div>
         : <h3>Loading data...</h3>
       }
