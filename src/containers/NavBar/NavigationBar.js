@@ -59,6 +59,9 @@ const NavigationBar = (props) => {
       case "products":
         history.push("/products");
         break;
+        case "documentTypes":
+          history.push("/document-types");
+          break;  
       default:
         history.push("/");
         break;
@@ -71,6 +74,9 @@ const NavigationBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
+        <NavDropdown title="Invoices" id="basic-nav-dropdown" className="white hover-dark-gray">
+            <NavDropdown.Item id="documentTypes" onClick={onClickDropdownList}>Document Types</NavDropdown.Item>
+          </NavDropdown>
           <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="products" onClick={onClickDropdownList}>Products</NavDropdown.Item>
             <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
