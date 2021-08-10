@@ -20,6 +20,7 @@ import { fetchInvoices, deleteInvoice } from '../actions';
 import './style.css';
 
 const drawerWidth = 240;
+const marginTop = 56;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,11 +29,11 @@ const useStyles = makeStyles((theme) => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
-    marginTop: 56,
+    marginTop: marginTop,
   },
   drawerPaper: {
     width: drawerWidth,
-    marginTop: 56,
+    marginTop: marginTop,
     zIndex: 0
   },
   drawerContainer: {
