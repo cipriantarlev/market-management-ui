@@ -59,9 +59,12 @@ const NavigationBar = (props) => {
       case "products":
         history.push("/products");
         break;
-        case "documentTypes":
-          history.push("/document-types");
-          break;  
+      case "documentTypes":
+        history.push("/document-types");
+        break;
+      case "incomeInvoices":
+        history.push("/invoices");
+        break;
       default:
         history.push("/");
         break;
@@ -69,12 +72,13 @@ const NavigationBar = (props) => {
   }
 
   return (
-    <Navbar bg="secondary" variant="dark" expand="lg">
+    <Navbar bg="secondary" variant="dark" expand="lg" >
       <Navbar.Brand><Link className="white hover-mid-gray no-underline" to="/">My Market</Link></Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-        <NavDropdown title="Invoices" id="basic-nav-dropdown" className="white hover-dark-gray">
+          <NavDropdown title="Invoices" id="basic-nav-dropdown" className="white hover-dark-gray">
+            <NavDropdown.Item id="incomeInvoices" onClick={onClickDropdownList}>Income Invoices</NavDropdown.Item>
             <NavDropdown.Item id="documentTypes" onClick={onClickDropdownList}>Document Types</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
