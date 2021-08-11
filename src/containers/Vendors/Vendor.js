@@ -52,7 +52,7 @@ const Vendor = (props) => {
   const { id } = useParams();
 
   const [vendor, setVendor] = useState({});
-  const [selectedRegion, setSelectedRegion] = useState(1);
+  const [selectedRegion, setSelectedRegion] = useState(0);
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
@@ -74,17 +74,16 @@ const Vendor = (props) => {
   }, [id, onFetchVendor])
 
   const intializeRegionValue = () => {
-    let tempRegion = initialVendor.region !== undefined ? initialVendor.region.id : 1;
-    setSelectedRegion(tempRegion);
+    if(initialVendor.region !== undefined){
+      setSelectedRegion(initialVendor.region.id);
+    }
   }
 
   useEffect(() => {
     intializeRegionValue();
     if (id !== "0") {
       setVendor(initialVendor)
-    } else {
-      setSelectedRegion(1);
-    }// eslint-disable-next-line
+    } // eslint-disable-next-line
   }, [initialVendor, id])
 
   const onChangeVendorValues = (event) => {
@@ -177,7 +176,8 @@ const Vendor = (props) => {
                   value={selectedRegion}
                   onChange={onChangeVendorValues}
                 >
-                  {regions.map(region => (
+                  <option>{'--Select Vendor Region--'}</option>
+                  {regions.map((region) => (
                     <option key={region.id} value={region.id}>{region.name}</option>
                   ))}
                 </Form.Control>
