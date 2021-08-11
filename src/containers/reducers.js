@@ -171,6 +171,12 @@ import {
   DELETE_INVOICE_PENDING,
   DELETE_INVOICE_SUCCESS,
   DELETE_INVOICE_FAILED,
+  REQUEST_INVOICES_ORGANIZATIONS_PENDING,
+  REQUEST_INVOICES_ORGANIZATIONS_SUCCESS,
+  REQUEST_INVOICES_ORGANIZATIONS_FAILED,
+  REQUEST_INVOICES_VENDORS_PENDING,
+  REQUEST_INVOICES_VENDORS_SUCCESS,
+  REQUEST_INVOICES_VENDORS_FAILED,
 } from './constants';
 
 const initialStateLogin = {
@@ -608,7 +614,7 @@ export const generateProductCode = (state = initialStateProductCode, action = {}
     case GENERATE_PRODUCT_CODE_PENDING:
       return Object.assign({}, state, { isPeding: true });
     case GENERATE_PRODUCT_CODE_SUCCESS:
-      return Object.assign({}, state, { productCode: action.payload, isPeding: false});
+      return Object.assign({}, state, { productCode: action.payload, isPeding: false });
     case GENERATE_PRODUCT_CODE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPeding: false });
     default:
@@ -627,7 +633,7 @@ export const generatePlu = (state = initialStatePlu, action = {}) => {
     case GENERATE_PLU_PENDING:
       return Object.assign({}, state, { isPeding: true });
     case GENERATE_PLU_SUCCESS:
-      return Object.assign({}, state, { plu: action.payload, isPeding: false});
+      return Object.assign({}, state, { plu: action.payload, isPeding: false });
     case GENERATE_PLU_FAILED:
       return Object.assign({}, state, { error: action.payload, isPeding: false });
     default:
@@ -646,7 +652,7 @@ export const generateBarcode = (state = initialStateBarcode, action = {}) => {
     case GENERATE_BARCODE_PENDING:
       return Object.assign({}, state, { isPeding: true });
     case GENERATE_BARCODE_SUCCESS:
-      return Object.assign({}, state, { barcode: action.payload, isPeding: false});
+      return Object.assign({}, state, { barcode: action.payload, isPeding: false });
     case GENERATE_BARCODE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPeding: false });
     default:
@@ -707,6 +713,12 @@ const initialStateInvoice = {
   error: false,
   invoice: {},
   status: '',
+  invoiceOrganizations: [],
+  invoiceOrganizationsIsPending: false,
+  invoiceOrganizationsError: false,
+  invoiceVendors: [],
+  invoiceVendorsIsPending: false,
+  invoiceVendorsError: false,
 }
 
 export const manageInvoices = (state = initialStateInvoice, action = {}) => {
@@ -741,6 +753,18 @@ export const manageInvoices = (state = initialStateInvoice, action = {}) => {
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_INVOICE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_INVOICES_ORGANIZATIONS_PENDING:
+      return Object.assign({}, state, { invoiceOrganizationsIsPending: true });
+    case REQUEST_INVOICES_ORGANIZATIONS_SUCCESS:
+      return Object.assign({}, state, { invoiceOrganizations: action.payload, invoiceOrganizationsIsPending: false });
+    case REQUEST_INVOICES_ORGANIZATIONS_FAILED:
+      return Object.assign({}, state, { invoiceOrganizationsError: action.payload, invoiceOrganizationsIsPending: false });
+    case REQUEST_INVOICES_VENDORS_PENDING:
+      return Object.assign({}, state, { invoiceVendorsIsPending: true });
+    case REQUEST_INVOICES_VENDORS_SUCCESS:
+      return Object.assign({}, state, { invoiceVendors: action.payload, invoiceVendorsIsPending: false });
+    case REQUEST_INVOICES_VENDORS_FAILED:
+      return Object.assign({}, state, { invoiceVendorsError: action.payload, invoiceVendorsIsPending: false });
     default:
       return state;
   }
