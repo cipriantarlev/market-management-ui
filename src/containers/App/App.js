@@ -25,6 +25,8 @@ import Product from "../Products/Product";
 import DocumentTypes from "../DocumentTypes/DocumentTypes";
 import Invoices from "../Invoices/Invoices";
 import Invoice from "../Invoices/Invoice";
+import InvoiceProducts from '../InvoiceProducts/InvoiceProducts';
+import InvoiceProduct from '../InvoiceProducts/InvoiceProduct';
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
@@ -87,6 +89,12 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route exact path="/invoices/:id" >
           {loggedIn ? <Invoice /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/invoice-products/:id" >
+          {loggedIn ? <InvoiceProducts /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/invoice-products/product/:id" >
+          {loggedIn ? <InvoiceProduct /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
