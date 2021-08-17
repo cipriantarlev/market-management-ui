@@ -630,7 +630,7 @@ export const deleteDocumentType = (id) => (dispatch) => {
 export const fetchInvoices = () => (dispatch) => {
   dispatch({ type: REQUEST_INVOICES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices`, authorizationData())
-    .then(response => response.json())
+    .then(response => response.status === 204 ? [] : response.json())
     .then(data => dispatch({ type: REQUEST_INVOICES_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_INVOICES_FAILED, payload: error }))
 }
@@ -685,7 +685,7 @@ export const fetchInvoiceVendors = () => (dispatch) => {
 export const fetchInvoiceProducts = (invoiceId) => (dispatch) => {
   dispatch({ type: REQUEST_INVOICE_PRODUCTS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoice-products/${invoiceId}`, authorizationData())
-    .then(response => response.json())
+    .then(response => response.status === 204 ? [] : response.json())
     .then(data => dispatch({ type: REQUEST_INVOICE_PRODUCTS_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_INVOICE_PRODUCTS_FAILED, payload: error }))
 }
