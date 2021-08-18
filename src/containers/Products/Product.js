@@ -135,7 +135,7 @@ const Product = (props) => {
       setBarcodes([]);
       setPlu({});
       setProductCode({});
-      history.push("/products")
+      history.goBack()
     }
   }
 
@@ -343,7 +343,7 @@ const Product = (props) => {
     setBarcodes([]);
     setPlu({});
     setProductCode({});
-    history.push("/products");
+    history.goBack();
   }
 
   return (

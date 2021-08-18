@@ -1,0 +1,9 @@
+.form-button {
+  background-color: darkgray;
+  cursor: pointer;
+}
+
+.form-button:hover {
+  background-color: gray;
+  cursor: pointer;
+}
