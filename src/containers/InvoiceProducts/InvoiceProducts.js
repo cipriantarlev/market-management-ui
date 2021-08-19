@@ -6,6 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DescriptionIcon from '@material-ui/icons/Description';
+import BackspaceIcon from '@material-ui/icons/Backspace';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -91,7 +92,7 @@ const InvoiceProducts = (props) => {
     </Link>
   )
 
-  const renderDiscountPrice = (params) => (params.row.product.discrountPrice)
+  const renderDiscountPrice = (params) => (params.row.product.discountPrice)
   const renderRetailPrice = (params) => (params.row.product.retailPrice)
   const renderTrandeMargin = (params) => (params.row.product.tradeMargin)
   const renderVatValue = (params) => (params.row.product.vat.name)
@@ -166,12 +167,15 @@ const InvoiceProducts = (props) => {
     onFetchInvoiceProducts(id);
   }, [onFetchInvoiceProducts, id])
 
-  const addOrderNumberToInvoiceProduct = () => (
-    invoiceProducts.map((element, index) => (
-      Object.assign(element, element, { orderNumber: index + 1 })
-    ))
-  )
-
+  const addOrderNumberToInvoiceProduct = () => {
+    console.log("invoiceProducts", invoiceProducts);
+    if(invoiceProducts !== null || invoiceProducts !== undefined) {
+      return invoiceProducts.map((element, index) => (
+        Object.assign(element, element, { orderNumber: index + 1 })
+      )) 
+    } 
+  }
+      
   useEffect(() => {
     setDisplayInvoiceProduct(addOrderNumberToInvoiceProduct());
     // eslint-disable-next-line 
@@ -213,6 +217,10 @@ const InvoiceProducts = (props) => {
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");
     }
+  }
+
+  const backToInvoices = () => {
+    history.push(`/invoices`);
   }
 
   return (
@@ -262,6 +270,14 @@ const InvoiceProducts = (props) => {
                 >
                   <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
                   <ListItemText primary={'Delete Selected Product(s)'} />
+                </ListItem>
+                <ListItem
+                  button
+                  divider
+                  onClick={backToInvoices}
+                >
+                  <ListItemIcon>{<BackspaceIcon />}</ListItemIcon>
+                  <ListItemText primary={'Back to Invoices'} />
                 </ListItem>
               </List>
             </div>

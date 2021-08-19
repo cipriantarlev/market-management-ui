@@ -814,19 +814,19 @@ export const manageInvoiceProducts = (state = initialStateInvoiceProducts, actio
     case REQUEST_INVOICE_PRODUCT_PENDING:
       return Object.assign({}, state, { isPending: true });
     case REQUEST_INVOICE_PRODUCT_SUCCESS:
-      return Object.assign({}, state, { invoiceProducts: action.payload, isPending: false });
+      return Object.assign({}, state, { invoiceProduct: action.payload, isPending: false });
     case REQUEST_INVOICE_PRODUCT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     case CREATE_INVOICE_PRODUCT_PENDING:
       return Object.assign({}, state, { isPending: true });
     case CREATE_INVOICE_PRODUCT_SUCCESS:
-      return Object.assign({}, state, { invoiceProducts: action.payload, isPending: false });
+      return Object.assign({}, state, { invoiceProduct: action.payload, isPending: false });
     case CREATE_INVOICE_PRODUCT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     case UPDATE_INVOICE_PRODUCT_PENDING:
       return Object.assign({}, state, { isPending: true });
     case UPDATE_INVOICE_PRODUCT_SUCCESS:
-      return Object.assign({}, state, { invoiceProducts: action.payload, isPending: false });
+      return Object.assign({}, state, { invoiceProduct: action.payload, isPending: false });
     case UPDATE_INVOICE_PRODUCT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     case DELETE_INVOICE_PRODUCT_PENDING:
