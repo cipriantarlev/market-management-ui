@@ -195,6 +195,7 @@ import {
   DELETE_INVOICE_PRODUCT_PENDING,
   DELETE_INVOICE_PRODUCT_SUCCESS,
   DELETE_INVOICE_PRODUCT_FAILED,
+  RESET_DATA,
 } from './constants';
 
 const initialStateLogin = {
@@ -623,6 +624,8 @@ export const manageProducts = (state = initialStateProduct, action = {}) => {
       return Object.assign({}, state, { productByBarcode: action.payload, isPending: false });
     case REQUEST_PRODUCT_BY_BARCODE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateProduct;
     default:
       return state;
   }

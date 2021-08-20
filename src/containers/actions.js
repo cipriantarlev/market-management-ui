@@ -138,6 +138,7 @@ import {
   REQUEST_PRODUCT_BY_BARCODE_PENDING,
   REQUEST_PRODUCT_BY_BARCODE_SUCCESS,
   REQUEST_PRODUCT_BY_BARCODE_FAILED,
+  RESET_DATA,
   GENERATE_PRODUCT_CODE_PENDING,
   GENERATE_PRODUCT_CODE_SUCCESS,
   GENERATE_PRODUCT_CODE_FAILED,
@@ -218,6 +219,10 @@ export const handleLogout = () => (dispatch) => {
     type: REQUEST_LOG_OUT,
     payload: localStorage.removeItem('user')
   })
+}
+
+export const restStoreData = () => (dispatch) => {
+  dispatch({ type: RESET_DATA });
 }
 
 export const fetchUsers = () => (dispatch) => {
