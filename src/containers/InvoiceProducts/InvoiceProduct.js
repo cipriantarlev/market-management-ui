@@ -14,7 +14,8 @@ import {
   updateInvoiceProduct,
   fetchMeasuringUnits,
   fetchInvoiceProducts,
-  fetchProductByBarcode
+  fetchProductByBarcode,
+  restStoreData,
 } from '../actions';
 
 import './style.css';
@@ -37,6 +38,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchMeasuringUnits: () => dispatch(fetchMeasuringUnits()),
     onFetchInvoiceProducts: (invoiceId) => dispatch(fetchInvoiceProducts(invoiceId)),
     onFetchProductByBarcode: (barcode) => dispatch(fetchProductByBarcode(barcode)),
+    onRestData: () => dispatch(restStoreData()),
   }
 }
 const InvoiceProduct = (props) => {
@@ -52,10 +54,12 @@ const InvoiceProduct = (props) => {
     onFetchMeasuringUnits,
     // onFetchInvoiceProducts,
     onFetchProductByBarcode,
+    onRestData,
   } = props;
 
   let history = useHistory();
   const { id } = useParams();
+  const { invoiceId } = useParams();
 
   const [invoiceProduct, setInvoiceProduct] = useState({});
   const [invoice, setInvoice] = useState({});
@@ -67,26 +71,6 @@ const InvoiceProduct = (props) => {
   const [vatSumProduct, setVatSum] = useState(0);
   const [tradeMarginProduct, setTradeMargin] = useState(0);
   const [retailPrice, setRetailPrice] = useState(0);
-
-  const onClickCancel = () => {
-    const answer = window.confirm('Are you sure you want to cancel?');
-    if (answer === true) {
-      setInvoiceProduct({});
-      setInvoice({});
-      setProduct({});
-      setSelectedMeasuringUnit(0);
-      setVendorPrice(0);
-      setSum(0);
-      setVatSum(0);
-      setTradeMargin(0);
-      setRetailPrice(0);
-      history.goBack();
-    }
-  }
-
-  const addNewProduct = () => {
-    history.push("/products/0")
-  }
 
   useEffect(() => {
     onFetchMeasuringUnits()
@@ -104,6 +88,7 @@ const InvoiceProduct = (props) => {
     intializeVendorPriceValue();
     intializeTradeMarginValue();
     intializeRetailPriceValue();
+    setInvoice({ ...invoice, id: Number(invoiceId) })
     // eslint-disable-next-line
   }, [productByBarcode])
 
@@ -181,9 +166,9 @@ const InvoiceProduct = (props) => {
     if (isNaN(numberTodisplay)) {
       return ""
     } else {
-      if (product?.measuringUnit.id === 1) {
+      if (product?.measuringUnit?.id === 1) {
         return Number(numberTodisplay).toFixed(4);
-      } else if (product?.measuringUnit.id === 2) {
+      } else if (product?.measuringUnit?.id === 2) {
         return Number(numberTodisplay);
       }
     }
@@ -203,6 +188,7 @@ const InvoiceProduct = (props) => {
         if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
           setSum(invoiceProduct?.quantity * Number(event.target.value));
           setVatSum(invoiceProduct?.quantity * Number(event.target.value) * (product?.vat?.value / 100))
+          setTradeMargin((retailPrice * 100) / Number(event.target.value) - 100);
         }
         setVendorPrice(Number(event.target.value));
         break;
@@ -237,24 +223,24 @@ const InvoiceProduct = (props) => {
     }
   }
 
-  console.log("productByBarcode", productByBarcode);
-
   const prepareInvoiceProductForSubmit = () => {
     Object.assign(product, product, {
       discountPrice: vendorPrice,
       retailPrice: retailPrice,
       tradeMargin: tradeMarginProduct,
-      stock: invoiceProduct?.quantity
+      stock: invoiceProduct.quantity,
     })
 
     Object.assign(invoiceProduct, invoiceProduct, {
       invoice: invoice,
       product: product,
       totalDiscountPrice: sum,
-      totalRetailPrice: retailPrice * invoiceProduct?.quantity,
-      vatSum: vatSumProduct
+      totalRetailPrice: retailPrice * invoiceProduct.quantity,
+      vatSum: vatSumProduct,
     })
   }
+
+  console.log("invoiceProduct", invoiceProduct);
 
   const onSubmitInvoiceProduct = () => {
     prepareInvoiceProductForSubmit();
@@ -264,7 +250,7 @@ const InvoiceProduct = (props) => {
     } else {
       onCreateInvoiceProduct(invoiceProduct);
     }
-    history.goBack();;
+    history.goBack();
     setInvoiceProduct({});
     setInvoice({});
     setProduct({});
@@ -274,6 +260,28 @@ const InvoiceProduct = (props) => {
     setVatSum(0);
     setTradeMargin(0);
     setRetailPrice(0);
+    onRestData();
+  }
+
+  const addNewProduct = () => {
+    history.push("/products/0")
+  }
+
+  const onClickCancel = () => {
+    const answer = window.confirm('Are you sure you want to cancel?');
+    if (answer === true) {
+      setInvoiceProduct({});
+      setInvoice({});
+      setProduct({});
+      setSelectedMeasuringUnit(0);
+      setVendorPrice(0);
+      setSum(0);
+      setVatSum(0);
+      setTradeMargin(0);
+      setRetailPrice(0);
+      onRestData();
+      history.goBack();
+    }
   }
 
   return (

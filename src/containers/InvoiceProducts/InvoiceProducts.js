@@ -75,19 +75,19 @@ const InvoiceProducts = (props) => {
   const [selectedInvoiceProducts, setSelectedInvoiceProduct] = useState([]);
 
   const addLinkToIdCell = (params) => (
-    <Link className="no-underline" to={`/invoice-products/product/${params.id}`}>
+    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.value}
     </Link>
   )
 
   const renderBarcodes = (params) => (
-    <Link className="no-underline" to={`/invoice-products/product/${params.id}`}>
+    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.value.barcodes[0].value}
     </Link>
   )
 
   const renderProductName = (params) => (
-    <Link className="no-underline" to={`/invoice-products/product/${params.id}`}>
+    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.row.product.nameRom}
     </Link>
   )
@@ -182,7 +182,7 @@ const InvoiceProducts = (props) => {
   }, [invoiceProducts])
 
   const onAddNewInvoiceProduct = () => {
-    history.push("/invoice-products/product/0")
+    history.push(`/invoice-products/${id}/product/0`)
   }
 
   const onSelectInvoiceProduct = (selectedInvoicesArray) => (setSelectedInvoiceProduct(selectedInvoicesArray.selectionModel));
@@ -203,7 +203,7 @@ const InvoiceProducts = (props) => {
   const onUpdateSelectedInvoiceProduct = () => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
       selectedInvoiceProducts.forEach(invoiceProductId => {
-        history.push(`/invoice-products/product/${invoiceProductId}`);
+        history.push(`/invoice-products/${id}/product/${invoiceProductId}`);
       })
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");

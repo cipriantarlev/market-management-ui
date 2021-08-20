@@ -93,7 +93,7 @@ const App = ({ loggedIn }) => {
         <Route exact path="/invoice-products/:id" >
           {loggedIn ? <InvoiceProducts /> : <Redirect to="/login" />}
         </Route>
-        <Route exact path="/invoice-products/product/:id" >
+        <Route exact path="/invoice-products/:invoiceId/product/:id" >
           {loggedIn ? <InvoiceProduct /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
