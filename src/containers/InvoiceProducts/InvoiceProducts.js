@@ -78,24 +78,32 @@ const InvoiceProducts = (props) => {
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.value}
     </Link>
-  )
+  );
 
   const renderBarcodes = (params) => (
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.value.barcodes[0].value}
     </Link>
-  )
+  );
 
   const renderProductName = (params) => (
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
       {params.row.product.nameRom}
     </Link>
-  )
+  );
 
-  const renderDiscountPrice = (params) => (params.row.product.discountPrice)
-  const renderRetailPrice = (params) => (params.row.product.retailPrice)
-  const renderTrandeMargin = (params) => (params.row.product.tradeMargin)
-  const renderVatValue = (params) => (params.row.product.vat.name)
+  const renderDiscountPrice = (params) => (Number(params.row.product.discountPrice).toFixed(2));
+  const renderRetailPrice = (params) => (Number(params.row.product.retailPrice).toFixed(2));
+  const renderTrandeMargin = (params) => (Number(params.row.product.tradeMargin).toFixed(2));
+  const renderVatValue = (params) => (params.row.product.vat.name);
+  const renderTotalValue = (params) => (Number(params.value).toFixed(2));
+
+  const renderQuatity = (params) => {
+    if(params.row.product.measuringUnit.id === 1){
+      return Number(params.value).toFixed(4);
+    }
+    return params.value;
+  }
 
   const columns = [
     {
@@ -120,6 +128,7 @@ const InvoiceProducts = (props) => {
       field: 'quantity',
       headerName: 'Qty',
       width: 80,
+      renderCell: renderQuatity,
     },
     {
       field: 'product.discountPrice',
@@ -137,16 +146,19 @@ const InvoiceProducts = (props) => {
       field: 'vatSum',
       headerName: 'VAT',
       width: 95,
+      renderCell: renderTotalValue,
     },
     {
       field: 'totalDiscountPrice',
       headerName: 'TDP',
       width: 95,
+      renderCell: renderTotalValue,
     },
     {
       field: 'totalRetailPrice',
       headerName: 'TRP',
       width: 95,
+      renderCell: renderTotalValue,
     },
     {
       field: 'product.tradeMargin',

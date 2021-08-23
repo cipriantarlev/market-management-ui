@@ -231,8 +231,8 @@ const Product = (props) => {
         setProduct({ ...product, nameRus: event.target.value });
         break;
       case "formGridRetailPrice":
-        if (product.discrountPrice !== null || product.discrountPrice !== undefined) {
-          setTradeMargin((Number(event.target.value) * 100) / product.discrountPrice - 100);
+        if (product.discountPrice !== null || product.discountPrice !== undefined) {
+          setTradeMargin((Number(event.target.value) * 100) / product.discountPrice - 100);
         } else {
           setTradeMargin(0);
         }
@@ -244,7 +244,7 @@ const Product = (props) => {
         } else {
           setTradeMargin(0);
         }
-        setProduct({ ...product, discrountPrice: Number(event.target.value).toFixed(2) });
+        setProduct({ ...product, discountPrice: Number(event.target.value).toFixed(2) });
         break;
       case "formGridMeasuringUnit":
         let measuringUnitObj = getDropDownValue(Number(event.target.value), measuringUnits, setSelectedMeasuringUnit);
@@ -508,7 +508,7 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Discount Price"
                   size="sm"
-                  value={product.discrountPrice}
+                  value={product.discountPrice}
                   onChange={onChangeProductValues}
                 />
               </Form.Group>

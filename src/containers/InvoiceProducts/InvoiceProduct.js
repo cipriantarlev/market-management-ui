@@ -5,6 +5,9 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
 
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { useHistory } from 'react-router-dom';
 import { useParams } from 'react-router';
 
@@ -16,6 +19,7 @@ import {
   fetchInvoiceProducts,
   fetchProductByBarcode,
   restStoreData,
+  fetchProducts,
 } from '../actions';
 
 import './style.css';
@@ -26,7 +30,8 @@ const mapStateToProps = (state) => {
     initialInvoiceProduct: state.manageInvoiceProducts.invoiceProduct,
     error: state.manageInvoiceProducts.error,
     measuringUnits: state.manageMeasuringUnits.measuringUnits,
-    productByBarcode: state.manageProducts.productByBarcode,
+    productByBarcode: state.manageProducts.product,
+    products: state.manageProducts.products,
   }
 }
 
@@ -39,6 +44,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchInvoiceProducts: (invoiceId) => dispatch(fetchInvoiceProducts(invoiceId)),
     onFetchProductByBarcode: (barcode) => dispatch(fetchProductByBarcode(barcode)),
     onRestData: () => dispatch(restStoreData()),
+    onFetchProducts: () => dispatch(fetchProducts()),
   }
 }
 const InvoiceProduct = (props) => {
@@ -48,6 +54,7 @@ const InvoiceProduct = (props) => {
     error,
     measuringUnits,
     productByBarcode,
+    // products
     onFetchInvoiceProduct,
     onCreateInvoiceProduct,
     onUpdateInvoiceProduct,
@@ -55,6 +62,7 @@ const InvoiceProduct = (props) => {
     // onFetchInvoiceProducts,
     onFetchProductByBarcode,
     onRestData,
+    // onFetchProducts,
   } = props;
 
   let history = useHistory();
@@ -71,6 +79,8 @@ const InvoiceProduct = (props) => {
   const [vatSumProduct, setVatSum] = useState(0);
   const [tradeMarginProduct, setTradeMargin] = useState(0);
   const [retailPrice, setRetailPrice] = useState(0);
+
+  console.log("productByBarcode", productByBarcode);
 
   useEffect(() => {
     onFetchMeasuringUnits()
@@ -360,12 +370,21 @@ const InvoiceProduct = (props) => {
                   paddingBottom: 0
                 }}
               >Product Name</Form.Label>
-              <Col sm="8">
+              <Col sm="7">
                 <Form.Control
                   type="text"
                   size="sm"
-                  placeholder="Find by Name"
+                  placeholder="Click 🔎︎ to find product by name"
                   value={product?.nameRom}
+                />
+              </Col>
+              <Col sm="1">
+                <Form.Control
+                  type="button"
+                  size="sm"
+                  className="form-button"
+                  value={"🔎︎"}
+                  onClick={() => alert("let's find a product")}
                 />
               </Col>
               <Col sm="1">
