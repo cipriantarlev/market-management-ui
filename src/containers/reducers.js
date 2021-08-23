@@ -583,7 +583,6 @@ const initialStateProduct = {
   error: false,
   product: {},
   status: '',
-  productByBarcode: {},
 }
 
 export const manageProducts = (state = initialStateProduct, action = {}) => {
@@ -621,7 +620,7 @@ export const manageProducts = (state = initialStateProduct, action = {}) => {
     case REQUEST_PRODUCT_BY_BARCODE_PENDING:
       return Object.assign({}, state, { isPending: true });
     case REQUEST_PRODUCT_BY_BARCODE_SUCCESS:
-      return Object.assign({}, state, { productByBarcode: action.payload, isPending: false });
+      return Object.assign({}, state, { product: action.payload, isPending: false });
     case REQUEST_PRODUCT_BY_BARCODE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     case RESET_DATA:
