@@ -5,9 +5,6 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
 
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
 import { useHistory } from 'react-router-dom';
 import { useParams } from 'react-router';
 
@@ -19,8 +16,9 @@ import {
   fetchInvoiceProducts,
   fetchProductByBarcode,
   restStoreData,
-  fetchProducts,
 } from '../actions';
+
+import FindProduct from './FindProduct';
 
 import './style.css';
 
@@ -31,7 +29,6 @@ const mapStateToProps = (state) => {
     error: state.manageInvoiceProducts.error,
     measuringUnits: state.manageMeasuringUnits.measuringUnits,
     productByBarcode: state.manageProducts.product,
-    products: state.manageProducts.products,
   }
 }
 
@@ -44,7 +41,6 @@ const mapDispatchToProps = (dispatch) => {
     onFetchInvoiceProducts: (invoiceId) => dispatch(fetchInvoiceProducts(invoiceId)),
     onFetchProductByBarcode: (barcode) => dispatch(fetchProductByBarcode(barcode)),
     onRestData: () => dispatch(restStoreData()),
-    onFetchProducts: () => dispatch(fetchProducts()),
   }
 }
 const InvoiceProduct = (props) => {
@@ -54,7 +50,6 @@ const InvoiceProduct = (props) => {
     error,
     measuringUnits,
     productByBarcode,
-    // products
     onFetchInvoiceProduct,
     onCreateInvoiceProduct,
     onUpdateInvoiceProduct,
@@ -62,7 +57,6 @@ const InvoiceProduct = (props) => {
     // onFetchInvoiceProducts,
     onFetchProductByBarcode,
     onRestData,
-    // onFetchProducts,
   } = props;
 
   let history = useHistory();
@@ -79,6 +73,8 @@ const InvoiceProduct = (props) => {
   const [vatSumProduct, setVatSum] = useState(0);
   const [tradeMarginProduct, setTradeMargin] = useState(0);
   const [retailPrice, setRetailPrice] = useState(0);
+
+  const [openDialog, setOpenDialog] = useState(false);
 
   console.log("productByBarcode", productByBarcode);
 
@@ -101,6 +97,16 @@ const InvoiceProduct = (props) => {
     setInvoice({ ...invoice, id: Number(invoiceId) })
     // eslint-disable-next-line
   }, [productByBarcode])
+
+  const handleClose = (event, reason) => {
+    if (reason !== "backdropClick") {
+      setOpenDialog(false);
+    }
+  };
+
+  const onFindProductByName = () => {
+    setOpenDialog(true);
+  }
 
   const intializeMeasuringUnitValue = () => {
     if (initialInvoiceProduct?.product?.measuringUnit !== undefined && id !== "0") {
@@ -250,11 +256,8 @@ const InvoiceProduct = (props) => {
     })
   }
 
-  console.log("invoiceProduct", invoiceProduct);
-
   const onSubmitInvoiceProduct = () => {
     prepareInvoiceProductForSubmit();
-    console.log("invoiceProduct", invoiceProduct);
     if (id !== "0") {
       onUpdateInvoiceProduct(invoiceProduct);
     } else {
@@ -337,7 +340,7 @@ const InvoiceProduct = (props) => {
                   type="text"
                   placeholder="Find by Barcode"
                   size="sm"
-                  value={invoiceProduct?.product?.barcodes[0].value}
+                  value={product?.barcodes !== undefined ? product?.barcodes[0].value : null}
                   onKeyDown={onPressEnterBarcodeField}
                 />
               </Col>
@@ -361,7 +364,7 @@ const InvoiceProduct = (props) => {
                 />
               </Col>
             </Form.Group>
-            <Form.Group as={Row} controlId="formGridProductName">
+            <Form.Group as={Row} >
               <Form.Label
                 column
                 sm="3"
@@ -374,6 +377,7 @@ const InvoiceProduct = (props) => {
                 <Form.Control
                   type="text"
                   size="sm"
+                  id="ProductName"
                   placeholder="Click 🔎︎ to find product by name"
                   value={product?.nameRom}
                 />
@@ -382,15 +386,17 @@ const InvoiceProduct = (props) => {
                 <Form.Control
                   type="button"
                   size="sm"
+                  id="FindProduct"
                   className="form-button"
                   value={"🔎︎"}
-                  onClick={() => alert("let's find a product")}
+                  onClick={onFindProductByName}
                 />
               </Col>
               <Col sm="1">
                 <Form.Control
                   type="button"
                   size="sm"
+                  id="AddProduct"
                   className="form-button"
                   value={"+"}
                   onClick={addNewProduct}
@@ -593,6 +599,10 @@ const InvoiceProduct = (props) => {
               </Button>
             </div>
           </Form>
+          <FindProduct
+            open={openDialog}
+            handleClose={handleClose}
+          />
         </div>
         : <h3>Loading data...</h3>
       }
