@@ -76,8 +76,6 @@ const InvoiceProduct = (props) => {
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  console.log("productByBarcode", productByBarcode);
-
   useEffect(() => {
     onFetchMeasuringUnits()
   }, [onFetchMeasuringUnits])
@@ -183,7 +181,7 @@ const InvoiceProduct = (props) => {
       return ""
     } else {
       if (product?.measuringUnit?.id === 1) {
-        return Number(numberTodisplay).toFixed(4);
+        return Number(numberTodisplay).toFixed(3);
       } else if (product?.measuringUnit?.id === 2) {
         return Number(numberTodisplay);
       }
@@ -200,7 +198,6 @@ const InvoiceProduct = (props) => {
         setInvoiceProduct({ ...invoiceProduct, quantity: Number(event.target.value) });
         break;
       case "formGridVendorPrice":
-        console.log()
         if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
           setSum(invoiceProduct?.quantity * Number(event.target.value));
           setVatSum(invoiceProduct?.quantity * Number(event.target.value) * (product?.vat?.value / 100))

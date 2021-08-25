@@ -159,9 +159,11 @@ const Invoice = (props) => {
     if (id !== "0") {
       onUpdateInvoice(invoice);
     } else {
-      setInvoice(Object.assign(invoice, invoice, { dateCreated: getTodayDate() }));
-      setInvoice(Object.assign(invoice, invoice, { invoiceDate: getTodayDate() }));
-      console.log("invoice", invoice)
+      setInvoice(Object.assign(invoice, invoice,
+        {
+          dateCreated: getTodayDate(),
+          invoiceDate: getTodayDate()
+        }));
       onCreateInvoice(invoice);
     }
     history.push("/invoices");
