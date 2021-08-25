@@ -73,13 +73,13 @@ const Invoices = (props) => {
   const [selectedInvoices, setSelectedInvoices] = useState([]);
 
   const addLinkToCell = (params) => (
-    <Link className="no-underline" to={`/invoices/products/${params.id}`}>
+    <Link className="no-underline" to={`/invoice-products/${params.id}`}>
       {params.value.name}
     </Link>
   )
 
   const addLinkToIdCell = (params) => (
-    <Link className="no-underline" to={`/invoices/products/${params.id}`}>
+    <Link className="no-underline" to={`/invoice-products/${params.id}`}>
       {params.value}
     </Link>
   )
@@ -196,6 +196,16 @@ const Invoices = (props) => {
     }
   }
 
+  const onUpdateSelectedInvoiceProducts = () => {
+    if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
+      selectedInvoices.forEach(invoiceId => {
+        history.push(`/invoice-products/${invoiceId}`);
+      })
+    } else {
+      alert("You didn't select an invoice or selected more than one. Please try again.");
+    }
+  }
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
@@ -223,7 +233,7 @@ const Invoices = (props) => {
                 <ListItem
                   button
                   divider
-                  onClick={() => alert('update')}
+                  onClick={onUpdateSelectedInvoiceProducts}
                 >
                   <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
                   <ListItemText primary={'Update Invoice'} />

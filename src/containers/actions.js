@@ -135,6 +135,10 @@ import {
   DELETE_PRODUCT_PENDING,
   DELETE_PRODUCT_SUCCESS,
   DELETE_PRODUCT_FAILED,
+  REQUEST_PRODUCT_BY_BARCODE_PENDING,
+  REQUEST_PRODUCT_BY_BARCODE_SUCCESS,
+  REQUEST_PRODUCT_BY_BARCODE_FAILED,
+  RESET_DATA,
   GENERATE_PRODUCT_CODE_PENDING,
   GENERATE_PRODUCT_CODE_SUCCESS,
   GENERATE_PRODUCT_CODE_FAILED,
@@ -180,6 +184,21 @@ import {
   REQUEST_INVOICES_VENDORS_PENDING,
   REQUEST_INVOICES_VENDORS_SUCCESS,
   REQUEST_INVOICES_VENDORS_FAILED,
+  REQUEST_INVOICE_PRODUCTS_PENDING,
+  REQUEST_INVOICE_PRODUCTS_SUCCESS,
+  REQUEST_INVOICE_PRODUCTS_FAILED,
+  REQUEST_INVOICE_PRODUCT_PENDING,
+  REQUEST_INVOICE_PRODUCT_SUCCESS,
+  REQUEST_INVOICE_PRODUCT_FAILED,
+  CREATE_INVOICE_PRODUCT_PENDING,
+  CREATE_INVOICE_PRODUCT_SUCCESS,
+  CREATE_INVOICE_PRODUCT_FAILED,
+  UPDATE_INVOICE_PRODUCT_PENDING,
+  UPDATE_INVOICE_PRODUCT_SUCCESS,
+  UPDATE_INVOICE_PRODUCT_FAILED,
+  DELETE_INVOICE_PRODUCT_PENDING,
+  DELETE_INVOICE_PRODUCT_SUCCESS,
+  DELETE_INVOICE_PRODUCT_FAILED,
 } from './constants';
 
 export const handleLogin = (username, password) => (dispatch) => {
@@ -200,6 +219,10 @@ export const handleLogout = () => (dispatch) => {
     type: REQUEST_LOG_OUT,
     payload: localStorage.removeItem('user')
   })
+}
+
+export const restStoreData = () => (dispatch) => {
+  dispatch({ type: RESET_DATA });
 }
 
 export const fetchUsers = () => (dispatch) => {
@@ -538,6 +561,14 @@ export const deleteProduct = (id) => (dispatch) => {
     .catch(error => dispatch({ type: DELETE_PRODUCT_FAILED, payload: error }))
 }
 
+export const fetchProductByBarcode = (barcode) => (dispatch) => {
+  dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products/barcodes/${barcode}`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_FAILED, payload: error }))
+}
+
 export const generateProductCode = () => (dispatch) => {
   dispatch({ type: GENERATE_PRODUCT_CODE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products-code`, dataApi('post'))
@@ -604,7 +635,7 @@ export const deleteDocumentType = (id) => (dispatch) => {
 export const fetchInvoices = () => (dispatch) => {
   dispatch({ type: REQUEST_INVOICES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices`, authorizationData())
-    .then(response => response.json())
+    .then(response => response.status === 204 ? [] : response.json())
     .then(data => dispatch({ type: REQUEST_INVOICES_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_INVOICES_FAILED, payload: error }))
 }
@@ -654,4 +685,43 @@ export const fetchInvoiceVendors = () => (dispatch) => {
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_INVOICES_VENDORS_SUCCESS, payload: data }))
     .catch(error => dispatch({ type: REQUEST_INVOICES_VENDORS_FAILED, payload: error }))
+}
+
+export const fetchInvoiceProducts = (invoiceId) => (dispatch) => {
+  dispatch({ type: REQUEST_INVOICE_PRODUCTS_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoice-products/${invoiceId}`, authorizationData())
+    .then(response => response.status === 204 ? [] : response.json())
+    .then(data => dispatch({ type: REQUEST_INVOICE_PRODUCTS_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_INVOICE_PRODUCTS_FAILED, payload: error }))
+}
+
+export const fetchInvoiceProduct = (id) => (dispatch) => {
+  dispatch({ type: REQUEST_INVOICE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoice-products/product/${id}`, authorizationData())
+    .then(response => response.json())
+    .then(data => dispatch({ type: REQUEST_INVOICE_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: REQUEST_INVOICE_PRODUCT_FAILED, payload: error }))
+}
+
+export const createInvoiceProduct = (invoiceProduct) => (dispatch) => {
+  dispatch({ type: CREATE_INVOICE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoice-products/product`, dataApi('post', invoiceProduct))
+    .then(response => response.json())
+    .then(data => dispatch({ type: CREATE_INVOICE_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: CREATE_INVOICE_PRODUCT_FAILED, payload: error }))
+}
+
+export const updateInvoiceProduct = (invoiceProduct) => (dispatch) => {
+  dispatch({ type: UPDATE_INVOICE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoice-products/product`, dataApi('put', invoiceProduct))
+    .then(response => response.json())
+    .then(data => dispatch({ type: UPDATE_INVOICE_PRODUCT_SUCCESS, payload: data }))
+    .catch(error => dispatch({ type: UPDATE_INVOICE_PRODUCT_FAILED, payload: error }))
+}
+
+export const deleteInvoiceProduct = (id) => (dispatch) => {
+  dispatch({ type: DELETE_INVOICE_PRODUCT_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoice-products/product/${id}`, dataApi('delete'))
+    .then(respone => dispatch({ type: DELETE_INVOICE_PRODUCT_SUCCESS, payload: respone.status }))
+    .catch(error => dispatch({ type: DELETE_INVOICE_PRODUCT_FAILED, payload: error }))
 }
