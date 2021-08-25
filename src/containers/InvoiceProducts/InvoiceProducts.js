@@ -19,7 +19,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Link, useHistory } from 'react-router-dom';
 import { useParams } from 'react-router';
 
-import { fetchInvoiceProducts, deleteInvoiceProduct } from '../actions';
+import { 
+  fetchInvoiceProducts, 
+  deleteInvoiceProduct,
+  updateInvoice,
+  restStoreData
+} from '../actions';
 
 const drawerWidth = 240;
 const marginTop = 56;
@@ -55,6 +60,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchInvoiceProducts: (invoiceId) => dispatch(fetchInvoiceProducts(invoiceId)),
     onDeleteInvoiceProduct: (id) => dispatch(deleteInvoiceProduct(id)),
+    onUpdateInvoice: (invoice) => dispatch(updateInvoice(invoice)),
+    onRestData: () => dispatch(restStoreData()),
   }
 }
 const InvoiceProducts = (props) => {
@@ -63,7 +70,9 @@ const InvoiceProducts = (props) => {
     invoiceProducts,
     error,
     onFetchInvoiceProducts,
-    onDeleteInvoiceProduct
+    onDeleteInvoiceProduct,
+    onUpdateInvoice,
+    onRestData
   } = props;
 
   const history = useHistory();
@@ -73,6 +82,8 @@ const InvoiceProducts = (props) => {
 
   const [displayInvoiceProducts, setDisplayInvoiceProduct] = useState([]);
   const [selectedInvoiceProducts, setSelectedInvoiceProduct] = useState([]);
+  const [invoiceToUpdate, setInvoiceToUpdate] = useState({});
+  const [invoiceValues, setInvoiceValue] = useState({});
 
   const addLinkToIdCell = (params) => (
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
@@ -82,25 +93,37 @@ const InvoiceProducts = (props) => {
 
   const renderBarcodes = (params) => (
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params.value.barcodes[0].value}
+      {params?.value?.barcodes[0].value}
     </Link>
   );
 
   const renderProductName = (params) => (
     <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params.row.product.nameRom}
+      {params?.row?.product?.nameRom}
     </Link>
   );
 
-  const renderDiscountPrice = (params) => (Number(params.row.product.discountPrice).toFixed(2));
-  const renderRetailPrice = (params) => (Number(params.row.product.retailPrice).toFixed(2));
-  const renderTrandeMargin = (params) => (Number(params.row.product.tradeMargin).toFixed(2));
+  const renderDiscountPrice = (params) => {
+    if (params.row.id !== 0) {
+      return Number(params.row.product.discountPrice).toFixed(2);
+    }
+  };
+  const renderRetailPrice = (params) => {
+    if (params.row.id !== 0) {
+      return Number(params.row.product.retailPrice).toFixed(2)
+    }
+  };
+  const renderTrandeMargin = (params) => {
+    if (params.row.id !== 0) {
+    return Number(params.row.product.tradeMargin).toFixed(2)
+    }
+  };
   const renderVatValue = (params) => (params.row.product.vat.name);
   const renderTotalValue = (params) => (Number(params.value).toFixed(2));
 
   const renderQuatity = (params) => {
-    if(params.row.product.measuringUnit.id === 1){
-      return Number(params.value).toFixed(4);
+    if (params.row.product.measuringUnit.id === 1) {
+      return Number(params.value).toFixed(3);
     }
     return params.value;
   }
@@ -111,66 +134,77 @@ const InvoiceProducts = (props) => {
       headerName: '№',
       width: 75,
       renderCell: addLinkToIdCell,
+      sortable: false,
     },
     {
       field: 'product',
       headerName: 'Barcode',
       width: 120,
       renderCell: renderBarcodes,
+      sortable: false
     },
     {
       field: 'product.nameRom',
       headerName: 'Product',
       width: 260,
       renderCell: renderProductName,
+      sortable: false
     },
     {
       field: 'quantity',
       headerName: 'Qty',
       width: 80,
       renderCell: renderQuatity,
+      sortable: false
     },
     {
       field: 'product.discountPrice',
       headerName: 'DP',
       width: 85,
       renderCell: renderDiscountPrice,
+      sortable: false
     },
     {
       field: 'product.retailPrice',
       headerName: 'RP',
       width: 85,
       renderCell: renderRetailPrice,
+      sortable: false
     },
     {
       field: 'vatSum',
       headerName: 'VAT',
       width: 95,
       renderCell: renderTotalValue,
+      sortable: false
     },
     {
       field: 'totalDiscountPrice',
       headerName: 'TDP',
       width: 95,
       renderCell: renderTotalValue,
+      sortable: false
     },
     {
       field: 'totalRetailPrice',
       headerName: 'TRP',
       width: 95,
       renderCell: renderTotalValue,
+      sortable: false
     },
     {
       field: 'product.tradeMargin',
       headerName: 'TM%',
       width: 90,
-      renderCell: renderTrandeMargin
+      renderCell: renderTrandeMargin,
+      sortable: false
     },
     {
       field: 'product.vat',
       headerName: 'VAT%',
       width: 95,
-      renderCell: renderVatValue
+      renderCell: renderVatValue,
+      sortable: false
     },
   ];
 
@@ -180,20 +214,76 @@ const InvoiceProducts = (props) => {
   }, [onFetchInvoiceProducts, id])
 
   const addOrderNumberToInvoiceProduct = () => {
-    console.log("invoiceProducts", invoiceProducts);
-    if(invoiceProducts !== null || invoiceProducts !== undefined) {
-      return invoiceProducts.map((element, index) => (
+    if (invoiceProducts !== null || invoiceProducts !== undefined) {
+      let invoiceProductWithOrder = invoiceProducts.map((element, index) => (
         Object.assign(element, element, { orderNumber: index + 1 })
-      )) 
-    } 
+      ))
+
+      let quantity = invoiceProductWithOrder.reduce((acc, element) => (
+        acc + element.quantity
+      ), 0)
+
+      let vatSum = invoiceProductWithOrder.reduce((acc, element) => (
+        acc + element.vatSum
+      ), 0)
+
+      let totalDiscountPrice = invoiceProductWithOrder.reduce((acc, element) => (
+        acc + element.totalDiscountPrice
+      ), 0)
+
+      let totalRetailPrice = invoiceProductWithOrder.reduce((acc, element) => (
+        acc + element.totalRetailPrice
+      ), 0)
+
+      let averageTradeMargin = invoiceProductWithOrder.reduce((acc, element) => (
+        acc + element.product.tradeMargin
+      ), 0)
+
+      let totalTradeMargin = invoiceProductWithOrder.reduce((acc, element) => (
+        (element.product.retailPrice - element.product.discountPrice) + acc
+      ), 0)
+
+      averageTradeMargin = averageTradeMargin / invoiceProductWithOrder.length;
+
+      setInvoiceValue({
+        totalDiscountPrice, 
+        totalRetailPrice, 
+        vatSum,
+        averageTradeMargin,
+        totalTradeMargin
+      });
+
+      invoiceProductWithOrder.push({
+        id: 0,
+        quantity,
+        vatSum,
+        totalDiscountPrice,
+        totalRetailPrice,
+        invoice: null,
+        product: {
+          nameRom: '',
+          discountPrice: '',
+          retailPrice: '',
+          tradeMargin: '',
+          vat: '',
+          barcodes: [{ value: '' }],
+          measuringUnit: { id: 0 }
+        },
+      })
+      return invoiceProductWithOrder;
+    }
   }
-      
+
   useEffect(() => {
+    setInvoiceToUpdate(invoiceProducts[0]?.invoice);
     setDisplayInvoiceProduct(addOrderNumberToInvoiceProduct());
     // eslint-disable-next-line 
   }, [invoiceProducts])
 
+ 
+
   const onAddNewInvoiceProduct = () => {
+    onRestData();
     history.push(`/invoice-products/${id}/product/0`)
   }
 
@@ -225,13 +315,23 @@ const InvoiceProducts = (props) => {
   const onUpdateSelectedInvoiceProductInformation = () => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
       const selectedInvoiceProduct = displayInvoiceProducts.filter(element => (element.id === selectedInvoiceProducts[0]))
-        history.push(`/products/${selectedInvoiceProduct[0].product.id}`);
+      history.push(`/products/${selectedInvoiceProduct[0].product.id}`);
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");
     }
   }
 
   const backToInvoices = () => {
+    Object.assign(
+      invoiceToUpdate, invoiceToUpdate,{
+        totalDiscountPrice: invoiceValues.totalDiscountPrice,
+        totalRetailPrice: invoiceValues.totalRetailPrice,
+        totalTradeMargin: invoiceValues.totalTradeMargin,
+        tradeMargin: invoiceValues.averageTradeMargin,
+        vatSum: invoiceValues.vatSum
+      }
+    )
+    onUpdateInvoice(invoiceToUpdate);
     history.push(`/invoices`);
   }
 
@@ -301,9 +401,10 @@ const InvoiceProducts = (props) => {
               pageSize={25}
               checkboxSelection={true}
               loading={isPending}
-              sortingOrder={['asc', 'desc', null]}
+              // sortingOrder={['asc', 'desc', null]}
               disableSelectionOnClick={true}
               rowHeight={30}
+              isRowSelectable={(params) => params.row.id !== 0}
               onSelectionModelChange={onSelectInvoiceProduct}
               disableColumnMenu
             />

@@ -28,6 +28,7 @@ import {
   generateProductCode,
   generatePlu,
   generateBarcode,
+  restStoreData,
 } from '../actions';
 
 import './style.css';
@@ -62,6 +63,7 @@ const mapDispatchToProps = (dispatch) => {
     onGenerateProductCode: () => dispatch(generateProductCode()),
     onGeneratePlu: () => dispatch(generatePlu()),
     onGenerateBarcode: (barcode) => dispatch(generateBarcode(barcode)),
+    onRestData: () => dispatch(restStoreData()),
   }
 }
 
@@ -99,6 +101,7 @@ const Product = (props) => {
     onGenerateProductCode,
     onGeneratePlu,
     onGenerateBarcode,
+    onRestData,
   } = props;
 
   const classes = useStyles();
@@ -135,6 +138,7 @@ const Product = (props) => {
       setBarcodes([]);
       setPlu({});
       setProductCode({});
+      onRestData();
       history.goBack()
     }
   }
@@ -344,6 +348,7 @@ const Product = (props) => {
     setPlu({});
     setProductCode({});
     history.goBack();
+    onRestData();
   }
 
   return (

@@ -837,7 +837,7 @@ export const manageInvoiceProducts = (state = initialStateInvoiceProducts, actio
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_INVOICE_PRODUCT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
-      case RESET_DATA:
+    case RESET_DATA:
       return initialStateInvoiceProducts;
     default:
       return state;
