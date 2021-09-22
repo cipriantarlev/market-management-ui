@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,10 +11,13 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import { 
+import {
   fetchUsers,
   deleteUser,
- } from '../actions';
+} from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 
 import './style.css';
 
@@ -52,10 +55,19 @@ const Users = (props) => {
   } = props;
 
   const history = useHistory();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     onFetchUsers();
   }, [onFetchUsers])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onAddNewUser = () => {
     history.push("/users/0")
@@ -79,6 +91,11 @@ const Users = (props) => {
       >
         Add new User
       </Button>
+      <DisplayAlert 
+        error={error}
+        open={open}
+        setOpen={setOpen}
+      />
       {!isPending ?
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
@@ -126,9 +143,8 @@ const Users = (props) => {
           </Table>
         </TableContainer>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
-    </div>
+        <ProgressLoading />}
+      </div>
   );
 }
 

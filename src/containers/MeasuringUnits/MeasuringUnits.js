@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,7 +14,14 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchMeasuringUnits, deleteMeasuringUnit } from '../actions';
+import { 
+  fetchMeasuringUnits, 
+  deleteMeasuringUnit,
+  restStoreData,
+} from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 import MeasuringUnit from './MeasuringUnit';
 
 const useStyles = makeStyles({
@@ -34,6 +42,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchMeasuringUnits: () => dispatch(fetchMeasuringUnits()),
     onDeleteMeasuringUnit: (id) => dispatch(deleteMeasuringUnit(id)),
+    onRestStoreData: () => dispatch(restStoreData()),
   }
 }
 
@@ -43,24 +52,38 @@ const MeasuringUnits = (props) => {
     measuringUnits,
     error,
     onFetchMeasuringUnits,
-    onDeleteMeasuringUnit
+    onDeleteMeasuringUnit,
+    onRestStoreData,
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
+  const [measuringUnitList, setMeasuringUnitList] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpenDialog(false);
+      setMeasuringUnitList([]);
+      onRestStoreData();
     }
   };
 
   useEffect(() => {
     onFetchMeasuringUnits();
-  }, [onFetchMeasuringUnits])
+    setMeasuringUnitList(measuringUnits);
+    // eslint-disable-next-line
+  }, [onFetchMeasuringUnits, measuringUnitList])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onAddNewMeasuringUnit = () => {
     setId(0);
@@ -76,7 +99,8 @@ const MeasuringUnits = (props) => {
     const answer = window.confirm(`Are you sure you want to delete Measuring Unit with id: ${measuringUnitId}?`);
     if (answer === true) {
       onDeleteMeasuringUnit(measuringUnitId);
-      history.go(0);
+      setMeasuringUnitList([]);
+      onRestStoreData();
     }
   }
 
@@ -91,6 +115,12 @@ const MeasuringUnits = (props) => {
       >
         Add new Measuring Unit
       </Button>
+      {error ? 
+      <DisplayAlert 
+        error={error}
+        open={open}
+        setOpen={setOpen}
+      /> : null}
       {!isPending ?
         <div>
           <TableContainer component={Paper}>
@@ -138,8 +168,7 @@ const MeasuringUnits = (props) => {
           />
         </div>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
+        <ProgressLoading />}
     </div>
   );
 }
