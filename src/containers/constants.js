@@ -23,6 +23,14 @@ export const dataApi = (method, data) => {
   }
 }
 
+export const checkStatusCode = (data, type, dispatch) => {
+  if (data[0]?.statusCode !== undefined && data[0]?.statusCode !== 200) {
+    throw data;
+  } else {
+    return dispatch({ type: type, payload: data })
+  }
+}
+
 export const REQUEST_LOGIN_PENDING = 'REQUEST_LOGIN_PENDING';
 export const REQUEST_LOGIN_SUCCESS = 'REQUEST_LOGIN_SUCCESS';
 export const REQUEST_LOGIN_FAILED = 'REQUEST_LOGIN_FAILED';

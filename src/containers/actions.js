@@ -1,6 +1,7 @@
 import {
   authorizationData,
   dataApi,
+  checkStatusCode,
   ROOT_CONTEXT_PATH,
   REQUEST_LOGIN_PENDING,
   REQUEST_LOGIN_SUCCESS,
@@ -245,7 +246,7 @@ export const createUser = (user) => (dispatch) => {
   dispatch({ type: CREATE_USER_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/users`, dataApi('post', user))
     .then(respone => respone.json())
-    .then(data => dispatch({ type: CREATE_USER_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_USER_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_USER_FAILED, payload: error }))
 }
 
@@ -253,7 +254,7 @@ export const updateUser = (user) => (dispatch) => {
   dispatch({ type: UPDATE_USER_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/users`, dataApi('put', user))
     .then(respone => respone.json())
-    .then(data => dispatch({ type: UPDATE_USER_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_USER_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_USER_FAILED, payload: error }))
 }
 
@@ -503,7 +504,7 @@ export const createMeasuringUnit = (measuringUnit) => (dispatch) => {
   dispatch({ type: CREATE_MEASURING_UNIT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/measuring-units`, dataApi('post', measuringUnit))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_MEASURING_UNIT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_MEASURING_UNIT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_MEASURING_UNIT_FAILED, payload: error }))
 }
 
@@ -511,7 +512,7 @@ export const updateMeasuringUnit = (measuringUnit) => (dispatch) => {
   dispatch({ type: UPDATE_MEASURING_UNIT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/measuring-units`, dataApi('put', measuringUnit))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_MEASURING_UNIT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_MEASURING_UNIT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_MEASURING_UNIT_FAILED, payload: error }))
 }
 

@@ -572,6 +572,8 @@ export const manageMeasuringUnits = (state = initialStateMeasuringUnits, action 
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_MEASURING_UNIT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateMeasuringUnits;
     default:
       return state;
   }
