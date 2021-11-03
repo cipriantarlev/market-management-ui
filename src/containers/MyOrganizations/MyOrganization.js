@@ -13,6 +13,10 @@ import {
   fetchMyOrganizations
 } from '../actions';
 
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
+import InvalidFieldText from '../../common/InvalidFieldText';
+
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageMyOrganizations.isPending,
@@ -42,10 +46,14 @@ const MyOrganizations = (props) => {
     onFetchMyOrganizations
   } = props;
 
+  const COMPANY_NAME_HELP_BLOCK = "companyNameHeloBlock";
+
   let history = useHistory();
   const { id } = useParams();
 
   const [myOrg, setMyOrg] = useState({});
+  const [openAlert, setOpenAlert] = useState(true);
+  const [invalidCompanyName, setInvalidCompanyName] = useState(false);
 
   useEffect(() => {
     if (id !== "0") {
@@ -59,6 +67,14 @@ const MyOrganizations = (props) => {
     }
   }, [myOrganization, id])
 
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
+
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     return answer === true ? history.push("/my-organizations") : null;
@@ -69,6 +85,12 @@ const MyOrganizations = (props) => {
   const onChangeOrgValues = (event) => {
     switch (event.target.id) {
       case "formGridCompanyName":
+        if (event.target.value.match("^[a-zA-Z0-9\\s]*$")) {
+          setInvalidCompanyName(false);
+        } else {
+          setInvalidCompanyName(true);
+        }
+        console.log("InvalidCompanyName", invalidCompanyName);
         setMyOrg({ ...myOrg, name: event.target.value });
         break;
       case "formGridVatCode":
@@ -101,20 +123,32 @@ const MyOrganizations = (props) => {
     }
   }
 
-  const onSubmitMyOrganization = () => {
-    if (id !== "0") {
-      onUpdateMyOrganization(myOrg);
-    } else {
-      onCreateMyOrganization(myOrg);
+  const isMyOrganizationReadyToBeSubmitted = () => {
+    return invalidCompanyName === false;
+  }
+
+  const onSubmitMyOrganization = (event) => {
+    if(isMyOrganizationReadyToBeSubmitted()) {
+      if (id !== "0") {
+        onUpdateMyOrganization(myOrg);
+      } else {
+        onCreateMyOrganization(myOrg);
+      }
+      onFetchMyOrganizations();
+      history.push("/my-organizations");
     }
-    onFetchMyOrganizations();
-    history.push("/my-organizations");
   }
 
   return (
     <div className="w-60 center mt4">
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        /> : null}
       {!isPending ?
-        <Form>
+        <Form onSubmit={onSubmitMyOrganization}>
           <Form.Row>
             <Form.Group as={Col} controlId="formGridCompanyName">
               <Form.Label>Company Name</Form.Label>
@@ -122,7 +156,15 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter Company Name"
                 value={myOrg.name}
+                required={true}
+                isInvalid={invalidCompanyName}
                 onChange={onChangeOrgValues}
+                aria-describedby={COMPANY_NAME_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidCompanyName}
+                message={"My Organization name should contain only letters, numbers and spaces"}
+                ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
               />
             </Form.Group>
             <Form.Group as={Col} controlId="formGridVatCode">
@@ -131,6 +173,7 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter VAT Code"
                 value={myOrg.vatCode}
+                required={true}
                 onChange={onChangeOrgValues}
               />
             </Form.Group>
@@ -142,6 +185,7 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter Bank Name"
                 value={myOrg.bank}
+                required={true}
                 onChange={onChangeOrgValues}
               />
             </Form.Group>
@@ -151,6 +195,7 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter City"
                 value={myOrg.city}
+                required={true}
                 onChange={onChangeOrgValues}
               />
             </Form.Group>
@@ -162,6 +207,7 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter Fiscal Code"
                 value={myOrg.fiscalCode}
+                required={true}
                 onChange={onChangeOrgValues}
               />
             </Form.Group>
@@ -182,6 +228,7 @@ const MyOrganizations = (props) => {
                 type="text"
                 placeholder="Enter Bank Account"
                 value={myOrg.bankAccount}
+                required={true}
                 onChange={onChangeOrgValues}
               />
             </Form.Group>
@@ -212,7 +259,7 @@ const MyOrganizations = (props) => {
             <Button
               className="mr5 w4"
               variant="primary"
-              onClick={onSubmitMyOrganization}
+              type="submit"
             >
               Submit
             </Button>
@@ -224,9 +271,8 @@ const MyOrganizations = (props) => {
             </Button>
           </div>
         </Form>
-        : <h3>Loading data ...</h3>
+        : <ProgressLoading />
       }
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
     </div>
   );
 }

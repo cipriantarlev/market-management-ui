@@ -74,7 +74,7 @@ const MeasuringUnit = (props) => {
   }, [])
 
   const onChangeMeasuringUnitValues = (event) => {
-    if (event.target.id === "name" && event.target.value.match("^[a-zA-Z0-9]+$")) {
+    if (event.target.id === "name" && event.target.value.match("^[a-zA-Z0-9]*$")) {
       setMeasuringUnit({ ...measuringUnit, name: event.target.value });
       setFhowError(false);
       setErrorMessage("")
