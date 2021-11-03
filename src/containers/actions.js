@@ -293,7 +293,7 @@ export const createMyOrganization = (myOrg) => (dispatch) => {
   dispatch({ type: CREATE_MY_ORGANIZATION_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/my-organizations`, dataApi('post', myOrg))
     .then(respone => respone.json())
-    .then(data => dispatch({ type: CREATE_MY_ORGANIZATION_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_MY_ORGANIZATION_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_MY_ORGANIZATION_FAILED, payload: error }))
 }
 
@@ -301,7 +301,7 @@ export const updateMyOrganization = (myOrg) => (dispatch) => {
   dispatch({ type: UPDATE_MY_ORGANIZATION_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/my-organizations`, dataApi('put', myOrg))
     .then(respone => respone.json())
-    .then(data => dispatch({ type: UPDATE_MY_ORGANIZATION_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_MY_ORGANIZATION_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_MY_ORGANIZATION_FAILED, payload: error }))
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,6 +15,9 @@ import {
   fetchMyOrganizations,
   deleteMyOrganization
 } from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 
 const useStyles = makeStyles({
   table: {
@@ -49,10 +52,19 @@ const MyOrganizations = (props) => {
 
   const classes = useStyles();
   const history = useHistory();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     onFetchMyOrganizations();
   }, [onFetchMyOrganizations])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onAddNewUser = () => {
     history.push("/my-organizations/0")
@@ -76,6 +88,11 @@ const MyOrganizations = (props) => {
       >
         Add new Organization
       </Button>
+      <DisplayAlert
+        error={error}
+        open={open}
+        setOpen={setOpen}
+      />
       {!isPending ?
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
@@ -120,8 +137,7 @@ const MyOrganizations = (props) => {
           </Table>
         </TableContainer>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
+        <ProgressLoading />}
     </div>
   );
 }
