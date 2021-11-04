@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import Form from 'react-bootstrap/Form'
-import Col from 'react-bootstrap/Col'
-import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import { useHistory } from 'react-router-dom';
 import { useParams } from 'react-router';
 
@@ -16,6 +16,10 @@ import {
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
 import InvalidFieldText from '../../common/InvalidFieldText';
+import { 
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -46,14 +50,31 @@ const MyOrganizations = (props) => {
     onFetchMyOrganizations
   } = props;
 
-  const COMPANY_NAME_HELP_BLOCK = "companyNameHeloBlock";
+  const COMPANY_NAME_HELP_BLOCK = "companyNameHelpBlock";
+  const VAT_CODE_HELP_BLOCK = "vatCodeHelpBlock";
+  const BANK_NAME_HELP_BLOCK = "bankNameHelpBlock";
+  const CITY_HELP_BLOCK = "cityHelpBlock";
+  const FISCAL_CODE_HELP_BLOCK = "fiscalCodeHelpBlock";
+  const PHONE_NUMBER_HELP_BLOCK = "phoneNumberHelpBlock";
+  const BANK_ACCOUNT_HELP_BLOCK = "bankAccountHelpBlock";
+  const EMAIL_HELP_BLOCK = "emailHelpBlock";
+  const NOTE_HELP_BLOCK = "noteHelpBlock";
 
   let history = useHistory();
   const { id } = useParams();
 
   const [myOrg, setMyOrg] = useState({});
   const [openAlert, setOpenAlert] = useState(true);
+
   const [invalidCompanyName, setInvalidCompanyName] = useState(false);
+  const [invalidVatCode, setInvalidVatCode] = useState(false);
+  const [invalidBankName, setInvalidBankName] = useState(false);
+  const [invalidCity, setInvalidCity] = useState(false);
+  const [invalidFiscalCode, setInvalidFiscalCode] = useState(false);
+  const [invalidPhoneNumber, setInvalidPhoneNumber] = useState(false);
+  const [invalidBankAccount, setInvalidBankAccount] = useState(false);
+  const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidNote, setInvalidNote] = useState(false);
 
   useEffect(() => {
     if (id !== "0") {
@@ -85,36 +106,39 @@ const MyOrganizations = (props) => {
   const onChangeOrgValues = (event) => {
     switch (event.target.id) {
       case "formGridCompanyName":
-        if (event.target.value.match("^[a-zA-Z0-9\\s]*$")) {
-          setInvalidCompanyName(false);
-        } else {
-          setInvalidCompanyName(true);
-        }
-        console.log("InvalidCompanyName", invalidCompanyName);
+        validateInputValue(setInvalidCompanyName, "^[a-zA-Z0-9\\s]+$", event);
         setMyOrg({ ...myOrg, name: event.target.value });
         break;
       case "formGridVatCode":
+        validateInputValue(setInvalidVatCode, "^[0-9]+$", event);
         setMyOrg({ ...myOrg, vatCode: event.target.value });
         break;
       case "formGridBankName":
+        validateInputValue(setInvalidBankName, "^[a-zA-Z0-9-.\\s]+$", event);
         setMyOrg({ ...myOrg, bank: event.target.value });
         break;
       case "formGridCity":
+        validateInputValue(setInvalidCity, "^[a-zA-Z0-9\\s]+$", event);
         setMyOrg({ ...myOrg, city: event.target.value });
         break;
       case "formGridFiscalCode":
+        validateInputValue(setInvalidFiscalCode, "^[0-9]+$", event);
         setMyOrg({ ...myOrg, fiscalCode: event.target.value });
         break;
       case "formGridPhoneNumber":
+        validateInputValue(setInvalidPhoneNumber, "^[0-9-]+$", event);
         setMyOrg({ ...myOrg, phoneNumber: event.target.value });
         break;
       case "formGridBankAccount":
+        validateInputValue(setInvalidBankAccount, "^[0-9]+$", event);
         setMyOrg({ ...myOrg, bankAccount: event.target.value });
         break;
       case "formGridEmail":
+        validateInputValue(setInvalidEmail, "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", event);
         setMyOrg({ ...myOrg, email: event.target.value });
         break;
       case "formGridNote":
+        validateInputValue(setInvalidNote, "^[a-zA-Z0-9\\s.,:;-]+$", event);
         setMyOrg({ ...myOrg, note: event.target.value });
         break;
       default:
@@ -124,11 +148,19 @@ const MyOrganizations = (props) => {
   }
 
   const isMyOrganizationReadyToBeSubmitted = () => {
-    return invalidCompanyName === false;
+    return invalidCompanyName === false && 
+           invalidVatCode === false &&
+           invalidBankName === false &&
+           invalidCity === false &&
+           invalidFiscalCode === false &&
+           invalidPhoneNumber === false &&
+           invalidBankAccount === false &&
+           invalidEmail === false &&
+           invalidNote === false;
   }
 
   const onSubmitMyOrganization = (event) => {
-    if(isMyOrganizationReadyToBeSubmitted()) {
+   if(isMyOrganizationReadyToBeSubmitted()) {
       if (id !== "0") {
         onUpdateMyOrganization(myOrg);
       } else {
@@ -136,17 +168,18 @@ const MyOrganizations = (props) => {
       }
       onFetchMyOrganizations();
       history.push("/my-organizations");
+    } else {
+      preventSubmitIfInvalidInput(event);
     }
   }
 
   return (
     <div className="w-60 center mt4">
-      {error ?
-        <DisplayAlert
+      <DisplayAlert
           error={error}
           open={openAlert}
           setOpen={setOpenAlert}
-        /> : null}
+        />
       {!isPending ?
         <Form onSubmit={onSubmitMyOrganization}>
           <Form.Row>
@@ -163,7 +196,7 @@ const MyOrganizations = (props) => {
               />
               <InvalidFieldText 
                 isInvalid={invalidCompanyName}
-                message={"My Organization name should contain only letters, numbers and spaces"}
+                message={"My Organization name should contain only letters, numbers and spaces."}
                 ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
               />
             </Form.Group>
@@ -174,7 +207,14 @@ const MyOrganizations = (props) => {
                 placeholder="Enter VAT Code"
                 value={myOrg.vatCode}
                 required={true}
+                isInvalid={invalidVatCode}
                 onChange={onChangeOrgValues}
+                aria-describedby={VAT_CODE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidVatCode}
+                message={"Vat Code should contain only numbers."}
+                ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
               />
             </Form.Group>
           </Form.Row>
@@ -187,6 +227,13 @@ const MyOrganizations = (props) => {
                 value={myOrg.bank}
                 required={true}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidBankName}
+                aria-describedby={BANK_NAME_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidBankName}
+                message={"Bank should contain only letters, numbers, . and -."}
+                ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
               />
             </Form.Group>
             <Form.Group as={Col} controlId="formGridCity">
@@ -197,6 +244,13 @@ const MyOrganizations = (props) => {
                 value={myOrg.city}
                 required={true}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidCity}
+                aria-describedby={CITY_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidCity}
+                message={"City should contain only letters and numbers."}
+                ariaDescribedbyId={CITY_HELP_BLOCK}
               />
             </Form.Group>
           </Form.Row>
@@ -209,6 +263,13 @@ const MyOrganizations = (props) => {
                 value={myOrg.fiscalCode}
                 required={true}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidFiscalCode}
+                aria-describedby={FISCAL_CODE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidFiscalCode}
+                message={"Fiscal Code should contain only numbers."}
+                ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
               />
             </Form.Group>
             <Form.Group as={Col} controlId="formGridPhoneNumber">
@@ -218,6 +279,13 @@ const MyOrganizations = (props) => {
                 placeholder="Enter Phone Number"
                 value={myOrg.phoneNumber}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidPhoneNumber}
+                aria-describedby={PHONE_NUMBER_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidPhoneNumber}
+                message={"Phone number should contain only dash and numbers. Example: 255-545-54"}
+                ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
               />
             </Form.Group>
           </Form.Row>
@@ -230,6 +298,13 @@ const MyOrganizations = (props) => {
                 value={myOrg.bankAccount}
                 required={true}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidBankAccount}
+                aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidBankAccount}
+                message={"Bank Account should contain only numbers."}
+                ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
               />
             </Form.Group>
             <Form.Group as={Col} controlId="formGridEmail">
@@ -239,6 +314,13 @@ const MyOrganizations = (props) => {
                 placeholder="Enter email"
                 value={myOrg.email}
                 onChange={onChangeOrgValues}
+                isInvalid={invalidEmail}
+                aria-describedby={EMAIL_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidEmail}
+                message={"Email should respect the pattern: email@email.com."}
+                ariaDescribedbyId={EMAIL_HELP_BLOCK}
               />
             </Form.Group>
           </Form.Row>
@@ -253,6 +335,13 @@ const MyOrganizations = (props) => {
               placeholder="Enter note"
               value={checkForNull(myOrg)}
               onChange={onChangeOrgValues}
+              isInvalid={invalidNote}
+              aria-describedby={NOTE_HELP_BLOCK}
+            />
+            <InvalidFieldText 
+              isInvalid={invalidNote}
+              message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+              ariaDescribedbyId={NOTE_HELP_BLOCK}
             />
           </Form.Group>
           <div>

@@ -1,7 +1,4 @@
 import {
-  authorizationData,
-  dataApi,
-  checkStatusCode,
   ROOT_CONTEXT_PATH,
   REQUEST_LOGIN_PENDING,
   REQUEST_LOGIN_SUCCESS,
@@ -202,6 +199,12 @@ import {
   DELETE_INVOICE_PRODUCT_FAILED,
 } from './constants';
 
+import {
+  authorizationData,
+  dataApi,
+  checkStatusCode,
+} from '../common/utils';
+
 export const handleLogin = (username, password) => (dispatch) => {
   dispatch({ type: REQUEST_LOGIN_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/login`, {
@@ -230,7 +233,7 @@ export const fetchUsers = () => (dispatch) => {
   dispatch({ type: REQUEST_USERS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/users`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_USERS_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_USERS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_USERS_FAILED, payload: error }))
 }
 
@@ -238,7 +241,7 @@ export const fetchUser = (id) => (dispatch) => {
   dispatch({ type: REQUEST_USER_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/users/${id}`, authorizationData())
     .then(respone => respone.json())
-    .then(data => dispatch({ type: REQUEST_USER_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_USER_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_USER_FAILED, payload: error }))
 }
 
@@ -269,7 +272,7 @@ export const fetchRoles = () => (dispatch) => {
   dispatch({ type: REQUEST_ROLES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/roles`, authorizationData())
     .then(respone => respone.json())
-    .then(data => dispatch({ type: REQUEST_ROLES_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_ROLES_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_ROLES_FAILED, payload: error }))
 }
 
@@ -277,7 +280,7 @@ export const fetchMyOrganizations = () => (dispatch) => {
   dispatch({ type: REQUEST_MY_ORGANIZATIONS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/my-organizations`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_MY_ORGANIZATIONS_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_MY_ORGANIZATIONS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_MY_ORGANIZATIONS_FAILED, payload: error }))
 }
 
@@ -316,7 +319,7 @@ export const fetchVendors = () => (dispatch) => {
   dispatch({ type: REQUEST_VENDORS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vendors`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_VENDORS_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_VENDORS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_VENDORS_FAILED, payload: error }))
 }
 
@@ -324,7 +327,7 @@ export const fetchVendor = (id) => (dispatch) => {
   dispatch({ type: REQUEST_VENDOR_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vendors/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_VENDOR_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_VENDOR_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_VENDOR_FAILED, payload: error }))
 }
 
@@ -332,7 +335,7 @@ export const createVendor = (vendor) => (dispatch) => {
   dispatch({ type: CREATE_VENDOR_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vendors`, dataApi('post', vendor))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_VENDOR_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_VENDOR_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_VENDOR_FAILED, payload: error }))
 }
 
@@ -340,7 +343,7 @@ export const updateVendor = (vendor) => (dispatch) => {
   dispatch({ type: UPDATE_VENDOR_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vendors`, dataApi('put', vendor))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_VENDOR_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_VENDOR_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_VENDOR_FAILED, payload: error }))
 }
 
@@ -488,7 +491,7 @@ export const fetchMeasuringUnits = () => (dispatch) => {
   dispatch({ type: REQUEST_MEASURING_UNITS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/measuring-units`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_MEASURING_UNITS_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_MEASURING_UNITS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_MEASURING_UNITS_FAILED, payload: error }))
 }
 
@@ -496,7 +499,7 @@ export const fetchMeasuringUnit = (id) => (dispatch) => {
   dispatch({ type: REQUEST_MEASURING_UNIT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/measuring-units/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_MEASURING_UNIT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_MEASURING_UNIT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_MEASURING_UNIT_FAILED, payload: error }))
 }
 

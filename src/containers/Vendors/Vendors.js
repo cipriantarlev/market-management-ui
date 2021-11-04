@@ -8,6 +8,8 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { fetchVendors, deleteVendor } from '../actions';
 
+import DisplayAlert from '../../common/DisplayAlert';
+
 import './style.css';
 
 const mapStateToProps = (state) => {
@@ -36,6 +38,8 @@ const Vendors = (props) => {
   } = props;
 
   const history = useHistory();
+
+  const [open, setOpen] = useState(false);
 
   const [displayVendors, setDisplayVendors] = useState([]);
   const [selectedVendors, setSelectedVendors] = useState([]);
@@ -108,6 +112,14 @@ const Vendors = (props) => {
     setDisplayVendors(vendors);
   }, [vendors])
 
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
+
   const removeVendor = (id) => {
     const answer = window.confirm(`Are you sure you want to delete the vendor with id: ${id}?`);
     if (answer) {
@@ -123,8 +135,8 @@ const Vendors = (props) => {
   const onSelectVendors = (selectedVendorArray) => (setSelectedVendors(selectedVendorArray.selectionModel));
 
   const onDeleteSelectedVendor = () => {
-    if(selectedVendors !== undefined && selectedVendors.length > 0) {
-      if(window.confirm(`Are you sure you want to delete selected vendors?`)) {
+    if (selectedVendors !== undefined && selectedVendors.length > 0) {
+      if (window.confirm(`Are you sure you want to delete selected vendors?`)) {
         selectedVendors.forEach(vendorId => {
           onDeleteVendor(vendorId);
         })
@@ -137,39 +149,42 @@ const Vendors = (props) => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
-        <div className="center mt-3" style={{ height: '34em', width: '77rem' }}>
-          <Button
-            variant="contained"
-            className="mb-2"
-            style={{ backgroundColor: '#2aa839', color: 'white' }}
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={onAddNewVendor}
-          >
-            Add new Vendor
-          </Button>
-          <Button
-            variant="contained"
-            className="mb-2 ml-5"
-            startIcon={<DeleteIcon />}
-            color="secondary"
-            onClick={onDeleteSelectedVendor}
-          >
-            Delete Selected Vendor(s)
-          </Button>
-          <DataGrid
-            rows={displayVendors}
-            columns={columns}
-            pageSize={25}
-            checkboxSelection={true}
-            loading={isPending}
-            sortingOrder={['asc', 'desc', null]}
-            disableSelectionOnClick={true}
-            rowHeight={30}
-            onSelectionModelChange={onSelectVendors}
-          />
-        </div>
-      }
+      <div className="center mt-3" style={{ height: '34em', width: '77rem' }}>
+        <Button
+          variant="contained"
+          className="mb-2"
+          style={{ backgroundColor: '#2aa839', color: 'white' }}
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={onAddNewVendor}
+        >
+          Add new Vendor
+        </Button>
+        <Button
+          variant="contained"
+          className="mb-2 ml-5"
+          startIcon={<DeleteIcon />}
+          color="secondary"
+          onClick={onDeleteSelectedVendor}
+        >
+          Delete Selected Vendor(s)
+        </Button>
+        <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        />
+        <DataGrid
+          rows={displayVendors}
+          columns={columns}
+          pageSize={25}
+          checkboxSelection={true}
+          loading={isPending}
+          sortingOrder={['asc', 'desc', null]}
+          disableSelectionOnClick={true}
+          rowHeight={30}
+          onSelectionModelChange={onSelectVendors}
+        />
+      </div>
     </div>
   );
 }

@@ -18,6 +18,10 @@ import {
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
 import InvalidFieldText from '../../common/InvalidFieldText';
+import { 
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -128,12 +132,8 @@ const User = (props) => {
   const onChangeUserValues = (event) => {
     switch (event.target.id) {
       case "formGridUsername":
-        if (event.target.value.match("^[a-zA-Z0-9]*$")) {
-          setUser({ ...user, username: event.target.value });
-          setInvalidUsername(false);
-        } else {
-          setInvalidUsername(true);
-        }
+        validateInputValue(setInvalidUsername, "^[a-zA-Z0-9]+$", event);
+        setUser({ ...user, username: event.target.value });
         break;
       case "formGridPassword":
         setUser({ ...user, password: event.target.value });
@@ -144,12 +144,8 @@ const User = (props) => {
         user.password === event.target.value ? setInvalidPassword(false) : setInvalidPassword(true);
         break;
       case "formGridEmail":
-        if (event.target.value.match("^[a-z0-9_.-@]*$")) {
-          setUser({ ...user, email: event.target.value });
-          setInvalidEmail(false);
-        } else {
-          setInvalidEmail(true);
-        }
+        validateInputValue(setInvalidEmail, "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", event);
+        setUser({ ...user, email: event.target.value });
         break;
       default:
         setUser({ ...user });
@@ -162,7 +158,7 @@ const User = (props) => {
       && invalidUsername === false && invalidEmail === false;
   }
 
-  const onSubmitUser = () => {
+  const onSubmitUser = (event) => {
     if (isUserReadyToBeSubmitted()) {
       const hashPassword = bcrypt.hashSync(user.password, salt);
       setUser(Object.assign(user, user, { password: hashPassword }));
@@ -177,6 +173,7 @@ const User = (props) => {
     } else {
       setInvalidPassword(true);
       setConfirmPassword('');
+      preventSubmitIfInvalidInput(event);
     }
   }
 
