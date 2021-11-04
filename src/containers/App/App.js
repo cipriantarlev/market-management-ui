@@ -30,6 +30,7 @@ import InvoiceProduct from '../InvoiceProducts/InvoiceProduct';
 import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
+import Forbidden from '../Forbidden/Forbidden';
 
 const mapStateToProps = (state) => {
   return {
@@ -98,6 +99,9 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}
+        </Route>
+        <Route exact path="/forbidden" >
+          {loggedIn ? <Forbidden /> : <Redirect to="/login" />}
         </Route>
         <Route component={NotFound} />
       </Switch>

@@ -81,8 +81,61 @@ const Users = (props) => {
     }
   }
 
+  const renderTableContainer = () => {
+    return !isPending ?
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead style={{ backgroundColor: "#808080ad" }}>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell align="center">Username</TableCell>
+            <TableCell align="center">Email</TableCell>
+            <TableCell align="center">Roles</TableCell>
+            <TableCell align="center">Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell component="th" scope="row">
+                <Link className="no-underline" to={`/users/${user.id}`}>
+                  {user.id}
+                </Link>
+              </TableCell>
+              <TableCell align="center">
+                <Link className="no-underline" to={`/users/${user.id}`}>
+                  {user.username}
+                </Link>
+              </TableCell>
+              <TableCell align="center">{user.email}</TableCell>
+              <TableCell align="center">
+                {user.roles.reduce((acc, role) => {
+                  const result = `${role.role}, ${acc}`
+                  return result.replace(/[, ]+$/, "");
+                }, '')}
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => removeUser(user.id)}
+                >
+                  Delete
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+    :
+    <ProgressLoading />
+  }
+
   return (
     <div style={{ width: 'auto', margin: 100, }}>
+      {users.status === 403 ? history.push("/forbidden") : 
+      <div>
       <Button
         variant="contained"
         className="mb-4"
@@ -96,54 +149,8 @@ const Users = (props) => {
         open={open}
         setOpen={setOpen}
       />
-      {!isPending ?
-        <TableContainer component={Paper}>
-          <Table className={classes.table} aria-label="simple table">
-            <TableHead style={{ backgroundColor: "#808080ad" }}>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell align="center">Username</TableCell>
-                <TableCell align="center">Email</TableCell>
-                <TableCell align="center">Roles</TableCell>
-                <TableCell align="center">Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell component="th" scope="row">
-                    <Link className="no-underline" to={`/users/${user.id}`}>
-                      {user.id}
-                    </Link>
-                  </TableCell>
-                  <TableCell align="center">
-                    <Link className="no-underline" to={`/users/${user.id}`}>
-                      {user.username}
-                    </Link>
-                  </TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
-                  <TableCell align="center">
-                    {user.roles.reduce((acc, role) => {
-                      const result = `${role.role}, ${acc}`
-                      return result.replace(/[, ]+$/, "");
-                    }, '')}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => removeUser(user.id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        :
-        <ProgressLoading />}
+      {renderTableContainer()}
+        </div>}
       </div>
   );
 }
