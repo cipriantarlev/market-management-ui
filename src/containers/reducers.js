@@ -422,6 +422,8 @@ export const manageCategories = (state = initialStateCategory, action = {}) => {
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_CATEGORY_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateCategory;
     default:
       return state;
   }
@@ -478,6 +480,8 @@ export const manageSubcategories = (state = initialStateSubcategory, action = {}
       return Object.assign({}, state, { subcategoriesByCategory: action.payload, fetchSubategoryByCategoryPending: false });
     case REQUEST_SUBCATEGORIES_CATEGORY_FAILED:
       return Object.assign({}, state, { fetchSubcategoryByCategoryError: action.payload, fetchSubategoryByCategoryPending: false });
+    case RESET_DATA:
+      return initialStateSubcategory;
     default:
       return state;
   }
@@ -525,6 +529,8 @@ export const manageVat = (state = initialStateVat, action = {}) => {
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_VAT_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateVat;
     default:
       return state;
   }

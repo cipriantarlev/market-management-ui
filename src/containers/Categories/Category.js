@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,6 +13,10 @@ import {
   createCategory,
   updateCategory,
 } from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
+import { validateInputValueAndShowErrorMessage } from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -45,10 +48,10 @@ const Category = (props) => {
     onUpdateCategory,
   } = props;
 
-  
-  const history = useHistory();
-
   const [category, setCategory] = useState({});
+  const [openAlert, setOpenAlert] = useState(true);
+  const [showNameError, setShowNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState("");
 
   useEffect(() => {
     if (id !== 0) {
@@ -64,7 +67,21 @@ const Category = (props) => {
     }
   }, [id, initialCategory])
 
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
+
   const onChangeCategoryName = (event) => {
+    validateInputValueAndShowErrorMessage(
+      setShowNameError,
+      "^[A-Za-z\\s]+$",
+      event,
+      setNameErrorMessage,
+      "Vat name should contain only letters, numbers, () or %!")
     setCategory({...category, name: event.target.value});
   }
 
@@ -73,14 +90,21 @@ const Category = (props) => {
     return answer === true ? handleClose() : null;
   }
 
-  const onSubmitCategory = () => {
-    if(id !== 0) {
-      onUpdateCategory(category);
-    } else {
-      onCreateCategory(category);
+  const onPressEnter = (event) => {
+    if (event.charCode === 13) {
+      onSubmitCategory();
     }
-    handleClose();
-    history.go(0);
+  }
+
+  const onSubmitCategory = () => {
+    if(!showNameError){
+      if(id !== 0) {
+        onUpdateCategory(category);
+      } else {
+        onCreateCategory(category);
+      }
+      handleClose();
+    }
   }
 
   return (
@@ -90,11 +114,16 @@ const Category = (props) => {
       aria-labelledby="form-dialog-title"
       disableEscapeKeyDown={true}
     >
-      {error ? <div className="tc red f3">Something went wrong during category!</div> : null}
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        /> : null}
       {!isPending ?
         <DialogTitle id="form-dialog-title">Add New Category</DialogTitle>
         :
-        <DialogTitle id="form-dialog-title">Loading data...</DialogTitle>}
+        <ProgressLoading />}
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new category.
@@ -106,8 +135,12 @@ const Category = (props) => {
           placeholder="Category Name"
           type="text"
           fullWidth
+          required={true}
+          error={showNameError}
+          helperText={nameErrorMessage}
           value={category.name}
           onChange={onChangeCategoryName}
+          onKeyPress={onPressEnter}
         />
       </DialogContent>
       <DialogActions>
