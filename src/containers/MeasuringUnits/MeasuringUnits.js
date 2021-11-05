@@ -20,9 +20,10 @@ import {
   restStoreData,
 } from '../actions';
 
+import MeasuringUnit from './MeasuringUnit';
+
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import MeasuringUnit from './MeasuringUnit';
 
 const useStyles = makeStyles({
   table: {

@@ -366,7 +366,7 @@ export const fetchCategories = () => (dispatch) => {
   dispatch({ type: REQUEST_CATEGORIES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/categories`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_CATEGORIES_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_CATEGORIES_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_CATEGORIES_FAILED, payload: error }))
 }
 
@@ -374,7 +374,7 @@ export const fetchCategory = (id) => (dispatch) => {
   dispatch({ type: REQUEST_CATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/categories/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_CATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_CATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_CATEGORY_FAILED, payload: error }))
 }
 
@@ -382,7 +382,7 @@ export const createCategory = (category) => (dispatch) => {
   dispatch({ type: CREATE_CATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/categories`, dataApi('post', category))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_CATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_CATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_CATEGORY_FAILED, payload: error }))
 }
 
@@ -390,7 +390,7 @@ export const updateCategory = (category) => (dispatch) => {
   dispatch({ type: UPDATE_CATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/categories`, dataApi('put', category))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_CATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_CATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_CATEGORY_FAILED, payload: error }))
 }
 
@@ -405,7 +405,7 @@ export const fetchSubcategories = () => (dispatch) => {
   dispatch({ type: REQUEST_SUBCATEGORIES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/subcategories`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_SUBCATEGORIES_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_SUBCATEGORIES_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_SUBCATEGORIES_FAILED, payload: error }))
 }
 
@@ -413,7 +413,7 @@ export const fetchSubcategoriesCategory = (categoryId) => (dispatch) => {
   dispatch({ type: REQUEST_SUBCATEGORIES_CATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/subcategories/category/${categoryId}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_SUBCATEGORIES_CATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_SUBCATEGORIES_CATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_SUBCATEGORIES_CATEGORY_FAILED, payload: error }))
 }
 
@@ -421,7 +421,7 @@ export const fetchSubcategory = (id) => (dispatch) => {
   dispatch({ type: REQUEST_SUBCATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/subcategories/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_SUBCATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_SUBCATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_SUBCATEGORY_FAILED, payload: error }))
 }
 
@@ -429,7 +429,7 @@ export const createSubcategory = (subcategory) => (dispatch) => {
   dispatch({ type: CREATE_SUBCATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/subcategories`, dataApi('post', subcategory))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_SUBCATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_SUBCATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_SUBCATEGORY_FAILED, payload: error }))
 }
 
@@ -437,7 +437,7 @@ export const updateSubcategory = (subcategory) => (dispatch) => {
   dispatch({ type: UPDATE_SUBCATEGORY_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/subcategories`, dataApi('put', subcategory))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_SUBCATEGORY_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_SUBCATEGORY_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_SUBCATEGORY_FAILED, payload: error }))
 }
 
@@ -452,7 +452,7 @@ export const fetchVatList = () => (dispatch) => {
   dispatch({ type: REQUEST_VAT_LIST_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vat`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_VAT_LIST_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_VAT_LIST_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_VAT_LIST_FAILED, payload: error }))
 }
 
@@ -460,7 +460,7 @@ export const fetchVat = (id) => (dispatch) => {
   dispatch({ type: REQUEST_VAT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vat/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_VAT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_VAT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_VAT_FAILED, payload: error }))
 }
 
@@ -468,7 +468,7 @@ export const createVat = (vat) => (dispatch) => {
   dispatch({ type: CREATE_VAT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vat`, dataApi('post', vat))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_VAT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_VAT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_VAT_FAILED, payload: error }))
 }
 
@@ -476,7 +476,7 @@ export const updateVat = (vat) => (dispatch) => {
   dispatch({ type: UPDATE_VAT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/vat`, dataApi('put', vat))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_VAT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_VAT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_VAT_FAILED, payload: error }))
 }
 

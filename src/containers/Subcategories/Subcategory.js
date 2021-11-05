@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,6 +14,10 @@ import {
   updateSubcategory,
   fetchCategories
 } from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
+import { validateInputValueAndShowErrorMessage } from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -49,10 +52,12 @@ const Subcategory = (props) => {
     onFetchCategories,
   } = props;
 
-  const history = useHistory();
-
   const [subccategory, setSubcategory] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(1);
+
+  const [openAlert, setOpenAlert] = useState(true);
+  const [showNameError, setShowNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState("");
 
   useEffect(() => {
     if (id !== 0) {
@@ -63,6 +68,14 @@ const Subcategory = (props) => {
   useEffect(() => {
     onFetchCategories();
   }, [onFetchCategories])
+
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
 
   const intializeCategoryValue = () => {
     let tempCategory = initialSubcategory.category !== undefined ? initialSubcategory.category.id : 1;
@@ -81,12 +94,22 @@ const Subcategory = (props) => {
 
   const onChangeSubcategory = (event) => {
     if (event.target.id === "name") {
+      validateInputValueAndShowErrorMessage(
+        setShowNameError,
+        "^[a-zA-Z0-9()%\\s]+$",
+        event,
+        setNameErrorMessage,
+        "Vat name should contain only letters, numbers, () or %!")
       setSubcategory({ ...subccategory, name: event.target.value });
     } else {
-      let categoryObj = categories.find(category => category.id === Number(event.target.value));
-      setSelectedCategory(Number(event.target.value));
-      setSubcategory(Object.assign(subccategory, subccategory, { category: categoryObj }));
+      setCategoryValue(event.target.value);
     }
+  }
+
+  const setCategoryValue = (selectedId) => {
+    let categoryObj = categories.find(category => category.id === Number(selectedId));
+      setSelectedCategory(Number(selectedId));
+      setSubcategory(Object.assign(subccategory, subccategory, { category: categoryObj }));
   }
 
   const onCancel = () => {
@@ -104,10 +127,12 @@ const Subcategory = (props) => {
     if (id !== 0) {
       onUpdateSubcategory(subccategory);
     } else {
+      if(selectedCategory === 1) {
+        setCategoryValue(1);
+      }
       onCreateSubcategory(subccategory);
     }
     handleClose();
-    history.go(0);
   }
 
   return (
@@ -117,11 +142,16 @@ const Subcategory = (props) => {
       aria-labelledby="form-dialog-title"
       disableEscapeKeyDown={true}
     >
-      {error ? <div className="tc red f3">Something went wrong during category!</div> : null}
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        /> : null}
       {!isPending ?
         <DialogTitle id="form-dialog-title">Add New Subcategory</DialogTitle>
         :
-        <DialogTitle id="form-dialog-title">Loading data...</DialogTitle>}
+        <ProgressLoading />}
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new subccategory.
@@ -133,16 +163,19 @@ const Subcategory = (props) => {
           placeholder="Subcategory Name"
           type="text"
           fullWidth
+          required={true}
+          error={showNameError}
+          helperText={nameErrorMessage}
           value={subccategory.name}
           onChange={onChangeSubcategory}
         />
         <TextField
-          autoFocus
           margin="dense"
           id="category"
-          label="Subcategory Name"
+          label="Category Name"
           type="text"
           fullWidth
+          required={true}
           select={true}
           value={selectedCategory}
           onChange={onChangeSubcategory}
@@ -154,7 +187,7 @@ const Subcategory = (props) => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={onSubmitSubcategory}
+          onClick={!showNameError ? onSubmitSubcategory : null}
           className="mr5 w4"
           variant="contained"
           color="primary"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,8 +15,16 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchSubcategories, deleteSubcategory } from '../actions';
+import {
+  fetchSubcategories,
+  deleteSubcategory,
+  restStoreData,
+} from '../actions';
+
 import Subcategory from './Subcategory';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 
 const useStyles = makeStyles({
   table: {
@@ -36,6 +44,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchSubategories: () => dispatch(fetchSubcategories()),
     onDeleteSubategory: (id) => dispatch(deleteSubcategory(id)),
+    onRestStoreData: () => dispatch(restStoreData()),
   }
 }
 
@@ -45,14 +54,17 @@ const Subcategories = (props) => {
     subcategories,
     error,
     onFetchSubategories,
-    onDeleteSubategory
+    onDeleteSubategory,
+    onRestStoreData,
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
+
+  const [open, setOpen] = useState(false);
+  const [subcategoryList, setSubcategoryList] = useState([]);
 
   const [totalRows, setTotalRows] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -61,12 +73,24 @@ const Subcategories = (props) => {
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpenDialog(false);
+      setSubcategoryList([]);
+      onRestStoreData();
     }
   };
 
   useEffect(() => {
     onFetchSubategories();
-  }, [onFetchSubategories])
+    setSubcategoryList(subcategories);
+    // eslint-disable-next-line
+  }, [onFetchSubategories, subcategoryList])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   useEffect(() => {
     setTotalRows(subcategories.length);
@@ -86,7 +110,8 @@ const Subcategories = (props) => {
     const answer = window.confirm(`Are you sure you want to delete the subcategory with id: ${subcategoryId}?`);
     if (answer === true) {
       onDeleteSubategory(subcategoryId);
-      history.go(0);
+      setSubcategoryList([]);
+      onRestStoreData();
     }
   }
 
@@ -107,6 +132,12 @@ const Subcategories = (props) => {
       >
         Add new Subcategory
       </Button>
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        /> : null}
       {!isPending ?
         <div>
           <TableContainer component={Paper}>
@@ -170,8 +201,7 @@ const Subcategories = (props) => {
           />
         </div>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
+        <ProgressLoading />}
     </div>
   );
 }
