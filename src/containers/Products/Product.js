@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
-import { Button as DeleteButton } from '@material-ui/core';
+import { Button as BarcodeButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -145,6 +146,7 @@ const Product = (props) => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(0);
   const [selectedMeasuringUnit, setSelectedMeasuringUnit] = useState(0);
   const [selectedVat, setSelectedVat] = useState(0);
+  const [barcodeIndex, setBarcodeIndex] = useState(-1);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [openAlert, setOpenAlert] = useState(true);
@@ -363,6 +365,11 @@ const Product = (props) => {
     }
   }
 
+  const onUpdateBarcode = (indexValue) => {
+    setBarcodeIndex(indexValue);
+    setOpenDialog(true);
+  }
+
   const deleteBarcode = (barcodeValue) => {
     const answer = window.confirm(`Are you sure you want to delete the barcode with value: ${barcodeValue}?`);
     if (answer) {
@@ -383,7 +390,7 @@ const Product = (props) => {
     !invalidRomName && !invalidRusName &&
     !invalidRetailPrice && !invalidDiscountPrice &&
     !invalidStock && product.hasOwnProperty('nameRus') &&
-    product.hasOwnProperty('nameRom') && 
+    product.hasOwnProperty('nameRom') &&
     (productCode.hasOwnProperty('value') || product.hasOwnProperty('productCode')) &&
     selectedCategory !== 0 && selectedSubcategory !== 0 &&
     selectedVat !== 0 && selectedMeasuringUnit !== 0 &&
@@ -508,8 +515,8 @@ const Product = (props) => {
                   ariaDescribedbyId={ROM_NAME_HELP_BLOCK}
                 />
               </Form.Group>
-              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242, border: invalidBarcode}}>
-                <Table className={classes.table}  stickyHeader size="small" aria-label="a dense table sticky table">
+              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242, border: invalidBarcode }}>
+                <Table className={classes.table} stickyHeader size="small" aria-label="a dense table sticky table">
                   <TableHead>
                     <TableRow>
                       <TableCell className={classes.header}>Barcodes</TableCell>
@@ -526,10 +533,12 @@ const Product = (props) => {
                     {barcodes.map((item, index) => (
                       <TableRow key={`${item.value}_${index}`}>
                         <TableCell component="th" scope="row">
-                          {item.value}
+                          <Link className="no-underline" to="#" onClick={() => onUpdateBarcode(index)}>
+                            {item.value}
+                          </Link>
                         </TableCell>
                         <TableCell>
-                          <DeleteButton
+                          <BarcodeButton
                             variant="contained"
                             color="secondary"
                             style={{
@@ -541,7 +550,7 @@ const Product = (props) => {
                             onClick={() => deleteBarcode(item.value)}
                           >
                             Delete
-                          </DeleteButton>
+                          </BarcodeButton>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -719,6 +728,9 @@ const Product = (props) => {
             open={openDialog}
             handleClose={handleClose}
             setBarcodes={setBarcodes}
+            barcodeIndex={barcodeIndex}
+            barcodes={barcodes}
+            setBarcodeIndex={setBarcodeIndex}
           />
         </div>
         : <ProgressLoading />
