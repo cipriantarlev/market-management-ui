@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -7,28 +7,73 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+
 const Barcode = (props) => {
 
   const {
     open,
     handleClose,
     setBarcodes,
+    barcodeIndex,
+    barcodes,
+    setBarcodeIndex,
   } = props;
 
   const [barcode, setBarocode] = useState({});
 
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const onChangeCategoryName = (event) => {
-    setBarocode({value: event.target.value});
+    validateInputValueAndShowErrorMessage(
+      setShowError,
+      "^[0-9]+$",
+      event,
+      setErrorMessage,
+      "Barcode value should contain only numbers!")
+    setBarocode({ value: event.target.value });
   }
+
+  useEffect(() => {
+    if (barcodeIndex >= 0) {
+      setBarocode({ ...barcodes[barcodeIndex] });
+    }
+  }, [barcodes, barcodeIndex])
 
   const onCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
-    return answer === true ? handleClose() : null;
+    if (answer) {
+      setBarocode({});
+      setBarcodeIndex(-1);
+      handleClose();
+    }
   }
 
-  const onSubmitCategory = () => {
-    setBarcodes(oldValue => ([...oldValue, barcode]));
-    handleClose();
+  const onPressEnter = (event) => {
+    if (event.charCode === 13) {
+      onSubmitBarcode();
+    }
+  }
+
+  const updateBarcodeList = () => (
+    barcodes.filter((element, index) => index !== barcodeIndex)
+  )
+
+  const onSubmitBarcode = () => {
+    console.log("barcodeIndex", barcodeIndex);
+    console.log("barcodes", barcodes);
+    console.log("barcode", barcode);
+    if (!showError) {
+      if (barcodes[barcodeIndex] !== undefined) {
+        setBarcodes([...updateBarcodeList(), barcode]);
+      } else {
+        setBarcodes(oldValue => ([...oldValue, barcode]));
+      }
+      setBarocode({});
+      setBarcodeIndex(-1);
+      handleClose();
+    }
   }
 
   return (
@@ -38,7 +83,6 @@ const Barcode = (props) => {
       aria-labelledby="form-dialog-title"
       disableEscapeKeyDown={true}
     >
-
       <DialogTitle id="form-dialog-title">Add New Barcode</DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -50,13 +94,18 @@ const Barcode = (props) => {
           id="name"
           placeholder="Barcode"
           type="text"
+          required={true}
+          error={showError}
+          helperText={errorMessage}
+          value={barcode.value}
           fullWidth
           onChange={onChangeCategoryName}
+          onKeyPress={onPressEnter}
         />
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={onSubmitCategory}
+          onClick={onSubmitBarcode}
           className="mr5 w4"
           variant="contained"
           color="primary"
