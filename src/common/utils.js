@@ -35,8 +35,10 @@ export const checkStatusCode = (data, type, dispatch) => {
 export const validateInputValue = (setInvalidValue, validationRegex, event) => {
   if (event.target.value.match(validationRegex)) {
     setInvalidValue(false);
+    return true;
   } else {
     setInvalidValue(true);
+    return false;
   }
 }
 

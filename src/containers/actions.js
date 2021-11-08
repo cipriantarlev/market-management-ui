@@ -530,7 +530,7 @@ export const fetchProducts = () => (dispatch) => {
   dispatch({ type: REQUEST_PRODUCTS_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_PRODUCTS_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_PRODUCTS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_PRODUCTS_FAILED, payload: error }))
 }
 
@@ -538,7 +538,7 @@ export const fetchProduct = (id) => (dispatch) => {
   dispatch({ type: REQUEST_PRODUCT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_PRODUCT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_PRODUCT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_PRODUCT_FAILED, payload: error }))
 }
 
@@ -546,7 +546,7 @@ export const createProduct = (product) => (dispatch) => {
   dispatch({ type: CREATE_PRODUCT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products`, dataApi('post', product))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_PRODUCT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_PRODUCT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_PRODUCT_FAILED, payload: error }))
 }
 
@@ -554,7 +554,7 @@ export const updateProduct = (product) => (dispatch) => {
   dispatch({ type: UPDATE_PRODUCT_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products`, dataApi('put', product))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_PRODUCT_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_PRODUCT_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_PRODUCT_FAILED, payload: error }))
 }
 
@@ -569,7 +569,7 @@ export const fetchProductByBarcode = (barcode) => (dispatch) => {
   dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products/barcodes/${barcode}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_PRODUCT_BY_BARCODE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_PRODUCT_BY_BARCODE_FAILED, payload: error }))
 }
 
@@ -577,7 +577,7 @@ export const generateProductCode = () => (dispatch) => {
   dispatch({ type: GENERATE_PRODUCT_CODE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/products-code`, dataApi('post'))
     .then(response => response.json())
-    .then(data => dispatch({ type: GENERATE_PRODUCT_CODE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, GENERATE_PRODUCT_CODE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: GENERATE_PRODUCT_CODE_FAILED, payload: error }))
 }
 
@@ -585,7 +585,7 @@ export const generatePlu = () => (dispatch) => {
   dispatch({ type: GENERATE_PLU_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/plu`, dataApi('post'))
     .then(response => response.json())
-    .then(data => dispatch({ type: GENERATE_PLU_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, GENERATE_PLU_SUCCESS, dispatch))
     .catch(error => dispatch({ type: GENERATE_PLU_FAILED, payload: error }))
 }
 
@@ -593,7 +593,7 @@ export const generateBarcode = (barcode) => (dispatch) => {
   dispatch({ type: GENERATE_BARCODE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/barcodes`, dataApi('post', barcode))
     .then(response => response.json())
-    .then(data => dispatch({ type: GENERATE_BARCODE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, GENERATE_BARCODE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: GENERATE_BARCODE_FAILED, payload: error }))
 }
 

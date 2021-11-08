@@ -10,6 +10,8 @@ import { fetchProducts, deleteProduct } from '../actions';
 
 import './style.css';
 
+import DisplayAlert from '../../common/DisplayAlert';
+
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageProducts.isPending,
@@ -35,6 +37,7 @@ const Products = (props) => {
   } = props;
 
   const history = useHistory();
+  const [open, setOpen] = useState(false);
 
   const [displayProducts, setDisplayProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -119,6 +122,14 @@ const Products = (props) => {
     setDisplayProducts(products);
   }, [products])
 
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
+
   const removeProduct = (id) => {
     const answer = window.confirm(`Are you sure you want to delete the product with id: ${id}?`);
     if (answer) {
@@ -148,7 +159,6 @@ const Products = (props) => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
         <div className="center mt-3" style={{ height: '34em', width: '77rem' }}>
           <Button
             variant="contained"
@@ -168,6 +178,11 @@ const Products = (props) => {
           >
             Delete Selected Product(s)
           </Button>
+          <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        />
           <DataGrid
             rows={displayProducts}
             columns={columns}
@@ -180,7 +195,6 @@ const Products = (props) => {
             onSelectionModelChange={onSelectProducts}
           />
         </div>
-      }
     </div>
   );
 }
