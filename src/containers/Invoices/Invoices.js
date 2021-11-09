@@ -13,9 +13,14 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
-import { fetchInvoices, deleteInvoice } from '../actions';
+import {
+  fetchInvoices,
+  deleteInvoice,
+  fetchIncomeInvoices,
+  fetchOutComeInvoices,
+} from '../actions';
 
 import './style.css';
 
@@ -52,6 +57,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onFetchInvoices: () => dispatch(fetchInvoices()),
+    onFetchIncomeInvoices: () => dispatch(fetchIncomeInvoices()),
+    onFetchOutComeInvoices: () => dispatch(fetchOutComeInvoices()),
     onDeleteInvoice: (id) => dispatch(deleteInvoice(id)),
   }
 }
@@ -62,11 +69,14 @@ const Invoices = (props) => {
     invoices,
     error,
     onFetchInvoices,
-    onDeleteInvoice
+    onFetchIncomeInvoices,
+    onFetchOutComeInvoices,
+    onDeleteInvoice,
+    // location
   } = props;
 
   const history = useHistory();
-
+  const location = useLocation();
   const classes = useStyles();
 
   const [displayInvoices, setDisplayInvoices] = useState([]);
@@ -96,8 +106,9 @@ const Invoices = (props) => {
     {
       field: 'id',
       headerName: 'ID',
-      width: 100,
+      width: 75,
       renderCell: addLinkToIdCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'vendor',
@@ -120,32 +131,37 @@ const Invoices = (props) => {
     {
       field: 'totalDiscountPrice',
       headerName: 'TDP',
-      width: 110,
+      width: 95,
       renderCell: formateSumCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'totalRetailPrice',
       headerName: 'TRP',
-      width: 110,
+      width: 95,
       renderCell: formateSumCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'totalTradeMargin',
       headerName: 'TTM',
-      width: 110,
+      width: 95,
       renderCell: formateSumCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'tradeMargin',
       headerName: '% TM',
-      width: 120,
+      width: 95,
       renderCell: formateSumCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'vatSum',
       headerName: 'VS',
-      width: 110,
+      width: 95,
       renderCell: formateSumCell,
+      disableColumnMenu: 'true',
     },
     {
       field: 'invoiceNumber',
@@ -160,15 +176,40 @@ const Invoices = (props) => {
   ];
 
   useEffect(() => {
-    onFetchInvoices();
-  }, [onFetchInvoices])
+    switch (location.pathname) {
+      case '/income-invoices':
+        onFetchIncomeInvoices();
+        break;
+      case '/outcome-invoices':
+        onFetchOutComeInvoices();
+        break;
+      default:
+        onFetchInvoices();
+        break;
+    }
+    // eslint-disable-next-line
+  }, [onFetchInvoices, location.pathname])
 
   useEffect(() => {
     setDisplayInvoices(invoices);
   }, [invoices])
 
   const onAddNewInvoice = () => {
-    history.push("/invoices/0")
+    pushHistory("/income-invoices/0", "/outcome-invoices/0");
+  }
+
+  const pushHistory = (path1, path2) => {
+    switch (location.pathname) {
+      case '/income-invoices':
+        history.push(path1);
+        break;
+      case '/outcome-invoices':
+        history.push(path2);
+        break;
+      default:
+        history.push("/");
+        break;
+    }
   }
 
   const onSelectInvoices = (selectedInvoicesArray) => (setSelectedInvoices(selectedInvoicesArray.selectionModel));
@@ -189,7 +230,7 @@ const Invoices = (props) => {
   const onUpdateSelectedInvoice = () => {
     if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
       selectedInvoices.forEach(invoiceId => {
-        history.push(`/invoices/${invoiceId}`);
+        pushHistory(`/income-invoices/${invoiceId}`, `/outcome-invoices/${invoiceId}`);
       })
     } else {
       alert("You didn't select an invoice or selected more than one. Please try again.");
@@ -199,7 +240,7 @@ const Invoices = (props) => {
   const onUpdateSelectedInvoiceProducts = () => {
     if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
       selectedInvoices.forEach(invoiceId => {
-        history.push(`/invoice-products/${invoiceId}`);
+        pushHistory(`/income-invoice-products/${invoiceId}`, `/outcome-invoice-products/${invoiceId}`);
       })
     } else {
       alert("You didn't select an invoice or selected more than one. Please try again.");

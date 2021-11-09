@@ -164,6 +164,12 @@ import {
   REQUEST_INVOICES_PENDING,
   REQUEST_INVOICES_SUCCESS,
   REQUEST_INVOICES_FAILED,
+  REQUEST_INCOME_INVOICES_PENDING,
+  REQUEST_INCOME_INVOICES_SUCCESS,
+  REQUEST_INCOME_INVOICES_FAILED,
+  REQUEST_OUTCOME_INVOICES_PENDING,
+  REQUEST_OUTCOME_INVOICES_SUCCESS,
+  REQUEST_OUTCOME_INVOICES_FAILED,
   REQUEST_INVOICE_PENDING,
   REQUEST_INVOICE_SUCCESS,
   REQUEST_INVOICE_FAILED,
@@ -601,7 +607,7 @@ export const fetchDocumentTypes = () => (dispatch) => {
   dispatch({ type: REQUEST_DOCUMENT_TYPES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/document-types`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_DOCUMENT_TYPES_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_DOCUMENT_TYPES_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_DOCUMENT_TYPES_FAILED, payload: error }))
 }
 
@@ -609,7 +615,7 @@ export const fetchDocumentType = (id) => (dispatch) => {
   dispatch({ type: REQUEST_DOCUMENT_TYPE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/document-types/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_DOCUMENT_TYPE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_DOCUMENT_TYPE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_DOCUMENT_TYPE_FAILED, payload: error }))
 }
 
@@ -617,7 +623,7 @@ export const createDocumentType = (documentType) => (dispatch) => {
   dispatch({ type: CREATE_DOCUMENT_TYPE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/document-types`, dataApi('post', documentType))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_DOCUMENT_TYPE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_DOCUMENT_TYPE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_DOCUMENT_TYPE_FAILED, payload: error }))
 }
 
@@ -625,7 +631,7 @@ export const updateDocumentType = (documentType) => (dispatch) => {
   dispatch({ type: UPDATE_DOCUMENT_TYPE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/document-types`, dataApi('put', documentType))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_DOCUMENT_TYPE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_DOCUMENT_TYPE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_DOCUMENT_TYPE_FAILED, payload: error }))
 }
 
@@ -640,15 +646,31 @@ export const fetchInvoices = () => (dispatch) => {
   dispatch({ type: REQUEST_INVOICES_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices`, authorizationData())
     .then(response => response.status === 204 ? [] : response.json())
-    .then(data => dispatch({ type: REQUEST_INVOICES_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_INVOICES_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_INVOICES_FAILED, payload: error }))
+}
+
+export const fetchIncomeInvoices = () => (dispatch) => {
+  dispatch({ type: REQUEST_INCOME_INVOICES_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoices/income`, authorizationData())
+    .then(response => response.status === 204 ? [] : response.json())
+    .then(data => checkStatusCode(data, REQUEST_INCOME_INVOICES_SUCCESS, dispatch))
+    .catch(error => dispatch({ type: REQUEST_INCOME_INVOICES_FAILED, payload: error }))
+}
+
+export const fetchOutComeInvoices = () => (dispatch) => {
+  dispatch({ type: REQUEST_OUTCOME_INVOICES_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoices/outcome`, authorizationData())
+    .then(response => response.status === 204 ? [] : response.json())
+    .then(data => checkStatusCode(data, REQUEST_OUTCOME_INVOICES_SUCCESS, dispatch))
+    .catch(error => dispatch({ type: REQUEST_OUTCOME_INVOICES_FAILED, payload: error }))
 }
 
 export const fetchInvoice = (id) => (dispatch) => {
   dispatch({ type: REQUEST_INVOICE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices/${id}`, authorizationData())
     .then(response => response.json())
-    .then(data => dispatch({ type: REQUEST_INVOICE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, REQUEST_INVOICE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_INVOICE_FAILED, payload: error }))
 }
 
@@ -656,7 +678,7 @@ export const createInvoice = (invoice) => (dispatch) => {
   dispatch({ type: CREATE_INVOICE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices`, dataApi('post', invoice))
     .then(response => response.json())
-    .then(data => dispatch({ type: CREATE_INVOICE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, CREATE_INVOICE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: CREATE_INVOICE_FAILED, payload: error }))
 }
 
@@ -664,7 +686,7 @@ export const updateInvoice = (invoice) => (dispatch) => {
   dispatch({ type: UPDATE_INVOICE_PENDING });
   fetch(`${ROOT_CONTEXT_PATH}/invoices`, dataApi('put', invoice))
     .then(response => response.json())
-    .then(data => dispatch({ type: UPDATE_INVOICE_SUCCESS, payload: data }))
+    .then(data => checkStatusCode(data, UPDATE_INVOICE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: UPDATE_INVOICE_FAILED, payload: error }))
 }
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
@@ -14,9 +15,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import { useHistory } from 'react-router-dom';
-import { useParams } from 'react-router';
 
 import {
   fetchProduct,
@@ -149,7 +147,7 @@ const Product = (props) => {
   const [barcodeIndex, setBarcodeIndex] = useState(-1);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [openAlert, setOpenAlert] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {

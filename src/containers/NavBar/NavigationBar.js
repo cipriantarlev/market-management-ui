@@ -63,8 +63,11 @@ const NavigationBar = (props) => {
         history.push("/document-types");
         break;
       case "incomeInvoices":
-        history.push("/invoices");
-        break;
+        history.push("/income-invoices"); 
+        break; 
+        case "outcomeInvoices":
+          history.push("/outcome-invoices");
+          break;  
       default:
         history.push("/");
         break;
@@ -79,6 +82,7 @@ const NavigationBar = (props) => {
         <Nav className="mr-auto">
           <NavDropdown title="Invoices" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="incomeInvoices" onClick={onClickDropdownList}>Income Invoices</NavDropdown.Item>
+            <NavDropdown.Item id="outcomeInvoices" onClick={onClickDropdownList}>Outcome Invoices</NavDropdown.Item>
             <NavDropdown.Item id="documentTypes" onClick={onClickDropdownList}>Document Types</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">

@@ -162,6 +162,12 @@ import {
   REQUEST_INVOICES_PENDING,
   REQUEST_INVOICES_SUCCESS,
   REQUEST_INVOICES_FAILED,
+  REQUEST_INCOME_INVOICES_PENDING,
+  REQUEST_INCOME_INVOICES_SUCCESS,
+  REQUEST_INCOME_INVOICES_FAILED,
+  REQUEST_OUTCOME_INVOICES_PENDING,
+  REQUEST_OUTCOME_INVOICES_SUCCESS,
+  REQUEST_OUTCOME_INVOICES_FAILED,
   REQUEST_INVOICE_PENDING,
   REQUEST_INVOICE_SUCCESS,
   REQUEST_INVOICE_FAILED,
@@ -737,6 +743,8 @@ export const manageDocumentTypes = (state = initialStateDocumentTypes, action = 
       return Object.assign({}, state, { status: action.payload, isPending: false });
     case DELETE_DOCUMENT_TYPE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateDocumentTypes;
     default:
       return state;
   }
@@ -763,6 +771,18 @@ export const manageInvoices = (state = initialStateInvoice, action = {}) => {
     case REQUEST_INVOICES_SUCCESS:
       return Object.assign({}, state, { invoices: action.payload, isPending: false });
     case REQUEST_INVOICES_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_INCOME_INVOICES_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_INCOME_INVOICES_SUCCESS:
+      return Object.assign({}, state, { invoices: action.payload, isPending: false });
+    case REQUEST_INCOME_INVOICES_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_OUTCOME_INVOICES_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_OUTCOME_INVOICES_SUCCESS:
+      return Object.assign({}, state, { invoices: action.payload, isPending: false });
+    case REQUEST_OUTCOME_INVOICES_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
     case REQUEST_INVOICE_PENDING:
       return Object.assign({}, state, { isPending: true });
@@ -800,6 +820,8 @@ export const manageInvoices = (state = initialStateInvoice, action = {}) => {
       return Object.assign({}, state, { invoiceVendors: action.payload, invoiceVendorsIsPending: false });
     case REQUEST_INVOICES_VENDORS_FAILED:
       return Object.assign({}, state, { invoiceVendorsError: action.payload, invoiceVendorsIsPending: false });
+    case RESET_DATA:
+      return initialStateInvoice;
     default:
       return state;
   }

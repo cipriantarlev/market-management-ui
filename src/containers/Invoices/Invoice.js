@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
 
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router';
 
 import {
@@ -58,13 +58,23 @@ const Invoice = (props) => {
     onFetchInvoiceVendors,
   } = props;
 
-  let history = useHistory();
+  const history = useHistory();
+  const location = useLocation();
   const { id } = useParams();
 
   const [invoice, setInvoice] = useState({});
   const [selectedDocumentType, setSelectedDocumentType] = useState(0);
   const [selectedOrganization, setSelectedOrganization] = useState(0);
   const [selectedVendor, setSelectedVendor] = useState(0);
+
+  const pushHistory = (path1, path2) => {
+    if(location.pathname.includes('/income-invoices')) {
+      history.push(path1);
+    }
+    if(location.pathname.includes('/outcome-invoices')) {
+      history.push(path2);
+    }
+  }
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
@@ -73,7 +83,7 @@ const Invoice = (props) => {
       setSelectedDocumentType(0);
       setSelectedVendor(0);
       setSelectedOrganization(0);
-      history.push("/invoices")
+      pushHistory("/income-invoices", "/outcome-invoices");
     }
   }
 
@@ -166,7 +176,7 @@ const Invoice = (props) => {
         }));
       onCreateInvoice(invoice);
     }
-    history.push("/invoices");
+    pushHistory("/income-invoices", "/outcome-invoices");
     onFetchInvoices();
     setInvoice({});
     setSelectedDocumentType(0);

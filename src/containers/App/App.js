@@ -5,7 +5,7 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  Switch
+  Switch,
 } from 'react-router-dom';
 
 import Login from '../Login/Login';
@@ -85,16 +85,28 @@ const App = ({ loggedIn }) => {
         <Route exact path="/document-types" >
           {loggedIn ? <DocumentTypes /> : <Redirect to="/login" />}
         </Route>
-        <Route exact path="/invoices" >
+        <Route exact path="/income-invoices" >
           {loggedIn ? <Invoices /> : <Redirect to="/login" />}
         </Route>
-        <Route exact path="/invoices/:id" >
+        <Route exact path="/income-invoices/:id" >
           {loggedIn ? <Invoice /> : <Redirect to="/login" />}
         </Route>
-        <Route exact path="/invoice-products/:id" >
+        <Route exact path="/outcome-invoices" >
+          {loggedIn ? <Invoices /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/outcome-invoices/:id" >
+          {loggedIn ? <Invoice /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/income-invoice-products/:id" >
           {loggedIn ? <InvoiceProducts /> : <Redirect to="/login" />}
         </Route>
-        <Route exact path="/invoice-products/:invoiceId/product/:id" >
+        <Route exact path="/income-invoice-products/:invoiceId/product/:id" >
+          {loggedIn ? <InvoiceProduct /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/outcome-invoice-products/:id" >
+          {loggedIn ? <InvoiceProducts /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/outcome-invoice-products/:invoiceId/product/:id" >
           {loggedIn ? <InvoiceProduct /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
