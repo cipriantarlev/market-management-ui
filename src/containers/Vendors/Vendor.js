@@ -73,7 +73,7 @@ const Vendor = (props) => {
   const [vendor, setVendor] = useState({});
   const [selectedRegion, setSelectedRegion] = useState(0);
 
-  const [openAlert, setOpenAlert] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const [invalidCompanyName, setInvalidCompanyName] = useState(false);
   const [invalidVatCode, setInvalidVatCode] = useState(false);

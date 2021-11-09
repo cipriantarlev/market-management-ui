@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,6 +7,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
+import { validateInputValueAndShowErrorMessage } from '../../common/utils';
 
 import {
   fetchDocumentType,
@@ -44,10 +47,10 @@ const DocumentType = (props) => {
     onUpdateDocumentType,
   } = props;
 
-  
-  const history = useHistory();
-
   const [documentType, setDocumentType] = useState({});
+  const [openAlert, setOpenAlert] = useState(true);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (id !== 0) {
@@ -63,8 +66,22 @@ const DocumentType = (props) => {
     }
   }, [id, initialDocumentType])
 
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
+
   const onChangeDocumentTypeName = (event) => {
-    setDocumentType({...documentType, name: event.target.value});
+    validateInputValueAndShowErrorMessage(
+      setShowError,
+      "^[A-Za-z\\s]+$",
+      event,
+      setErrorMessage,
+      "Document type name should contain only letters!")
+    setDocumentType({ ...documentType, name: event.target.value });
   }
 
   const onCancel = () => {
@@ -72,14 +89,21 @@ const DocumentType = (props) => {
     return answer === true ? handleClose() : null;
   }
 
-  const onSubmitDocumentType = () => {
-    if(id !== 0) {
-      onUpdateDocumentType(documentType);
-    } else {
-      onCreateDocumentType(documentType);
+  const onPressEnter = (event) => {
+    if (event.charCode === 13) {
+      onSubmitDocumentType();
     }
-    handleClose();
-    history.go(0);
+  }
+
+  const onSubmitDocumentType = () => {
+    if (!showError) {
+      if (id !== 0) {
+        onUpdateDocumentType(documentType);
+      } else {
+        onCreateDocumentType(documentType);
+      }
+      handleClose();
+    }
   }
 
   return (
@@ -89,11 +113,16 @@ const DocumentType = (props) => {
       aria-labelledby="form-dialog-title"
       disableEscapeKeyDown={true}
     >
-      {error ? <div className="tc red f3">Something went wrong during category!</div> : null}
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        /> : null}
       {!isPending ?
         <DialogTitle id="form-dialog-title">Add New Document Type</DialogTitle>
         :
-        <DialogTitle id="form-dialog-title">Loading data...</DialogTitle>}
+        <ProgressLoading />}
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new document type.
@@ -105,8 +134,12 @@ const DocumentType = (props) => {
           placeholder="Document Type"
           type="text"
           fullWidth
+          required={true}
+          error={showError}
+          helperText={errorMessage}
           value={documentType.name}
           onChange={onChangeDocumentTypeName}
+          onKeyPress={onPressEnter}
         />
       </DialogContent>
       <DialogActions>

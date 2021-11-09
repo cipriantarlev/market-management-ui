@@ -64,7 +64,7 @@ const MyOrganizations = (props) => {
   const { id } = useParams();
 
   const [myOrg, setMyOrg] = useState({});
-  const [openAlert, setOpenAlert] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const [invalidCompanyName, setInvalidCompanyName] = useState(false);
   const [invalidVatCode, setInvalidVatCode] = useState(false);

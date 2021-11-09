@@ -332,7 +332,7 @@ const InvoiceProducts = (props) => {
       }
     )
     onUpdateInvoice(invoiceToUpdate);
-    history.push(`/invoices`);
+    history.push(`/income-invoices`);
   }
 
   return (
