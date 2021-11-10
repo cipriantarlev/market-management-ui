@@ -59,7 +59,7 @@ const InvoiceProduct = (props) => {
     onRestData,
   } = props;
 
-  let history = useHistory();
+  const history = useHistory();
   const { id } = useParams();
   const { invoiceId } = useParams();
 

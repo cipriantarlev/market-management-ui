@@ -16,11 +16,11 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router';
 
-import { 
-  fetchInvoiceProducts, 
+import {
+  fetchInvoiceProducts,
   deleteInvoiceProduct,
   updateInvoice,
   restStoreData
@@ -77,6 +77,7 @@ const InvoiceProducts = (props) => {
 
   const history = useHistory();
   const { id } = useParams();
+  const location = useLocation();
 
   const classes = useStyles();
 
@@ -91,17 +92,29 @@ const InvoiceProducts = (props) => {
     </Link>
   );
 
-  const renderBarcodes = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params?.value?.barcodes[0].value}
-    </Link>
-  );
+  const renderBarcodes = (params) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+        {params?.value?.barcodes[0].value}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+        {params?.value?.barcodes[0].value}
+      </Link>
+    }
+  }
 
-  const renderProductName = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params?.row?.product?.nameRom}
-    </Link>
-  );
+  const renderProductName = (params) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      return <Link className="no-underline" to={`/income-products/${id}/product/${params.id}`}>
+        {params?.row?.product?.nameRom}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      return <Link className="no-underline" to={`/outcome-products/${id}/product/${params.id}`}>
+        {params?.row?.product?.nameRom}
+      </Link>
+    }
+  }
 
   const renderDiscountPrice = (params) => {
     if (params.row.id !== 0) {
@@ -115,7 +128,7 @@ const InvoiceProducts = (props) => {
   };
   const renderTrandeMargin = (params) => {
     if (params.row.id !== 0) {
-    return Number(params.row.product.tradeMargin).toFixed(2)
+      return Number(params.row.product.tradeMargin).toFixed(2)
     }
   };
   const renderVatValue = (params) => (params.row.product.vat.name);
@@ -208,7 +221,6 @@ const InvoiceProducts = (props) => {
     },
   ];
 
-
   useEffect(() => {
     onFetchInvoiceProducts(id);
   }, [onFetchInvoiceProducts, id])
@@ -246,8 +258,8 @@ const InvoiceProducts = (props) => {
       averageTradeMargin = averageTradeMargin / invoiceProductWithOrder.length;
 
       setInvoiceValue({
-        totalDiscountPrice, 
-        totalRetailPrice, 
+        totalDiscountPrice,
+        totalRetailPrice,
         vatSum,
         averageTradeMargin,
         totalTradeMargin
@@ -280,11 +292,20 @@ const InvoiceProducts = (props) => {
     // eslint-disable-next-line 
   }, [invoiceProducts])
 
- 
+
 
   const onAddNewInvoiceProduct = () => {
     onRestData();
-    history.push(`/invoice-products/${id}/product/0`)
+    pushHistory(`/income-invoice-products/${id}/product/0`, 
+    `/outcome-invoice-products/${id}/product/0`);
+  }
+
+  const pushHistory = (incomePath, outcomePath) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      history.push(incomePath);
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      history.push(outcomePath);
+    }
   }
 
   const onSelectInvoiceProduct = (selectedInvoicesArray) => (setSelectedInvoiceProduct(selectedInvoicesArray.selectionModel));
@@ -305,7 +326,8 @@ const InvoiceProducts = (props) => {
   const onUpdateSelectedInvoiceProduct = () => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
       selectedInvoiceProducts.forEach(invoiceProductId => {
-        history.push(`/invoice-products/${id}/product/${invoiceProductId}`);
+        pushHistory(`/income-invoice-products/${id}/product/${invoiceProductId}`,
+        `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
       })
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");
@@ -323,16 +345,16 @@ const InvoiceProducts = (props) => {
 
   const backToInvoices = () => {
     Object.assign(
-      invoiceToUpdate, invoiceToUpdate,{
-        totalDiscountPrice: invoiceValues.totalDiscountPrice,
-        totalRetailPrice: invoiceValues.totalRetailPrice,
-        totalTradeMargin: invoiceValues.totalTradeMargin,
-        tradeMargin: invoiceValues.averageTradeMargin,
-        vatSum: invoiceValues.vatSum
-      }
+      invoiceToUpdate, invoiceToUpdate, {
+      totalDiscountPrice: invoiceValues.totalDiscountPrice,
+      totalRetailPrice: invoiceValues.totalRetailPrice,
+      totalTradeMargin: invoiceValues.totalTradeMargin,
+      tradeMargin: invoiceValues.averageTradeMargin,
+      vatSum: invoiceValues.vatSum
+    }
     )
     onUpdateInvoice(invoiceToUpdate);
-    history.push(`/income-invoices`);
+    pushHistory(`/income-invoices`, `/outcome-invoices`);
   }
 
   return (

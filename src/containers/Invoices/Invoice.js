@@ -13,10 +13,18 @@ import {
   createInvoice,
   updateInvoice,
   fetchDocumentTypes,
-  fetchInvoices,
   fetchInvoiceOrganizations,
   fetchInvoiceVendors,
+  restStoreData,
 } from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import InvalidFieldText from '../../common/InvalidFieldText';
+import ProgressLoading from '../../common/ProgressLoading';
+import {
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -35,9 +43,9 @@ const mapDispatchToProps = (dispatch) => {
     onCreateInvoice: (invoice) => dispatch(createInvoice(invoice)),
     onUpdateInvoice: (invoice) => dispatch(updateInvoice(invoice)),
     onFetchDocumentTypes: () => dispatch(fetchDocumentTypes()),
-    onFetchInvoices: () => dispatch(fetchInvoices()),
     onFetchInvoiceOrganizations: () => dispatch(fetchInvoiceOrganizations()),
     onFetchInvoiceVendors: () => dispatch(fetchInvoiceVendors()),
+    onRestData: () => dispatch(restStoreData()),
   }
 }
 
@@ -53,10 +61,21 @@ const Invoice = (props) => {
     onCreateInvoice,
     onUpdateInvoice,
     onFetchDocumentTypes,
-    onFetchInvoices,
     onFetchInvoiceOrganizations,
     onFetchInvoiceVendors,
+    onRestData,
   } = props;
+
+  const INVOICE_NUMBER_HELP_BLOCK = "invoiceNumberHelpBlock";
+  const NOTE_HELP_BLOCK = "noteHelpBlock";
+
+  const [invalidDocumentType, setInvalidDocumentType] = useState(false);
+  const [invalidOrganization, setInvalidOrganization] = useState(false);
+  const [invalidVendor, setInvalidVendor] = useState(false);
+  const [invalidInvoiceNumber, setInvalidInvoiceNumber] = useState(false);
+  const [invalidNote, setInvalidNote] = useState(false);
+
+  const [openAlert, setOpenAlert] = useState(false);
 
   const history = useHistory();
   const location = useLocation();
@@ -68,10 +87,10 @@ const Invoice = (props) => {
   const [selectedVendor, setSelectedVendor] = useState(0);
 
   const pushHistory = (path1, path2) => {
-    if(location.pathname.includes('/income-invoices')) {
+    if (location.pathname.includes('/income-invoices')) {
       history.push(path1);
     }
-    if(location.pathname.includes('/outcome-invoices')) {
+    if (location.pathname.includes('/outcome-invoices')) {
       history.push(path2);
     }
   }
@@ -79,11 +98,7 @@ const Invoice = (props) => {
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     if (answer === true) {
-      setInvoice({});
-      setSelectedDocumentType(0);
-      setSelectedVendor(0);
-      setSelectedOrganization(0);
-      pushHistory("/income-invoices", "/outcome-invoices");
+      resetAllAndSubmit();
     }
   }
 
@@ -98,6 +113,14 @@ const Invoice = (props) => {
       onFetchInvoice(id);
     }
   }, [id, onFetchInvoice])
+
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
 
   const intializeDocumentTYpeValue = () => {
     if (initialInvoice.documentType !== undefined) {
@@ -131,25 +154,30 @@ const Invoice = (props) => {
       case "formGridDocumentType":
         let documentTypeObj = getDropDownValue(Number(event.target.value), documentTypes, setSelectedDocumentType);
         setInvoice({ ...invoice, documentType: documentTypeObj });
+        setInvalidDocumentType(false);
         break;
       case "formGridOrganization":
         let organizationObj = getDropDownValue(Number(event.target.value), organizations, setSelectedOrganization);
         setInvoice({ ...invoice, myOrganization: organizationObj });
+        setInvalidOrganization(false);
         break;
       case "formGridVendor":
         let vendorObj = getDropDownValue(Number(event.target.value), vendors, setSelectedVendor);
         setInvoice({ ...invoice, vendor: vendorObj });
+        setInvalidVendor(false);
         break;
       case "formGridDateCreated":
         setInvoice({ ...invoice, dateCreated: event.target.value });
         break;
       case "formGridInvoiceNumber":
+        validateInputValue(setInvalidInvoiceNumber, "^[a-zA-Z0-9]+$", event);
         setInvoice({ ...invoice, invoiceNumber: event.target.value });
         break;
       case "formGridInvoiceDate":
         setInvoice({ ...invoice, invoiceDate: event.target.value });
         break;
       case "formGridNote":
+        validateInputValue(setInvalidNote, "^[a-zA-Z0-9\\s.,:;-]+$", event);
         setInvoice({ ...invoice, note: event.target.value });
         break;
       default:
@@ -163,34 +191,60 @@ const Invoice = (props) => {
     return itemList.find(item => item.id === itemId);
   }
 
-  const getTodayDate = () => (new Date().toJSON().slice(0, 10))
-
-  const onSubmitInvoice = () => {
-    if (id !== "0") {
-      onUpdateInvoice(invoice);
-    } else {
-      setInvoice(Object.assign(invoice, invoice,
-        {
-          dateCreated: getTodayDate(),
-          invoiceDate: getTodayDate()
-        }));
-      onCreateInvoice(invoice);
-    }
+  const resetAllAndSubmit = () => {
     pushHistory("/income-invoices", "/outcome-invoices");
-    onFetchInvoices();
+    onRestData();
     setInvoice({});
     setSelectedDocumentType(0);
     setSelectedVendor(0);
     setSelectedOrganization(0);
   }
 
+  const getTodayDate = () => (new Date().toJSON().slice(0, 10))
+
+  const isInvoiceReadyToBeSubmitted = () => (
+    !invalidDocumentType && !invalidOrganization &&
+    !invalidVendor && !invalidInvoiceNumber && !invalidNote &&
+    selectedOrganization !== 0 && selectedDocumentType !== 0 &&
+    selectedVendor !== 0
+  )
+
+  const markIvalidFields = () => {
+    setInvalidDocumentType(selectedDocumentType === 0);
+    setInvalidOrganization(selectedOrganization === 0);
+    setInvalidVendor(selectedVendor === 0);
+  }
+
+  const onSubmitInvoice = (event) => {
+    if (isInvoiceReadyToBeSubmitted()) {
+      if (id !== "0") {
+        onUpdateInvoice(invoice);
+      } else {
+        setInvoice(Object.assign(invoice, invoice,
+          {
+            dateCreated: getTodayDate(),
+            invoiceDate: getTodayDate()
+          }));
+        onCreateInvoice(invoice);
+      }
+      resetAllAndSubmit();
+    } else {
+      preventSubmitIfInvalidInput(event);
+      markIvalidFields();
+    }
+  }
+
   return (
     <div>
-      {error ? <div className="tc f2 red">Something went wrong!</div> : null}
+      <DisplayAlert
+        error={error}
+        open={openAlert}
+        setOpen={setOpenAlert}
+      />
       {!isPending ?
         <div className="container w-50 center mt4">
           <h3 className="mb5">Add New Invoice</h3>
-          <Form>
+          <Form onSubmit={onSubmitInvoice}>
             <Form.Group
               as={Row}
               controlId="formGridDocumentType"
@@ -209,6 +263,7 @@ const Invoice = (props) => {
                   as="select"
                   size="sm"
                   value={selectedDocumentType}
+                  isInvalid={invalidDocumentType}
                   onChange={onChangeInvoiceValues}
                 >
                   <option>{'--Select Document Type--'}</option>
@@ -232,6 +287,7 @@ const Invoice = (props) => {
                   as="select"
                   size="sm"
                   value={selectedOrganization}
+                  isInvalid={invalidOrganization}
                   onChange={onChangeInvoiceValues}
                 >
                   <option>{'--Select Organization--'}</option>
@@ -255,6 +311,7 @@ const Invoice = (props) => {
                   as="select"
                   size="sm"
                   value={selectedVendor}
+                  isInvalid={invalidVendor}
                   onChange={onChangeInvoiceValues}
                 >
                   <option>{'--Select Vendor--'}</option>
@@ -298,8 +355,16 @@ const Invoice = (props) => {
                   type="text"
                   placeholder="Enter Invoice Number"
                   size="sm"
+                  required={true}
                   value={invoice.invoiceNumber}
                   onChange={onChangeInvoiceValues}
+                  isInvalid={invalidInvoiceNumber}
+                  aria-describedby={INVOICE_NUMBER_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidInvoiceNumber}
+                  message={"Invoice number should contain only letters and numbers."}
+                  ariaDescribedbyId={INVOICE_NUMBER_HELP_BLOCK}
                 />
               </Col>
             </Form.Group>
@@ -339,6 +404,13 @@ const Invoice = (props) => {
                   size="sm"
                   value={invoice.note}
                   onChange={onChangeInvoiceValues}
+                  isInvalid={invalidNote}
+                  aria-describedby={NOTE_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidNote}
+                  message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+                  ariaDescribedbyId={NOTE_HELP_BLOCK}
                 />
               </Col>
             </Form.Group>
@@ -346,7 +418,7 @@ const Invoice = (props) => {
               <Button
                 className="mr5 w4 mt4"
                 variant="primary"
-                onClick={onSubmitInvoice}
+                type="submit"
               >
                 Submit
               </Button>
@@ -359,7 +431,7 @@ const Invoice = (props) => {
             </div>
           </Form>
         </div>
-        : <h3>Loading data...</h3>
+        : <ProgressLoading />
       }
     </div>
   );

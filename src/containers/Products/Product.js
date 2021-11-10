@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
+import { InputGroup } from 'react-bootstrap';
 import { Button as BarcodeButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -31,7 +32,6 @@ import {
 } from '../actions';
 
 import './style.css';
-import { InputGroup } from 'react-bootstrap';
 
 import Barcode from './Barcode';
 
@@ -119,7 +119,7 @@ const Product = (props) => {
 
   const classes = useStyles();
 
-  let history = useHistory();
+  const history = useHistory();
   const { id } = useParams();
 
   const [invalidRomName, setInvalidRomName] = useState(false);
@@ -418,7 +418,6 @@ const Product = (props) => {
   }
 
   const onSubmitProduct = (event) => {
-    console.log("product", product);
     if (isProductReadyToBeSubmitted()) {
       assignProductProperties();
       if (id !== "0") {
