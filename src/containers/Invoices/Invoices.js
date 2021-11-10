@@ -22,6 +22,8 @@ import {
   fetchOutComeInvoices,
 } from '../actions';
 
+import DisplayAlert from '../../common/DisplayAlert';
+
 import './style.css';
 
 const drawerWidth = 240;
@@ -79,20 +81,33 @@ const Invoices = (props) => {
   const location = useLocation();
   const classes = useStyles();
 
+  const [open, setOpen] = useState(false);
+
   const [displayInvoices, setDisplayInvoices] = useState([]);
   const [selectedInvoices, setSelectedInvoices] = useState([]);
 
-  const addLinkToCell = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${params.id}`}>
-      {params.value.name}
-    </Link>
-  )
-
-  const addLinkToIdCell = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${params.id}`}>
-      {params.value}
-    </Link>
-  )
+  const addLinkToCell = (params) => {
+    if (location.pathname.includes('/income-invoices')) {
+      return <Link className="no-underline" to={`/income-invoice-products/${params.id}`}>
+        {params.value.name}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoices')) {
+      return <Link className="no-underline" to={`/outcome-invoice-products/${params.id}`}>
+        {params.value.name}
+      </Link>
+    }
+  }
+  const addLinkToIdCell = (params) => {
+    if (location.pathname.includes('/income-invoices')) {
+      return <Link className="no-underline" to={`/income-invoice-products/${params.id}`}>
+        {params.value}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoices')) {
+      return <Link className="no-underline" to={`/outcome-invoice-products/${params.id}`}>
+        {params.value}
+      </Link>
+    }
+  }
 
   const formateSumCell = (params) => (
     Number(params.value).toFixed(2)
@@ -194,6 +209,14 @@ const Invoices = (props) => {
     setDisplayInvoices(invoices);
   }, [invoices])
 
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
+
   const onAddNewInvoice = () => {
     pushHistory("/income-invoices/0", "/outcome-invoices/0");
   }
@@ -249,70 +272,73 @@ const Invoices = (props) => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
-        <div className={classes.root}>
-          <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-          >
-            <Toolbar />
-            <Toolbar />
-            <div className={classes.drawerContainer}>
-              <List>
-                <Divider />
-                <ListItem
-                  button
-                  divider
-                  onClick={onAddNewInvoice}
-                >
-                  <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
-                  <ListItemText primary={'Add new Invoice'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoiceProducts}
-                >
-                  <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Invoice'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoice}
-                >
-                  <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Invoice Header'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onDeleteSelectedInvoices}
-                >
-                  <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
-                  <ListItemText primary={'Delete Selected Invoices(s)'} />
-                </ListItem>
-              </List>
-            </div>
-          </Drawer>
-          <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
-            <DataGrid
-              rows={displayInvoices}
-              columns={columns}
-              pageSize={25}
-              checkboxSelection={true}
-              loading={isPending}
-              sortingOrder={['asc', 'desc', null]}
-              disableSelectionOnClick={true}
-              rowHeight={30}
-              onSelectionModelChange={onSelectInvoices}
-            />
+      <div className={classes.root}>
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <Toolbar />
+          <Toolbar />
+          <div className={classes.drawerContainer}>
+            <List>
+              <Divider />
+              <ListItem
+                button
+                divider
+                onClick={onAddNewInvoice}
+              >
+                <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
+                <ListItemText primary={'Add new Invoice'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoiceProducts}
+              >
+                <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Invoice'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoice}
+              >
+                <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Invoice Header'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onDeleteSelectedInvoices}
+              >
+                <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
+                <ListItemText primary={'Delete Selected Invoices(s)'} />
+              </ListItem>
+            </List>
           </div>
+        </Drawer>
+        <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
+          <DisplayAlert
+            error={error}
+            open={open}
+            setOpen={setOpen}
+          />
+          <DataGrid
+            rows={displayInvoices}
+            columns={columns}
+            pageSize={25}
+            checkboxSelection={true}
+            loading={isPending}
+            sortingOrder={['asc', 'desc', null]}
+            disableSelectionOnClick={true}
+            rowHeight={30}
+            onSelectionModelChange={onSelectInvoices}
+          />
         </div>
-      }
+      </div>
     </div>
   );
 }
