@@ -26,6 +26,8 @@ import {
   restStoreData
 } from '../actions';
 
+import DisplayAlert from '../../common/DisplayAlert';
+
 const drawerWidth = 240;
 const marginTop = 56;
 
@@ -80,6 +82,8 @@ const InvoiceProducts = (props) => {
   const location = useLocation();
 
   const classes = useStyles();
+
+  const [open, setOpen] = useState(false);
 
   const [displayInvoiceProducts, setDisplayInvoiceProduct] = useState([]);
   const [selectedInvoiceProducts, setSelectedInvoiceProduct] = useState([]);
@@ -225,6 +229,14 @@ const InvoiceProducts = (props) => {
     onFetchInvoiceProducts(id);
   }, [onFetchInvoiceProducts, id])
 
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
+
   const addOrderNumberToInvoiceProduct = () => {
     if (invoiceProducts !== null || invoiceProducts !== undefined) {
       let invoiceProductWithOrder = invoiceProducts.map((element, index) => (
@@ -296,8 +308,8 @@ const InvoiceProducts = (props) => {
 
   const onAddNewInvoiceProduct = () => {
     onRestData();
-    pushHistory(`/income-invoice-products/${id}/product/0`, 
-    `/outcome-invoice-products/${id}/product/0`);
+    pushHistory(`/income-invoice-products/${id}/product/0`,
+      `/outcome-invoice-products/${id}/product/0`);
   }
 
   const pushHistory = (incomePath, outcomePath) => {
@@ -327,7 +339,7 @@ const InvoiceProducts = (props) => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
       selectedInvoiceProducts.forEach(invoiceProductId => {
         pushHistory(`/income-invoice-products/${id}/product/${invoiceProductId}`,
-        `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
+          `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
       })
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");
@@ -359,7 +371,6 @@ const InvoiceProducts = (props) => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
         <div className={classes.root}>
           <Drawer
             className={classes.drawer}
@@ -417,6 +428,11 @@ const InvoiceProducts = (props) => {
             </div>
           </Drawer>
           <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
+            <DisplayAlert
+              error={error}
+              open={open}
+              setOpen={setOpen}
+            />
             <DataGrid
               rows={displayInvoiceProducts}
               columns={columns}
@@ -432,7 +448,6 @@ const InvoiceProducts = (props) => {
             />
           </div>
         </div>
-      }
     </div>
   );
 }

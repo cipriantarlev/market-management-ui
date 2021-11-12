@@ -20,6 +20,14 @@ import {
 
 import FindProduct from './FindProduct';
 
+import DisplayAlert from '../../common/DisplayAlert';
+import InvalidFieldText from '../../common/InvalidFieldText';
+import ProgressLoading from '../../common/ProgressLoading';
+import {
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
+
 import './style.css';
 
 const mapStateToProps = (state) => {
@@ -54,7 +62,6 @@ const InvoiceProduct = (props) => {
     onCreateInvoiceProduct,
     onUpdateInvoiceProduct,
     onFetchMeasuringUnits,
-    // onFetchInvoiceProducts,
     onFetchProductByBarcode,
     onRestData,
   } = props;
@@ -76,6 +83,8 @@ const InvoiceProduct = (props) => {
 
   const [openDialog, setOpenDialog] = useState(false);
 
+  const [openAlert, setOpenAlert] = useState(false);
+
   useEffect(() => {
     onFetchMeasuringUnits()
   }, [onFetchMeasuringUnits])
@@ -95,6 +104,14 @@ const InvoiceProduct = (props) => {
     setInvoice({ ...invoice, id: Number(invoiceId) })
     // eslint-disable-next-line
   }, [productByBarcode])
+
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
@@ -296,11 +313,15 @@ const InvoiceProduct = (props) => {
 
   return (
     <div>
-      {error ? <div className="tc f2 red">Something went wrong!</div> : null}
+      <DisplayAlert
+        error={error}
+        open={openAlert}
+        setOpen={setOpenAlert}
+      />
       {!isPending ?
         <div className="container w-50 center mt3">
           <h3 className="mb4">Add New Product to Invoice</h3>
-          <Form>
+          <Form onSubmit={onSubmitInvoiceProduct}>
             <Form.Group as={Row} controlId="formGridInvoiceNumber">
               <Form.Label
                 column
@@ -315,6 +336,7 @@ const InvoiceProduct = (props) => {
                   type="text"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   style={{
                     textAlign: 'right'
@@ -334,7 +356,9 @@ const InvoiceProduct = (props) => {
               >Barcode</Form.Label>
               <Col sm="9">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
+                  required={true}
                   placeholder="Find by Barcode"
                   size="sm"
                   value={product?.barcodes !== undefined ? product?.barcodes[0].value : null}
@@ -356,6 +380,7 @@ const InvoiceProduct = (props) => {
                   type="text"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   value={product?.productCode?.value}
                 />
@@ -374,8 +399,9 @@ const InvoiceProduct = (props) => {
                 <Form.Control
                   type="text"
                   size="sm"
+                  required={true}
                   id="ProductName"
-                  placeholder="Click 🔎︎ to find product by name"
+                  placeholder="Click 🔎︎ to search product by name"
                   value={product?.nameRom}
                 />
               </Col>
@@ -414,8 +440,10 @@ const InvoiceProduct = (props) => {
                   >Quantity</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
@@ -456,8 +484,10 @@ const InvoiceProduct = (props) => {
                   >Vendor Price</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
@@ -479,8 +509,10 @@ const InvoiceProduct = (props) => {
                   >Sum</Form.Label>
                   <Col sm="7">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
@@ -502,9 +534,11 @@ const InvoiceProduct = (props) => {
               >VAT Sum</Form.Label>
               <Col sm="3">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   style={{
                     textAlign: 'right'
@@ -526,8 +560,10 @@ const InvoiceProduct = (props) => {
                   >Retail Price</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
@@ -549,8 +585,10 @@ const InvoiceProduct = (props) => {
                   >Trade Margin %</Form.Label>
                   <Col sm="7">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
@@ -572,7 +610,8 @@ const InvoiceProduct = (props) => {
               >Stock</Form.Label>
               <Col sm="3">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
                   size="sm"
                   disabled
                   readOnly
@@ -584,7 +623,7 @@ const InvoiceProduct = (props) => {
               <Button
                 className="mr5 w4 mt4"
                 variant="primary"
-                onClick={onSubmitInvoiceProduct}
+                type="submit"
               >
                 Submit
               </Button>
@@ -601,7 +640,7 @@ const InvoiceProduct = (props) => {
             handleClose={handleClose}
           />
         </div>
-        : <h3>Loading data...</h3>
+        : <ProgressLoading />
       }
     </div>
   );

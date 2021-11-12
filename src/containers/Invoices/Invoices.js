@@ -74,7 +74,6 @@ const Invoices = (props) => {
     onFetchIncomeInvoices,
     onFetchOutComeInvoices,
     onDeleteInvoice,
-    // location
   } = props;
 
   const history = useHistory();
