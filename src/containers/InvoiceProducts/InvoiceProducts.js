@@ -356,98 +356,100 @@ const InvoiceProducts = (props) => {
   }
 
   const backToInvoices = () => {
-    Object.assign(
-      invoiceToUpdate, invoiceToUpdate, {
-      totalDiscountPrice: invoiceValues.totalDiscountPrice,
-      totalRetailPrice: invoiceValues.totalRetailPrice,
-      totalTradeMargin: invoiceValues.totalTradeMargin,
-      tradeMargin: invoiceValues.averageTradeMargin,
-      vatSum: invoiceValues.vatSum
+    if (displayInvoiceProducts.length > 1) {
+      Object.assign(
+        invoiceToUpdate, invoiceToUpdate, {
+        totalDiscountPrice: invoiceValues.totalDiscountPrice,
+        totalRetailPrice: invoiceValues.totalRetailPrice,
+        totalTradeMargin: invoiceValues.totalTradeMargin,
+        tradeMargin: invoiceValues.averageTradeMargin,
+        vatSum: invoiceValues.vatSum
+      }
+      )
+      onUpdateInvoice(invoiceToUpdate);
     }
-    )
-    onUpdateInvoice(invoiceToUpdate);
     pushHistory(`/income-invoices`, `/outcome-invoices`);
   }
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-        <div className={classes.root}>
-          <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-          >
-            <Toolbar />
-            <Toolbar />
-            <div className={classes.drawerContainer}>
-              <List>
-                <Divider />
-                <ListItem
-                  button
-                  divider
-                  onClick={onAddNewInvoiceProduct}
-                >
-                  <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
-                  <ListItemText primary={'Add new Product'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoiceProduct}
-                >
-                  <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Product'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoiceProductInformation}
-                >
-                  <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Product Information'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onDeleteSelectedInvoiceProduct}
-                >
-                  <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
-                  <ListItemText primary={'Delete Selected Product(s)'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={backToInvoices}
-                >
-                  <ListItemIcon>{<BackspaceIcon />}</ListItemIcon>
-                  <ListItemText primary={'Back to Invoices'} />
-                </ListItem>
-              </List>
-            </div>
-          </Drawer>
-          <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
-            <DisplayAlert
-              error={error}
-              open={open}
-              setOpen={setOpen}
-            />
-            <DataGrid
-              rows={displayInvoiceProducts}
-              columns={columns}
-              pageSize={25}
-              checkboxSelection={true}
-              loading={isPending}
-              // sortingOrder={['asc', 'desc', null]}
-              disableSelectionOnClick={true}
-              rowHeight={30}
-              isRowSelectable={(params) => params.row.id !== 0}
-              onSelectionModelChange={onSelectInvoiceProduct}
-              disableColumnMenu
-            />
+      <div className={classes.root}>
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <Toolbar />
+          <Toolbar />
+          <div className={classes.drawerContainer}>
+            <List>
+              <Divider />
+              <ListItem
+                button
+                divider
+                onClick={onAddNewInvoiceProduct}
+              >
+                <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
+                <ListItemText primary={'Add new Product'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoiceProduct}
+              >
+                <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Product'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoiceProductInformation}
+              >
+                <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Product Information'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onDeleteSelectedInvoiceProduct}
+              >
+                <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
+                <ListItemText primary={'Delete Selected Product(s)'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={backToInvoices}
+              >
+                <ListItemIcon>{<BackspaceIcon />}</ListItemIcon>
+                <ListItemText primary={'Back to Invoices'} />
+              </ListItem>
+            </List>
           </div>
+        </Drawer>
+        <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
+          <DisplayAlert
+            error={error}
+            open={open}
+            setOpen={setOpen}
+          />
+          <DataGrid
+            rows={displayInvoiceProducts}
+            columns={columns}
+            pageSize={25}
+            checkboxSelection={true}
+            loading={isPending}
+            // sortingOrder={['asc', 'desc', null]}
+            disableSelectionOnClick={true}
+            rowHeight={30}
+            isRowSelectable={(params) => params.row.id !== 0}
+            onSelectionModelChange={onSelectInvoiceProduct}
+            disableColumnMenu
+          />
         </div>
+      </div>
     </div>
   );
 }
