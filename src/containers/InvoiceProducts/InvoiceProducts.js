@@ -359,11 +359,11 @@ const InvoiceProducts = (props) => {
     if (displayInvoiceProducts.length > 1) {
       Object.assign(
         invoiceToUpdate, invoiceToUpdate, {
-        totalDiscountPrice: invoiceValues.totalDiscountPrice,
-        totalRetailPrice: invoiceValues.totalRetailPrice,
-        totalTradeMargin: invoiceValues.totalTradeMargin,
-        tradeMargin: invoiceValues.averageTradeMargin,
-        vatSum: invoiceValues.vatSum
+        totalDiscountPrice: Math.round(invoiceValues.totalDiscountPrice * 100) / 100,
+        totalRetailPrice: Math.round(invoiceValues.totalRetailPrice * 100) / 100,
+        totalTradeMargin: Math.round(invoiceValues.totalTradeMargin * 100) / 100,
+        tradeMargin: Math.round(invoiceValues.averageTradeMargin * 100) / 100,
+        vatSum: Math.round(invoiceValues.vatSum * 100) / 100,
       }
       )
       onUpdateInvoice(invoiceToUpdate);

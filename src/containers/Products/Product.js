@@ -384,6 +384,12 @@ const Product = (props) => {
     history.goBack()
   }
 
+  const formate2DecimalNumber = (numberToDisplay) => {
+    if (!isNaN(numberToDisplay)) {
+      return numberToDisplay.toLocaleString(navigator.language, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    }
+  }
+
   const isProductReadyToBeSubmitted = () => (
     !invalidRomName && !invalidRusName &&
     !invalidRetailPrice && !invalidDiscountPrice &&
@@ -600,7 +606,7 @@ const Product = (props) => {
                   defaultValue="0.00"
                   placeholder="Enter Retail Price"
                   size="sm"
-                  value={product.retailPrice}
+                  value={formate2DecimalNumber(product.retailPrice)}
                   onChange={onChangeProductValues}
                   isInvalid={invalidRetailPrice}
                   aria-describedby={RETAIL_PRICE_HELP_BLOCK}
@@ -637,7 +643,7 @@ const Product = (props) => {
                   defaultValue="0.00"
                   placeholder="Enter Discount Price"
                   size="sm"
-                  value={product.discountPrice}
+                  value={formate2DecimalNumber(product.discountPrice)}
                   onChange={onChangeProductValues}
                   isInvalid={invalidDiscountPrice}
                   aria-describedby={DISCOUNT_PRICE_HELP_BLOCK}
