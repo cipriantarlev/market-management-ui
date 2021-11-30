@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,8 +15,15 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchDocumentTypes, deleteDocumentType } from '../actions';
+import {
+  fetchDocumentTypes,
+  deleteDocumentType,
+  restStoreData,
+} from '../actions';
 import DocumentType from './DocumentType';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 
 const useStyles = makeStyles({
   table: {
@@ -36,6 +43,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchDocumentTypes: () => dispatch(fetchDocumentTypes()),
     onDeleteDocumentType: (id) => dispatch(deleteDocumentType(id)),
+    onRestStoreData: () => dispatch(restStoreData()),
   }
 }
 
@@ -45,14 +53,16 @@ const DocumentTypes = (props) => {
     documentTypes,
     error,
     onFetchDocumentTypes,
-    onDeleteDocumentType
+    onDeleteDocumentType,
+    onRestStoreData,
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
+  const [documentTypeList, setDocumentTypeList] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const [totalRows, setTotalRows] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -61,16 +71,28 @@ const DocumentTypes = (props) => {
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpenDialog(false);
+      setDocumentTypeList([]);
+      onRestStoreData();
     }
   };
 
   useEffect(() => {
     onFetchDocumentTypes();
-  }, [onFetchDocumentTypes])
+    setDocumentTypeList(documentTypes)
+    // eslint-disable-next-line
+  }, [onFetchDocumentTypes, documentTypeList])
 
   useEffect(() => {
     setTotalRows(documentTypes.length);
   }, [documentTypes])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onAddNewDocumentType = () => {
     setId(0);
@@ -86,12 +108,13 @@ const DocumentTypes = (props) => {
     const answer = window.confirm(`Are you sure you want to delete the Document Type with id: ${documentTypeId}?`);
     if (answer === true) {
       onDeleteDocumentType(documentTypeId);
-      history.go(0);
+      setDocumentTypeList([]);
+      onRestStoreData();
     }
   }
 
   const changePage = (event, pageNr) => {
-    if(pageNr <= totalRows){
+    if (pageNr <= totalRows) {
       setPage(pageNr)
     }
   }
@@ -107,6 +130,12 @@ const DocumentTypes = (props) => {
       >
         Add new Document Type
       </Button>
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        /> : null}
       {!isPending ?
         <div>
           <TableContainer component={Paper}>
@@ -120,32 +149,32 @@ const DocumentTypes = (props) => {
               </TableHead>
               <TableBody>
                 {documentTypes
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((element) => (
-                  <TableRow key={element.id}>
-                    <TableCell component="th" scope="row">
-                      <Link className="no-underline" to="#" onClick={() => onUpdateDocumentType(element.id)} >
-                        {element.id}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link className="no-underline" to="#" onClick={() => onUpdateDocumentType(element.id)}>
-                        {element.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => removeDocumentType(element.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((element) => (
+                    <TableRow key={element.id}>
+                      <TableCell component="th" scope="row">
+                        <Link className="no-underline" to="#" onClick={() => onUpdateDocumentType(element.id)} >
+                          {element.id}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <Link className="no-underline" to="#" onClick={() => onUpdateDocumentType(element.id)}>
+                          {element.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          startIcon={<DeleteIcon />}
+                          onClick={() => removeDocumentType(element.id)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
               <TableFooter>
                 <TableRow>
@@ -168,8 +197,7 @@ const DocumentTypes = (props) => {
           />
         </div>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
+        <ProgressLoading />}
     </div>
   );
 }

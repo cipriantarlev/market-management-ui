@@ -58,6 +58,12 @@ const Login = (props) => {
     }
   }
 
+  const onPressEnter = (event) => {
+    if(event.charCode === 13){
+      handleSignin();
+    }
+  }
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -98,6 +104,7 @@ const Login = (props) => {
             error={credentialsError}
             helperText="Field must not be empty"
             onChange={handlePassword}
+            onKeyPress={onPressEnter}
           />
           <Button
             fullWidth

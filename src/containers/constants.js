@@ -1,35 +1,4 @@
 export const ROOT_CONTEXT_PATH = 'http://localhost:8080/api'
-export const authorizationData = () => {
-  return {headers: {'Authorization': localStorage.getItem('user')}}
-}
-
-export const dataApi = (method, data) => {
-  if(data === null || data === undefined) {
-    return {
-      method: method,
-      headers: {
-        'Authorization': localStorage.getItem('user')
-      }
-    }
-  } else {
-    return {
-      method: method,
-      headers: {
-        'Authorization': localStorage.getItem('user'),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }
-  }
-}
-
-export const checkStatusCode = (data, type, dispatch) => {
-  if (data[0]?.statusCode !== undefined && data[0]?.statusCode !== 200) {
-    throw data;
-  } else {
-    return dispatch({ type: type, payload: data })
-  }
-}
 
 export const REQUEST_LOGIN_PENDING = 'REQUEST_LOGIN_PENDING';
 export const REQUEST_LOGIN_SUCCESS = 'REQUEST_LOGIN_SUCCESS';
@@ -250,6 +219,14 @@ export const DELETE_DOCUMENT_TYPE_FAILED = 'DELETE_DOCUMENT_TYPE_FAILED';
 export const REQUEST_INVOICES_PENDING = 'REQUEST_INVOICES_PENDING';
 export const REQUEST_INVOICES_SUCCESS = 'REQUEST_INVOICES_SUCCESS';
 export const REQUEST_INVOICES_FAILED = 'REQUEST_INVOICES_FAILED';
+
+export const REQUEST_INCOME_INVOICES_PENDING = 'REQUEST_INCOME_INVOICES_PENDING';
+export const REQUEST_INCOME_INVOICES_SUCCESS = 'REQUEST_INCOME_INVOICES_SUCCESS';
+export const REQUEST_INCOME_INVOICES_FAILED = 'REQUEST_INCOME_INVOICES_FAILED';
+
+export const REQUEST_OUTCOME_INVOICES_PENDING = 'REQUEST_OUTCOME_INVOICES_PENDING';
+export const REQUEST_OUTCOME_INVOICES_SUCCESS = 'REQUEST_OUTCOME_INVOICES_SUCCESS';
+export const REQUEST_OUTCOME_INVOICES_FAILED = 'REQUEST_OUTCOME_INVOICES_FAILED';
 
 export const REQUEST_INVOICE_PENDING = 'REQUEST_INVOICE_PENDING';
 export const REQUEST_INVOICE_SUCCESS = 'REQUEST_INVOICE_SUCCESS';

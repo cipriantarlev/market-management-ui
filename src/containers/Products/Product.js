@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
-import { Button as DeleteButton } from '@material-ui/core';
+import { InputGroup } from 'react-bootstrap';
+import { Button as BarcodeButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,9 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import { useHistory } from 'react-router-dom';
-import { useParams } from 'react-router';
 
 import {
   fetchProduct,
@@ -32,9 +32,16 @@ import {
 } from '../actions';
 
 import './style.css';
-import { InputGroup } from 'react-bootstrap';
 
 import Barcode from './Barcode';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import InvalidFieldText from '../../common/InvalidFieldText';
+import ProgressLoading from '../../common/ProgressLoading';
+import {
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -104,10 +111,29 @@ const Product = (props) => {
     onRestData,
   } = props;
 
+  const ROM_NAME_HELP_BLOCK = "romNameHelpBlock";
+  const RUS_NAME_HELP_BLOCK = "rusNameHelpBlock";
+  const RETAIL_PRICE_HELP_BLOCK = "retailPriceHelpBlock";
+  const DISCOUNT_PRICE_HELP_BLOCK = "discountPriceHelpBlock";
+  const STOCK_HELP_BLOCK = "stockHelpBlock";
+
   const classes = useStyles();
 
-  let history = useHistory();
+  const history = useHistory();
   const { id } = useParams();
+
+  const [invalidRomName, setInvalidRomName] = useState(false);
+  const [invalidRusName, setInvalidRusName] = useState(false);
+  const [invalidRetailPrice, setInvalidRetailPrice] = useState(false);
+  const [invalidDiscountPrice, setInvalidDiscountPrice] = useState(false);
+  const [invalidStock, setInvalidStock] = useState(false);
+
+  const [invalidCategory, setInvalidCategory] = useState(false);
+  const [invalidSubcategory, setInvalidSubcategory] = useState(false);
+  const [invalidProductCode, setInvalidProductCode] = useState(false);
+  const [invalidMeasuringUnit, setInvalidMeasuringUnit] = useState(false);
+  const [invalidVat, setInvalidVat] = useState(false);
+  const [invalidBarcode, setInvalidBarcode] = useState(false);
 
   const [product, setProduct] = useState({});
   const [barcodes, setBarcodes] = useState([]);
@@ -118,8 +144,10 @@ const Product = (props) => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(0);
   const [selectedMeasuringUnit, setSelectedMeasuringUnit] = useState(0);
   const [selectedVat, setSelectedVat] = useState(0);
+  const [barcodeIndex, setBarcodeIndex] = useState(-1);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
@@ -134,12 +162,7 @@ const Product = (props) => {
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     if (answer) {
-      setProduct({});
-      setBarcodes([]);
-      setPlu({});
-      setProductCode({});
-      onRestData();
-      history.goBack()
+      resetAllAndGoBack();
     }
   }
 
@@ -162,6 +185,14 @@ const Product = (props) => {
   useEffect(() => {
     setProductCode(initialProductCode);
   }, [initialProductCode])
+
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
 
   const intializeCategoryValue = () => {
     if (initialProduct.category !== undefined) {
@@ -223,43 +254,54 @@ const Product = (props) => {
         let categoryObj = getDropDownValue(Number(event.target.value), categories, setSelectedCategory);
         onFetchSubcategoriesCategory(Number(event.target.value));
         setProduct({ ...product, category: categoryObj });
+        setInvalidCategory(false);
         break;
       case "formGridSubcategory":
         let subcategoryObj = getDropDownValue(Number(event.target.value), subcategoriesInitial, setSelectedSubcategory);
         setProduct({ ...product, subcategory: subcategoryObj });
+        setInvalidSubcategory(false);
         break;
       case "formGridNameRomanian":
+        validateInputValue(setInvalidRomName, "^[a-zA-Z0-9-\\s]+$", event);
         setProduct({ ...product, nameRom: event.target.value });
         break;
       case "formGridNameRussian":
+        validateInputValue(setInvalidRusName, "^[a-zA-ZА-Яа-я0-9-\\s]+$", event);
         setProduct({ ...product, nameRus: event.target.value });
         break;
       case "formGridRetailPrice":
-        if (product.discountPrice !== null || product.discountPrice !== undefined) {
-          setTradeMargin((Number(event.target.value) * 100) / product.discountPrice - 100);
-        } else {
-          setTradeMargin(0);
+        if (validateInputValue(setInvalidRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
+          if (product.discountPrice !== null || product.discountPrice !== undefined) {
+            setTradeMargin((event.target.value * 100) / product.discountPrice - 100);
+          } else {
+            setTradeMargin(0);
+          }
         }
-        setProduct({ ...product, retailPrice: Number(event.target.value).toFixed(2) });
+        setProduct({ ...product, retailPrice: event.target.value });
         break;
       case "formGridDiscountPrice":
-        if (product.retailPrice !== null || product.retailPrice !== undefined) {
-          setTradeMargin((product.retailPrice * 100) / Number(event.target.value) - 100);
-        } else {
-          setTradeMargin(0);
+        if (validateInputValue(setInvalidDiscountPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
+          if (product.retailPrice !== null || product.retailPrice !== undefined) {
+            setTradeMargin((product.retailPrice * 100) / event.target.value - 100);
+          } else {
+            setTradeMargin(0);
+          }
         }
-        setProduct({ ...product, discountPrice: Number(event.target.value).toFixed(2) });
+        setProduct({ ...product, discountPrice: event.target.value });
         break;
       case "formGridMeasuringUnit":
         let measuringUnitObj = getDropDownValue(Number(event.target.value), measuringUnits, setSelectedMeasuringUnit);
         setProduct({ ...product, measuringUnit: measuringUnitObj });
+        setInvalidMeasuringUnit(false);
         break;
       case "formGridVat":
         let vatObj = getDropDownValue(Number(event.target.value), vatList, setSelectedVat);
         setProduct({ ...product, vat: vatObj });
+        setInvalidVat(false);
         break;
       case "formGridStock":
-        setProduct({ ...product, stock: Number(event.target.value).toFixed(4) });
+        validateInputValue(setInvalidStock, "^(\\d{1,6}|\\d{0,6}\\.\\d{1,4})$", event)
+        setProduct({ ...product, stock: event.target.value });
         break;
       default:
         setProduct(product);
@@ -274,6 +316,7 @@ const Product = (props) => {
 
   const generateNewProductCode = () => {
     onGenerateProductCode();
+    setInvalidProductCode(false);
   }
 
   const getTradeMarging = () => {
@@ -316,7 +359,13 @@ const Product = (props) => {
       if (product.measuringUnit.name === "buc") {
         onGenerateBarcode({ value: "22" })
       }
+      setInvalidBarcode(false);
     }
+  }
+
+  const onUpdateBarcode = (indexValue) => {
+    setBarcodeIndex(indexValue);
+    setOpenDialog(true);
   }
 
   const deleteBarcode = (barcodeValue) => {
@@ -326,8 +375,42 @@ const Product = (props) => {
     }
   }
 
-  const onSubmitProduct = () => {
+  const resetAllAndGoBack = () => {
+    setProduct({});
+    setBarcodes([]);
+    setPlu({});
+    setProductCode({});
+    onRestData();
+    history.goBack()
+  }
 
+  const formate2DecimalNumber = (numberToDisplay) => {
+    if (!isNaN(numberToDisplay)) {
+      return numberToDisplay.toLocaleString(navigator.language, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    }
+  }
+
+  const isProductReadyToBeSubmitted = () => (
+    !invalidRomName && !invalidRusName &&
+    !invalidRetailPrice && !invalidDiscountPrice &&
+    !invalidStock && product.hasOwnProperty('nameRus') &&
+    product.hasOwnProperty('nameRom') &&
+    (productCode.hasOwnProperty('value') || product.hasOwnProperty('productCode')) &&
+    selectedCategory !== 0 && selectedSubcategory !== 0 &&
+    selectedVat !== 0 && selectedMeasuringUnit !== 0 &&
+    barcodes.length > 0
+  )
+
+  const markIvalidFields = () => {
+    setInvalidProductCode(!(productCode.hasOwnProperty('value') || product.hasOwnProperty('productCode')));
+    setInvalidCategory(selectedCategory === 0);
+    setInvalidSubcategory(selectedSubcategory === 0);
+    setInvalidMeasuringUnit(selectedMeasuringUnit === 0);
+    setInvalidVat(selectedVat === 0);
+    setInvalidBarcode('1px solid red');
+  }
+
+  const assignProductProperties = () => {
     if (product?.plu === null || product?.plu === undefined) {
       Object.assign(product, product, { plu: plu })
     }
@@ -335,25 +418,33 @@ const Product = (props) => {
     if (product?.productCode === null || product?.productCode === undefined) {
       Object.assign(product, product, { productCode: productCode })
     }
-    
+
     Object.assign(product, product, { barcodes: barcodes })
     Object.assign(product, product, { tradeMargin: tradeMargin })
-    if (id !== "0") {
-      onUpdateProduct(product);
+  }
+
+  const onSubmitProduct = (event) => {
+    if (isProductReadyToBeSubmitted()) {
+      assignProductProperties();
+      if (id !== "0") {
+        onUpdateProduct(product);
+      } else {
+        onCreateProduct(product);
+      }
+      resetAllAndGoBack();
     } else {
-      onCreateProduct(product);
+      preventSubmitIfInvalidInput(event);
+      markIvalidFields();
     }
-    setProduct({});
-    setBarcodes([]);
-    setPlu({});
-    setProductCode({});
-    history.goBack();
-    onRestData();
   }
 
   return (
     <div>
-      {error ? <div className="tc f2 red">Something went wrong!</div> : null}
+      <DisplayAlert
+        error={error}
+        open={openAlert}
+        setOpen={setOpenAlert}
+      />
       {!isPending ?
         <div className="container w-80 center mt2">
           <Form>
@@ -366,8 +457,10 @@ const Product = (props) => {
                   as="select"
                   size="sm"
                   className="mb-3"
+                  required={true}
                   id="formGridCategory"
                   value={selectedCategory}
+                  isInvalid={invalidCategory}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Category Value--"}</option>
@@ -380,8 +473,10 @@ const Product = (props) => {
                   as="select"
                   size="sm"
                   className="mb-3"
+                  required={true}
                   id="formGridSubcategory"
                   value={selectedSubcategory}
+                  isInvalid={invalidSubcategory}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Subcategory Value--"}</option>
@@ -396,6 +491,8 @@ const Product = (props) => {
                   className="mb-3"
                   size="sm"
                   readOnly
+                  isInvalid={invalidProductCode}
+                  required={true}
                   style={{
                     cursor: 'pointer'
                   }}
@@ -408,12 +505,20 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Name (Romanian)"
                   size="sm"
+                  required={true}
                   id="formGridNameRomanian"
                   value={product.nameRom}
                   onChange={onChangeProductValues}
+                  isInvalid={invalidRomName}
+                  aria-describedby={ROM_NAME_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidRomName}
+                  message={"Romanian Name should contain only letters, numbers and dash."}
+                  ariaDescribedbyId={ROM_NAME_HELP_BLOCK}
                 />
               </Form.Group>
-              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242 }}>
+              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242, border: invalidBarcode }}>
                 <Table className={classes.table} stickyHeader size="small" aria-label="a dense table sticky table">
                   <TableHead>
                     <TableRow>
@@ -431,10 +536,12 @@ const Product = (props) => {
                     {barcodes.map((item, index) => (
                       <TableRow key={`${item.value}_${index}`}>
                         <TableCell component="th" scope="row">
-                          {item.value}
+                          <Link className="no-underline" to="#" onClick={() => onUpdateBarcode(index)}>
+                            {item.value}
+                          </Link>
                         </TableCell>
                         <TableCell>
-                          <DeleteButton
+                          <BarcodeButton
                             variant="contained"
                             color="secondary"
                             style={{
@@ -446,7 +553,7 @@ const Product = (props) => {
                             onClick={() => deleteBarcode(item.value)}
                           >
                             Delete
-                          </DeleteButton>
+                          </BarcodeButton>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -461,8 +568,16 @@ const Product = (props) => {
                   type="text"
                   placeholder="Enter Name (Russian)"
                   size="sm"
+                  required={true}
                   value={product.nameRus}
                   onChange={onChangeProductValues}
+                  isInvalid={invalidRusName}
+                  aria-describedby={RUS_NAME_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidRusName}
+                  message={"Russian Name should contain only letters, numbers and dash."}
+                  ariaDescribedbyId={RUS_NAME_HELP_BLOCK}
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridMeasuringUnit">
@@ -470,7 +585,9 @@ const Product = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={selectedMeasuringUnit}
+                  isInvalid={invalidMeasuringUnit}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select Measuring Unit Value--"}</option>
@@ -484,11 +601,20 @@ const Product = (props) => {
               <Form.Group as={Col} controlId="formGridRetailPrice">
                 Retail Price
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
+                  defaultValue="0.00"
                   placeholder="Enter Retail Price"
                   size="sm"
-                  value={product.retailPrice}
+                  value={formate2DecimalNumber(product.retailPrice)}
                   onChange={onChangeProductValues}
+                  isInvalid={invalidRetailPrice}
+                  aria-describedby={RETAIL_PRICE_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidRetailPrice}
+                  message={"Retail Price fromat should have 5 integer digits and 2 digits."}
+                  ariaDescribedbyId={RETAIL_PRICE_HELP_BLOCK}
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridVat">
@@ -496,7 +622,9 @@ const Product = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={selectedVat}
+                  isInvalid={invalidVat}
                   onChange={onChangeProductValues}
                 >
                   <option>{"--Select VAT Value--"}</option>
@@ -510,11 +638,20 @@ const Product = (props) => {
               <Form.Group as={Col} controlId="formGridDiscountPrice">
                 Discount Price
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
+                  defaultValue="0.00"
                   placeholder="Enter Discount Price"
                   size="sm"
-                  value={product.discountPrice}
+                  value={formate2DecimalNumber(product.discountPrice)}
                   onChange={onChangeProductValues}
+                  isInvalid={invalidDiscountPrice}
+                  aria-describedby={DISCOUNT_PRICE_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidDiscountPrice}
+                  message={"Discount Price fromat should have 5 integer digits and 2 digits."}
+                  ariaDescribedbyId={DISCOUNT_PRICE_HELP_BLOCK}
                 />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridNote">
@@ -557,11 +694,20 @@ const Product = (props) => {
               <Form.Group as={Col} controlId="formGridStock">
                 Stock
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
+                  defaultValue="0.0000"
                   placeholder="Enter Stock"
                   size="sm"
                   value={product.stock}
                   onChange={onChangeProductValues}
+                  isInvalid={invalidStock}
+                  aria-describedby={STOCK_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidStock}
+                  message={"Stock fromat should have 6 integer digits and 4 digits."}
+                  ariaDescribedbyId={STOCK_HELP_BLOCK}
                 />
               </Form.Group>
             </Form.Row>
@@ -585,9 +731,12 @@ const Product = (props) => {
             open={openDialog}
             handleClose={handleClose}
             setBarcodes={setBarcodes}
+            barcodeIndex={barcodeIndex}
+            barcodes={barcodes}
+            setBarcodeIndex={setBarcodeIndex}
           />
         </div>
-        : <h3>Loading data...</h3>
+        : <ProgressLoading />
       }
     </div>
   );

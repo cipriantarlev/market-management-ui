@@ -20,6 +20,14 @@ import {
 
 import FindProduct from './FindProduct';
 
+import DisplayAlert from '../../common/DisplayAlert';
+import InvalidFieldText from '../../common/InvalidFieldText';
+import ProgressLoading from '../../common/ProgressLoading';
+import {
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
+
 import './style.css';
 
 const mapStateToProps = (state) => {
@@ -54,12 +62,25 @@ const InvoiceProduct = (props) => {
     onCreateInvoiceProduct,
     onUpdateInvoiceProduct,
     onFetchMeasuringUnits,
-    // onFetchInvoiceProducts,
     onFetchProductByBarcode,
     onRestData,
   } = props;
 
-  let history = useHistory();
+  const BARCODE_HELP_BLOCK = "barcodeHelpBlock";
+  const QUANTITY_HELP_BLOCK = "quntityHelpBlock";
+  const VENDOR_PRICE_HELP_BLOCK = "vendorPriceHelpBlock";
+  const RETAIL_PRICE_HELP_BLOCK = "retailPriceHelpBlock";
+  const TRADE_MARGIN_HELP_BLOCK = "tradeMarginHelpBlock";
+  const SUM_HELP_BLOCK = "sumHelpBlock";
+
+  const [invalidBarcode, setInvalidBarcode] = useState(false);
+  const [invalidQuantity, setInvalidQuantity] = useState(false);
+  const [invalidVendorPrice, setInvalidVendorPrice] = useState(false);
+  const [invalidRetailPrice, setInvalidRetailPrice] = useState(false);
+  const [invalidTradeMargin, setInvalidTradeMargin] = useState(false);
+  const [invalidSum, setInvalidSum] = useState(false);
+
+  const history = useHistory();
   const { id } = useParams();
   const { invoiceId } = useParams();
 
@@ -75,6 +96,7 @@ const InvoiceProduct = (props) => {
   const [retailPrice, setRetailPrice] = useState(0);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
 
   useEffect(() => {
     onFetchMeasuringUnits()
@@ -95,6 +117,14 @@ const InvoiceProduct = (props) => {
     setInvoice({ ...invoice, id: Number(invoiceId) })
     // eslint-disable-next-line
   }, [productByBarcode])
+
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
@@ -171,8 +201,10 @@ const InvoiceProduct = (props) => {
   const displayNnumberWith2Decimals = (numberTodisplay) => {
     if (isNaN(numberTodisplay)) {
       return Number(0).toFixed(2);
+    } else if (numberTodisplay === 0) {
+      return Number(0).toFixed(2);
     } else {
-      return Number(numberTodisplay).toFixed(2);
+      return Math.round(numberTodisplay * 100) / 100;
     }
   }
 
@@ -181,9 +213,9 @@ const InvoiceProduct = (props) => {
       return ""
     } else {
       if (product?.measuringUnit?.id === 1) {
-        return Number(numberTodisplay).toFixed(3);
+        return Math.round(numberTodisplay * 100) / 100;
       } else if (product?.measuringUnit?.id === 2) {
-        return Number(numberTodisplay);
+        return Math.round(numberTodisplay * 100) / 100;
       }
     }
   }
@@ -191,38 +223,48 @@ const InvoiceProduct = (props) => {
   const onChangeInvoiceProductValues = (event) => {
     switch (event.target.id) {
       case "formGridQuantity":
-        if (vendorPrice !== null || vendorPrice !== undefined) {
-          setSum(vendorPrice * Number(event.target.value));
-          setVatSum(vendorPrice * Number(event.target.value) * (product?.vat?.value / 100))
+        if (validateInputValue(setInvalidQuantity, "^(\\d{1,6}|\\d{0,6}\\.\\d{1,4})$", event)) {
+          if (vendorPrice !== null || vendorPrice !== undefined) {
+            setSum(vendorPrice * event.target.value);
+            setVatSum(vendorPrice * event.target.value * (product?.vat?.value / 100))
+          }
         }
-        setInvoiceProduct({ ...invoiceProduct, quantity: Number(event.target.value) });
+        setInvoiceProduct({ ...invoiceProduct, quantity: event.target.value });
         break;
       case "formGridVendorPrice":
-        if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
-          setSum(invoiceProduct?.quantity * Number(event.target.value));
-          setVatSum(invoiceProduct?.quantity * Number(event.target.value) * (product?.vat?.value / 100))
-          setTradeMargin((retailPrice * 100) / Number(event.target.value) - 100);
+        if (validateInputValue(setInvalidVendorPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
+          if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
+            setSum(invoiceProduct?.quantity * event.target.value);
+            setVatSum(invoiceProduct?.quantity * event.target.value * (product?.vat?.value / 100));
+            setTradeMargin(((retailPrice * 100) / event.target.value) - 100);
+          }
         }
-        setVendorPrice(Number(event.target.value));
+        setVendorPrice(event.target.value);
         break;
       case "formGridSum":
-        if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
-          setVendorPrice(Number(event.target.value) / invoiceProduct?.quantity);
-          setVatSum(Number(event.target.value) * (product?.vat?.value / 100))
+        if (validateInputValue(setInvalidSum, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
+          if (invoiceProduct?.quantity !== null || invoiceProduct?.quantity !== undefined) {
+            setVendorPrice(event.target.value / invoiceProduct?.quantity);
+            setVatSum(event.target.value * (product?.vat?.value / 100));
+          }
         }
-        setSum(Number(event.target.value));
+        setSum(event.target.value);
         break;
       case "formGridRetailPrice":
-        if (vendorPrice !== null || vendorPrice !== undefined) {
-          setTradeMargin(((Number(event.target.value) * 100) / vendorPrice - 100))
+        if (validateInputValue(setInvalidRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
+          if (vendorPrice !== null || vendorPrice !== undefined) {
+            setTradeMargin(((event.target.value * 100) / vendorPrice - 100));
+          }
         }
-        setRetailPrice(Number(event.target.value));
+        setRetailPrice(event.target.value);
         break;
       case "formGridTradeMarginPercent":
-        if (vendorPrice !== null || vendorPrice !== undefined) {
-          setRetailPrice(vendorPrice * (Number(event.target.value) / 100 + 1))
+        if (validateInputValue(setInvalidTradeMargin, "^(\\d{1,3}|\\d{0,3}\\.\\d{1,2})$", event)) {
+          if (vendorPrice !== null || vendorPrice !== undefined) {
+            setRetailPrice(vendorPrice * (event.target.value / 100 + 1));
+          }
         }
-        setTradeMargin(Number(event.target.value));
+        setTradeMargin(event.target.value);
         break;
       default:
         setInvoiceProduct(invoiceProduct);
@@ -231,36 +273,35 @@ const InvoiceProduct = (props) => {
   }
 
   const onPressEnterBarcodeField = (event) => {
-    if (event.keyCode === 13 || event.keyCode === 9) {
-      onFetchProductByBarcode(event.target.value)
+    if (Math.ceil(Math.log10(event.target.value + 1)) < 14) {
+      if (event.keyCode === 13 || event.keyCode === 9) {
+        validateInputValue(setInvalidBarcode, "^[0-9]+$", event);
+        onFetchProductByBarcode(event.target.value)
+      }
+      setInvalidBarcode(false);
+    } else {
+      setInvalidBarcode(true);
     }
   }
 
   const prepareInvoiceProductForSubmit = () => {
     Object.assign(product, product, {
-      discountPrice: vendorPrice,
-      retailPrice: retailPrice,
-      tradeMargin: tradeMarginProduct,
+      discountPrice: Math.round(vendorPrice * 100) / 100,
+      retailPrice: Math.round(retailPrice * 100) / 100,
+      tradeMargin: Math.round(tradeMarginProduct * 100) / 100,
       stock: invoiceProduct.quantity,
     })
 
     Object.assign(invoiceProduct, invoiceProduct, {
       invoice: invoice,
       product: product,
-      totalDiscountPrice: sum,
-      totalRetailPrice: retailPrice * invoiceProduct.quantity,
-      vatSum: vatSumProduct,
+      totalDiscountPrice: Math.round(sum * 100) / 100,
+      totalRetailPrice: Math.round(retailPrice * invoiceProduct.quantity * 100) / 100,
+      vatSum: Math.round(vatSumProduct * 100) / 100,
     })
   }
 
-  const onSubmitInvoiceProduct = () => {
-    prepareInvoiceProductForSubmit();
-    if (id !== "0") {
-      onUpdateInvoiceProduct(invoiceProduct);
-    } else {
-      onCreateInvoiceProduct(invoiceProduct);
-    }
-    history.goBack();
+  const resetAllAndGoBack = () => {
     setInvoiceProduct({});
     setInvoice({});
     setProduct({});
@@ -271,6 +312,38 @@ const InvoiceProduct = (props) => {
     setTradeMargin(0);
     setRetailPrice(0);
     onRestData();
+    history.goBack();
+  }
+
+  const isInvoiceProductReadyToBeSubmitted = () => (
+    !invalidBarcode && !invalidQuantity &&
+    !invalidVendorPrice && !invalidRetailPrice &&
+    !invalidTradeMargin && !invalidSum &&
+    vendorPrice > 0 && retailPrice > 0 &&
+    tradeMarginProduct > 0 && invoiceProduct.quantity > 0
+    && sum > 0
+  )
+
+  const markIvalidFields = () => {
+    setInvalidVendorPrice(vendorPrice === 0);
+    setInvalidSum(sum === 0);
+    setInvalidRetailPrice(retailPrice === 0);
+    setInvalidTradeMargin(tradeMarginProduct === 0);
+  }
+
+  const onSubmitInvoiceProduct = (event) => {
+    if (isInvoiceProductReadyToBeSubmitted()) {
+      prepareInvoiceProductForSubmit();
+      if (id !== "0") {
+        onUpdateInvoiceProduct(invoiceProduct);
+      } else {
+        onCreateInvoiceProduct(invoiceProduct);
+      }
+      resetAllAndGoBack();
+    } else {
+      preventSubmitIfInvalidInput(event);
+      markIvalidFields();
+    }
   }
 
   const addNewProduct = () => {
@@ -280,27 +353,21 @@ const InvoiceProduct = (props) => {
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     if (answer === true) {
-      setInvoiceProduct({});
-      setInvoice({});
-      setProduct({});
-      setSelectedMeasuringUnit(0);
-      setVendorPrice(0);
-      setSum(0);
-      setVatSum(0);
-      setTradeMargin(0);
-      setRetailPrice(0);
-      onRestData();
-      history.goBack();
+      resetAllAndGoBack();
     }
   }
 
   return (
     <div>
-      {error ? <div className="tc f2 red">Something went wrong!</div> : null}
+      <DisplayAlert
+        error={error}
+        open={openAlert}
+        setOpen={setOpenAlert}
+      />
       {!isPending ?
         <div className="container w-50 center mt3">
           <h3 className="mb4">Add New Product to Invoice</h3>
-          <Form>
+          <Form onSubmit={onSubmitInvoiceProduct}>
             <Form.Group as={Row} controlId="formGridInvoiceNumber">
               <Form.Label
                 column
@@ -315,6 +382,7 @@ const InvoiceProduct = (props) => {
                   type="text"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   style={{
                     textAlign: 'right'
@@ -334,11 +402,20 @@ const InvoiceProduct = (props) => {
               >Barcode</Form.Label>
               <Col sm="9">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
+                  required={true}
                   placeholder="Find by Barcode"
                   size="sm"
                   value={product?.barcodes !== undefined ? product?.barcodes[0].value : null}
                   onKeyDown={onPressEnterBarcodeField}
+                  isInvalid={invalidBarcode}
+                  aria-describedby={BARCODE_HELP_BLOCK}
+                />
+                <InvalidFieldText
+                  isInvalid={invalidBarcode}
+                  message={"Barcode value length should be between 1 and 13."}
+                  ariaDescribedbyId={BARCODE_HELP_BLOCK}
                 />
               </Col>
             </Form.Group>
@@ -356,6 +433,7 @@ const InvoiceProduct = (props) => {
                   type="text"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   value={product?.productCode?.value}
                 />
@@ -374,8 +452,9 @@ const InvoiceProduct = (props) => {
                 <Form.Control
                   type="text"
                   size="sm"
+                  required={true}
                   id="ProductName"
-                  placeholder="Click 🔎︎ to find product by name"
+                  placeholder="Click 🔎︎ to search product by name"
                   value={product?.nameRom}
                 />
               </Col>
@@ -414,13 +493,23 @@ const InvoiceProduct = (props) => {
                   >Quantity</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      defaultValue={"0.00"}
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
                       value={displayQuantityValueBasedOnMeasuringUnit(invoiceProduct?.quantity)}
                       onChange={onChangeInvoiceProductValues}
+                      isInvalid={invalidQuantity}
+                      aria-describedby={QUANTITY_HELP_BLOCK}
+                    />
+                    <InvalidFieldText
+                      isInvalid={invalidQuantity}
+                      message={"Quantity fromat should have 6 integer digits and 4 digits max."}
+                      ariaDescribedbyId={QUANTITY_HELP_BLOCK}
                     />
                   </Col>
                 </Form.Group>
@@ -456,13 +545,22 @@ const InvoiceProduct = (props) => {
                   >Vendor Price</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
                       value={displayNnumberWith2Decimals(vendorPrice)}
                       onChange={onChangeInvoiceProductValues}
+                      isInvalid={invalidVendorPrice}
+                      aria-describedby={VENDOR_PRICE_HELP_BLOCK}
+                    />
+                    <InvalidFieldText
+                      isInvalid={invalidVendorPrice}
+                      message={"Vendor Price fromat should have 5 integer digits and 2 digits."}
+                      ariaDescribedbyId={VENDOR_PRICE_HELP_BLOCK}
                     />
                   </Col>
                 </Form.Group>
@@ -479,13 +577,22 @@ const InvoiceProduct = (props) => {
                   >Sum</Form.Label>
                   <Col sm="7">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
                       value={displayNnumberWith2Decimals(sum)}
                       onChange={onChangeInvoiceProductValues}
+                      isInvalid={invalidSum}
+                      aria-describedby={SUM_HELP_BLOCK}
+                    />
+                    <InvalidFieldText
+                      isInvalid={invalidSum}
+                      message={"Sum fromat should have 6 integer digits and 2 digits."}
+                      ariaDescribedbyId={SUM_HELP_BLOCK}
                     />
                   </Col>
                 </Form.Group>
@@ -502,9 +609,11 @@ const InvoiceProduct = (props) => {
               >VAT Sum</Form.Label>
               <Col sm="3">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
                   size="sm"
                   disabled
+                  required={true}
                   readOnly
                   style={{
                     textAlign: 'right'
@@ -526,13 +635,22 @@ const InvoiceProduct = (props) => {
                   >Retail Price</Form.Label>
                   <Col sm="6">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
                       value={displayNnumberWith2Decimals(retailPrice)}
                       onChange={onChangeInvoiceProductValues}
+                      isInvalid={invalidRetailPrice}
+                      aria-describedby={RETAIL_PRICE_HELP_BLOCK}
+                    />
+                    <InvalidFieldText
+                      isInvalid={invalidRetailPrice}
+                      message={"Retail Price fromat should have 5 integer digits and 2 digits."}
+                      ariaDescribedbyId={RETAIL_PRICE_HELP_BLOCK}
                     />
                   </Col>
                 </Form.Group>
@@ -549,13 +667,22 @@ const InvoiceProduct = (props) => {
                   >Trade Margin %</Form.Label>
                   <Col sm="7">
                     <Form.Control
-                      type="text"
+                      type="number"
+                      as="input"
                       size="sm"
+                      required={true}
                       style={{
                         textAlign: 'right'
                       }}
                       value={displayNnumberWith2Decimals(tradeMarginProduct)}
                       onChange={onChangeInvoiceProductValues}
+                      isInvalid={invalidTradeMargin}
+                      aria-describedby={TRADE_MARGIN_HELP_BLOCK}
+                    />
+                    <InvalidFieldText
+                      isInvalid={invalidTradeMargin}
+                      message={"Trade margin fromat should have 3 integer digits and 2 digits."}
+                      ariaDescribedbyId={TRADE_MARGIN_HELP_BLOCK}
                     />
                   </Col>
                 </Form.Group>
@@ -572,7 +699,8 @@ const InvoiceProduct = (props) => {
               >Stock</Form.Label>
               <Col sm="3">
                 <Form.Control
-                  type="text"
+                  type="number"
+                  as="input"
                   size="sm"
                   disabled
                   readOnly
@@ -584,7 +712,7 @@ const InvoiceProduct = (props) => {
               <Button
                 className="mr5 w4 mt4"
                 variant="primary"
-                onClick={onSubmitInvoiceProduct}
+                type="submit"
               >
                 Submit
               </Button>
@@ -601,7 +729,7 @@ const InvoiceProduct = (props) => {
             handleClose={handleClose}
           />
         </div>
-        : <h3>Loading data...</h3>
+        : <ProgressLoading />
       }
     </div>
   );

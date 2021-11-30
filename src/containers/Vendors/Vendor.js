@@ -15,6 +15,14 @@ import {
   fetchVendors
 } from '../actions';
 
+import DisplayAlert from '../../common/DisplayAlert';
+import InvalidFieldText from '../../common/InvalidFieldText';
+import ProgressLoading from '../../common/ProgressLoading';
+import {
+  validateInputValue,
+  preventSubmitIfInvalidInput
+} from '../../common/utils';
+
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageVendors.isPending,
@@ -48,11 +56,35 @@ const Vendor = (props) => {
     onFetchVendors
   } = props;
 
+  const COMPANY_NAME_HELP_BLOCK = "companyNameHelpBlock";
+  const VAT_CODE_HELP_BLOCK = "vatCodeHelpBlock";
+  const BANK_NAME_HELP_BLOCK = "bankNameHelpBlock";
+  const CITY_HELP_BLOCK = "cityHelpBlock";
+  const FISCAL_CODE_HELP_BLOCK = "fiscalCodeHelpBlock";
+  const PHONE_NUMBER_HELP_BLOCK = "phoneNumberHelpBlock";
+  const BANK_ACCOUNT_HELP_BLOCK = "bankAccountHelpBlock";
+  const BUSINESS_ADDRESS_HELP_BLOCK = "businessAddressHelpBlock";
+  const NOTE_HELP_BLOCK = "noteHelpBlock";
+  const POSTAL_CODE_HELP_BLOCK = "postalCodeHelpBlock";
+
   let history = useHistory();
   const { id } = useParams();
 
   const [vendor, setVendor] = useState({});
   const [selectedRegion, setSelectedRegion] = useState(0);
+
+  const [openAlert, setOpenAlert] = useState(false);
+
+  const [invalidCompanyName, setInvalidCompanyName] = useState(false);
+  const [invalidVatCode, setInvalidVatCode] = useState(false);
+  const [invalidBankName, setInvalidBankName] = useState(false);
+  const [invalidCity, setInvalidCity] = useState(false);
+  const [invalidFiscalCode, setInvalidFiscalCode] = useState(false);
+  const [invalidPhoneNumber, setInvalidPhoneNumber] = useState(false);
+  const [invalidBankAccount, setInvalidBankAccount] = useState(false);
+  const [invalidBusinessAddress, setInvalidBusinessAddress] = useState(false);
+  const [invalidNote, setInvalidNote] = useState(false);
+  const [invalidPostalCode, setInvalidPostalCode] = useState(false);
 
   const onClickCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
@@ -73,8 +105,16 @@ const Vendor = (props) => {
     }
   }, [id, onFetchVendor])
 
+  useEffect(() => {
+    setOpenAlert(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpenAlert(false)
+  }, [])
+
   const intializeRegionValue = () => {
-    if(initialVendor.region !== undefined){
+    if (initialVendor.region !== undefined) {
       setSelectedRegion(initialVendor.region.id);
     }
   }
@@ -89,24 +129,31 @@ const Vendor = (props) => {
   const onChangeVendorValues = (event) => {
     switch (event.target.id) {
       case "formGridCompanyName":
+        validateInputValue(setInvalidCompanyName, "^[a-zA-Z0-9\\s]+$", event);
         setVendor({ ...vendor, name: event.target.value });
         break;
       case "formGridBankName":
+        validateInputValue(setInvalidBankName, "^[a-zA-Z0-9-.\\s]+$", event);
         setVendor({ ...vendor, bank: event.target.value });
         break;
       case "formGridPhoneNumber":
+        validateInputValue(setInvalidPhoneNumber, "^[0-9-]+$", event);
         setVendor({ ...vendor, phoneNumber: event.target.value });
         break;
       case "formGridFiscalCode":
+        validateInputValue(setInvalidFiscalCode, "^[0-9]+$", event);
         setVendor({ ...vendor, fiscalCode: event.target.value });
         break;
       case "formGridPostalCode":
+        validateInputValue(setInvalidPostalCode, "^[a-zA-Z0-9-]+$", event);
         setVendor({ ...vendor, postalCode: event.target.value });
         break;
       case "formGridBankAccount":
+        validateInputValue(setInvalidBankAccount, "^[0-9]+$", event);
         setVendor({ ...vendor, bankAccount: event.target.value });
         break;
       case "formGridBusinessAddress":
+        validateInputValue(setInvalidBusinessAddress, "^[a-zA-Z0-9\\s:\"'\\-ăâîșşțţÂĂÎȘŞȚŢ,]+$", event);
         setVendor({ ...vendor, businessAddress: event.target.value });
         break;
       case "formGridCurrency":
@@ -116,15 +163,18 @@ const Vendor = (props) => {
         setVendor({ ...vendor, vendorType: event.target.value });
         break;
       case "formGridVatCode":
+        validateInputValue(setInvalidVatCode, "^[0-9]+$", event);
         setVendor({ ...vendor, vatCode: event.target.value });
         break;
       case "formGridVendorLegalType":
         setVendor({ ...vendor, vendorLegalType: event.target.value });
         break;
       case "formGridCity":
+        validateInputValue(setInvalidCity, "^[a-zA-Z0-9-ăâîșşțţÂĂÎȘŞȚŢ\\s]+$", event);
         setVendor({ ...vendor, city: event.target.value });
         break;
       case "formGridNote":
+        validateInputValue(setInvalidNote, "^[a-zA-Z0-9\\s.,:;-]+$", event);
         setVendor({ ...vendor, note: event.target.value });
         break;
       case "formGridRegion":
@@ -138,22 +188,43 @@ const Vendor = (props) => {
     }
   }
 
-  const onSubmitVendor = () => {
-    if (id !== "0") {
-      onUpdateVendor(vendor);
+  const isMyOrganizationReadyToBeSubmitted = () => {
+    return invalidCompanyName === false &&
+      invalidVatCode === false &&
+      invalidBankName === false &&
+      invalidCity === false &&
+      invalidFiscalCode === false &&
+      invalidPhoneNumber === false &&
+      invalidBankAccount === false &&
+      invalidBusinessAddress === false &&
+      invalidNote === false &&
+      invalidPostalCode === false;
+  }
+
+  const onSubmitVendor = (event) => {
+    if (isMyOrganizationReadyToBeSubmitted()) {
+      if (id !== "0") {
+        onUpdateVendor(vendor);
+      } else {
+        onCreateVendor(vendor);
+      }
+      onFetchVendors();
+      history.push("/vendors");
     } else {
-      onCreateVendor(vendor);
+      preventSubmitIfInvalidInput(event);
     }
-    history.push("/vendors");
-    onFetchVendors();
   }
 
   return (
     <div>
-      {error ? <div className="tc f2 red">Something went wrong!</div> : null}
+      <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        />
       {!isPending ?
         <div className="container w-80 center mt4">
-          <Form>
+          <Form onSubmit={onSubmitVendor}>
             <Form.Row>
               <Form.Group
                 as={Col}
@@ -164,15 +235,24 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Company Name"
                   size="sm"
+                  required={true}
                   value={vendor.name}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidCompanyName}
+                  aria-describedby={COMPANY_NAME_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidCompanyName}
+                    message={"Vendor name should contain only letters and numbers."}
+                    ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridRegion">
                 Region
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={selectedRegion}
                   onChange={onChangeVendorValues}
                 >
@@ -190,9 +270,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Bank Name"
                   size="sm"
+                  required={true}
                   value={vendor.bank}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidBankName}
+                  aria-describedby={BANK_NAME_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidBankName}
+                    message={"Bank should contain only letters, numbers, . and -."}
+                    ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridPhoneNumber">
                 Phone Number
@@ -200,9 +288,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Phone Number"
                   size="sm"
+                  required={true}
                   value={vendor.phoneNumber}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidPhoneNumber}
+                  aria-describedby={PHONE_NUMBER_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidPhoneNumber}
+                    message={"Phone number should contain only numbers and dash. Example 254-548-52."}
+                    ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
+                  />
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -212,9 +308,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Fiscal Code"
                   size="sm"
+                  required={true}
                   value={vendor.fiscalCode}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidFiscalCode}
+                  aria-describedby={FISCAL_CODE_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidFiscalCode}
+                    message={"Fiscal code should contain only numbers."}
+                    ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridPostalCode">
                 Postal Code
@@ -222,9 +326,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Postal Code"
                   size="sm"
+                  required={true}
                   value={vendor.postalCode}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidPostalCode}
+                  aria-describedby={POSTAL_CODE_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidPostalCode}
+                    message={"Postal code should contain only letters, numbers and -."}
+                    ariaDescribedbyId={POSTAL_CODE_HELP_BLOCK}
+                  />
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -234,9 +346,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Bank Account"
                   size="sm"
+                  required={true}
                   value={vendor.bankAccount}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidBankAccount}
+                  aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidBankAccount}
+                    message={"Bank account should contain only numbers."}
+                    ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridBusinessAddress">
                 Business Address
@@ -244,9 +364,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter Business Address"
                   size="sm"
+                  required={true}
                   value={vendor.businessAddress}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidBusinessAddress}
+                  aria-describedby={BUSINESS_ADDRESS_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidBusinessAddress}
+                    message={"Business address should contain only letters, numbers, ', \", -, :."}
+                    ariaDescribedbyId={BUSINESS_ADDRESS_HELP_BLOCK}
+                  />
               </Form.Group>
             </Form.Row>
             <Form.Row>
@@ -255,6 +383,7 @@ const Vendor = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={vendor.currency}
                   onChange={onChangeVendorValues}
                 >
@@ -268,6 +397,7 @@ const Vendor = (props) => {
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={vendor.vendorType}
                   onChange={onChangeVendorValues}
                 >
@@ -284,15 +414,24 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter VAT Code"
                   size="sm"
+                  required={true}
                   value={vendor.vatCode}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidVatCode}
+                  aria-describedby={VAT_CODE_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidVatCode}
+                    message={"Vat code should contain only numbers."}
+                    ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridVendorLegalType">
                 Vendor Legal Type
                 <Form.Control
                   as="select"
                   size="sm"
+                  required={true}
                   value={vendor.vendorLegalType}
                   onChange={onChangeVendorValues}
                 >
@@ -309,9 +448,17 @@ const Vendor = (props) => {
                   type="text"
                   placeholder="Enter City"
                   size="sm"
+                  required={true}
                   value={vendor.city}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidCity}
+                  aria-describedby={CITY_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidCity}
+                    message={"City should contain only letters and numbers."}
+                    ariaDescribedbyId={CITY_HELP_BLOCK}
+                  />
               </Form.Group>
               <Form.Group as={Col} controlId="formGridNote">
                 Note
@@ -321,14 +468,21 @@ const Vendor = (props) => {
                   size="sm"
                   value={vendor.note}
                   onChange={onChangeVendorValues}
-                />
+                  isInvalid={invalidNote}
+                  aria-describedby={NOTE_HELP_BLOCK}
+                  />
+                  <InvalidFieldText 
+                    isInvalid={invalidNote}
+                    message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+                    ariaDescribedbyId={NOTE_HELP_BLOCK}
+                  />
               </Form.Group>
             </Form.Row>
             <div>
               <Button
                 className="mr5 w4"
                 variant="primary"
-                onClick={onSubmitVendor}
+                type="submit"
               >
                 Submit
               </Button>
@@ -341,7 +495,7 @@ const Vendor = (props) => {
             </div>
           </Form>
         </div>
-        : <h3>Loading data...</h3>
+        : <ProgressLoading />
       }
     </div>
   );

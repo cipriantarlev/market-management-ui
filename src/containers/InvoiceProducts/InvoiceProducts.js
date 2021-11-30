@@ -16,15 +16,17 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router';
 
-import { 
-  fetchInvoiceProducts, 
+import {
+  fetchInvoiceProducts,
   deleteInvoiceProduct,
   updateInvoice,
   restStoreData
 } from '../actions';
+
+import DisplayAlert from '../../common/DisplayAlert';
 
 const drawerWidth = 240;
 const marginTop = 56;
@@ -77,8 +79,11 @@ const InvoiceProducts = (props) => {
 
   const history = useHistory();
   const { id } = useParams();
+  const location = useLocation();
 
   const classes = useStyles();
+
+  const [open, setOpen] = useState(false);
 
   const [displayInvoiceProducts, setDisplayInvoiceProduct] = useState([]);
   const [selectedInvoiceProducts, setSelectedInvoiceProduct] = useState([]);
@@ -91,17 +96,29 @@ const InvoiceProducts = (props) => {
     </Link>
   );
 
-  const renderBarcodes = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params?.value?.barcodes[0].value}
-    </Link>
-  );
+  const renderBarcodes = (params) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+        {params?.value?.barcodes[0].value}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+        {params?.value?.barcodes[0].value}
+      </Link>
+    }
+  }
 
-  const renderProductName = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params?.row?.product?.nameRom}
-    </Link>
-  );
+  const renderProductName = (params) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      return <Link className="no-underline" to={`/income-products/${id}/product/${params.id}`}>
+        {params?.row?.product?.nameRom}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      return <Link className="no-underline" to={`/outcome-products/${id}/product/${params.id}`}>
+        {params?.row?.product?.nameRom}
+      </Link>
+    }
+  }
 
   const renderDiscountPrice = (params) => {
     if (params.row.id !== 0) {
@@ -115,7 +132,7 @@ const InvoiceProducts = (props) => {
   };
   const renderTrandeMargin = (params) => {
     if (params.row.id !== 0) {
-    return Number(params.row.product.tradeMargin).toFixed(2)
+      return Number(params.row.product.tradeMargin).toFixed(2)
     }
   };
   const renderVatValue = (params) => (params.row.product.vat.name);
@@ -208,10 +225,17 @@ const InvoiceProducts = (props) => {
     },
   ];
 
-
   useEffect(() => {
     onFetchInvoiceProducts(id);
   }, [onFetchInvoiceProducts, id])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const addOrderNumberToInvoiceProduct = () => {
     if (invoiceProducts !== null || invoiceProducts !== undefined) {
@@ -246,8 +270,8 @@ const InvoiceProducts = (props) => {
       averageTradeMargin = averageTradeMargin / invoiceProductWithOrder.length;
 
       setInvoiceValue({
-        totalDiscountPrice, 
-        totalRetailPrice, 
+        totalDiscountPrice,
+        totalRetailPrice,
         vatSum,
         averageTradeMargin,
         totalTradeMargin
@@ -280,11 +304,20 @@ const InvoiceProducts = (props) => {
     // eslint-disable-next-line 
   }, [invoiceProducts])
 
- 
+
 
   const onAddNewInvoiceProduct = () => {
     onRestData();
-    history.push(`/invoice-products/${id}/product/0`)
+    pushHistory(`/income-invoice-products/${id}/product/0`,
+      `/outcome-invoice-products/${id}/product/0`);
+  }
+
+  const pushHistory = (incomePath, outcomePath) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      history.push(incomePath);
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      history.push(outcomePath);
+    }
   }
 
   const onSelectInvoiceProduct = (selectedInvoicesArray) => (setSelectedInvoiceProduct(selectedInvoicesArray.selectionModel));
@@ -305,7 +338,8 @@ const InvoiceProducts = (props) => {
   const onUpdateSelectedInvoiceProduct = () => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
       selectedInvoiceProducts.forEach(invoiceProductId => {
-        history.push(`/invoice-products/${id}/product/${invoiceProductId}`);
+        pushHistory(`/income-invoice-products/${id}/product/${invoiceProductId}`,
+          `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
       })
     } else {
       alert("You didn't select a product or selected more than one. Please try again.");
@@ -322,95 +356,100 @@ const InvoiceProducts = (props) => {
   }
 
   const backToInvoices = () => {
-    Object.assign(
-      invoiceToUpdate, invoiceToUpdate,{
-        totalDiscountPrice: invoiceValues.totalDiscountPrice,
-        totalRetailPrice: invoiceValues.totalRetailPrice,
-        totalTradeMargin: invoiceValues.totalTradeMargin,
-        tradeMargin: invoiceValues.averageTradeMargin,
-        vatSum: invoiceValues.vatSum
+    if (displayInvoiceProducts.length > 1) {
+      Object.assign(
+        invoiceToUpdate, invoiceToUpdate, {
+        totalDiscountPrice: Math.round(invoiceValues.totalDiscountPrice * 100) / 100,
+        totalRetailPrice: Math.round(invoiceValues.totalRetailPrice * 100) / 100,
+        totalTradeMargin: Math.round(invoiceValues.totalTradeMargin * 100) / 100,
+        tradeMargin: Math.round(invoiceValues.averageTradeMargin * 100) / 100,
+        vatSum: Math.round(invoiceValues.vatSum * 100) / 100,
       }
-    )
-    onUpdateInvoice(invoiceToUpdate);
-    history.push(`/invoices`);
+      )
+      onUpdateInvoice(invoiceToUpdate);
+    }
+    pushHistory(`/income-invoices`, `/outcome-invoices`);
   }
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      {error ? <h4 className="tc red mt5">Something went wrong!</h4> :
-        <div className={classes.root}>
-          <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-          >
-            <Toolbar />
-            <Toolbar />
-            <div className={classes.drawerContainer}>
-              <List>
-                <Divider />
-                <ListItem
-                  button
-                  divider
-                  onClick={onAddNewInvoiceProduct}
-                >
-                  <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
-                  <ListItemText primary={'Add new Product'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoiceProduct}
-                >
-                  <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Product'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onUpdateSelectedInvoiceProductInformation}
-                >
-                  <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
-                  <ListItemText primary={'Update Product Information'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={onDeleteSelectedInvoiceProduct}
-                >
-                  <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
-                  <ListItemText primary={'Delete Selected Product(s)'} />
-                </ListItem>
-                <ListItem
-                  button
-                  divider
-                  onClick={backToInvoices}
-                >
-                  <ListItemIcon>{<BackspaceIcon />}</ListItemIcon>
-                  <ListItemText primary={'Back to Invoices'} />
-                </ListItem>
-              </List>
-            </div>
-          </Drawer>
-          <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
-            <DataGrid
-              rows={displayInvoiceProducts}
-              columns={columns}
-              pageSize={25}
-              checkboxSelection={true}
-              loading={isPending}
-              // sortingOrder={['asc', 'desc', null]}
-              disableSelectionOnClick={true}
-              rowHeight={30}
-              isRowSelectable={(params) => params.row.id !== 0}
-              onSelectionModelChange={onSelectInvoiceProduct}
-              disableColumnMenu
-            />
+      <div className={classes.root}>
+        <Drawer
+          className={classes.drawer}
+          variant="permanent"
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <Toolbar />
+          <Toolbar />
+          <div className={classes.drawerContainer}>
+            <List>
+              <Divider />
+              <ListItem
+                button
+                divider
+                onClick={onAddNewInvoiceProduct}
+              >
+                <ListItemIcon>{<AddCircleOutlineIcon />}</ListItemIcon>
+                <ListItemText primary={'Add new Product'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoiceProduct}
+              >
+                <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Product'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onUpdateSelectedInvoiceProductInformation}
+              >
+                <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
+                <ListItemText primary={'Update Product Information'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onDeleteSelectedInvoiceProduct}
+              >
+                <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
+                <ListItemText primary={'Delete Selected Product(s)'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={backToInvoices}
+              >
+                <ListItemIcon>{<BackspaceIcon />}</ListItemIcon>
+                <ListItemText primary={'Back to Invoices'} />
+              </ListItem>
+            </List>
           </div>
+        </Drawer>
+        <div className="center mt-3" style={{ height: '37em', width: '77rem' }}>
+          <DisplayAlert
+            error={error}
+            open={open}
+            setOpen={setOpen}
+          />
+          <DataGrid
+            rows={displayInvoiceProducts}
+            columns={columns}
+            pageSize={25}
+            checkboxSelection={true}
+            loading={isPending}
+            // sortingOrder={['asc', 'desc', null]}
+            disableSelectionOnClick={true}
+            rowHeight={30}
+            isRowSelectable={(params) => params.row.id !== 0}
+            onSelectionModelChange={onSelectInvoiceProduct}
+            disableColumnMenu
+          />
         </div>
-      }
+      </div>
     </div>
   );
 }

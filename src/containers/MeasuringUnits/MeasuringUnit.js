@@ -11,6 +11,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
+import { validateInputValueAndShowErrorMessage } from '../../common/utils';
 
 import {
   fetchMeasuringUnit,
@@ -48,7 +49,7 @@ const MeasuringUnit = (props) => {
 
   const [measuringUnit, setMeasuringUnit] = useState({});
   const [openAlert, setOpenAlert] = useState(true);
-  const [showError, setFhowError] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -74,19 +75,26 @@ const MeasuringUnit = (props) => {
   }, [])
 
   const onChangeMeasuringUnitValues = (event) => {
-    if (event.target.id === "name" && event.target.value.match("^[a-zA-Z0-9]+$")) {
+    if (event.target.id === "name") {
+      validateInputValueAndShowErrorMessage(
+        setShowError,
+        "^[a-zA-Z0-9]+$",
+        event,
+        setErrorMessage,
+        "Measuring Unit name should contain only letters and numbers!")
       setMeasuringUnit({ ...measuringUnit, name: event.target.value });
-      setFhowError(false);
-      setErrorMessage("")
-    } else {
-      setFhowError(true);
-      setErrorMessage("Measuring Unit name should contain only letters and numbers!")
     }
   }
 
   const onCancel = () => {
     const answer = window.confirm('Are you sure you want to cancel?');
     return answer === true ? handleClose() : null;
+  }
+
+  const onPressEnter = (event) => {
+    if (event.charCode === 13) {
+      onSubmitMeasuringUnit();
+    }
   }
 
   const onSubmitMeasuringUnit = () => {
@@ -133,6 +141,7 @@ const MeasuringUnit = (props) => {
           helperText={errorMessage}
           value={measuringUnit.name}
           onChange={onChangeMeasuringUnitValues}
+          onKeyPress={onPressEnter}
         />
       </DialogContent>
       <DialogActions>
@@ -141,6 +150,7 @@ const MeasuringUnit = (props) => {
           className="mr5 w4"
           variant="contained"
           color="primary"
+          type="submit"
         >
           Submit
         </Button>

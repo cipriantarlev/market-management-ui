@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,8 +13,16 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { fetchVatList, deleteVat } from '../actions';
+import { 
+  fetchVatList, 
+  deleteVat, 
+  restStoreData 
+} from '../actions';
+
 import Vat from './Vat';
+
+import DisplayAlert from '../../common/DisplayAlert';
+import ProgressLoading from '../../common/ProgressLoading';
 
 const useStyles = makeStyles({
   table: {
@@ -34,6 +42,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onFetchVatList: () => dispatch(fetchVatList()),
     onDeleteVat: (id) => dispatch(deleteVat(id)),
+    onRestStoreData: () => dispatch(restStoreData()),
   }
 }
 
@@ -44,24 +53,38 @@ const VatList = (props) => {
     vatList,
     error,
     onFetchVatList,
-    onDeleteVat
+    onDeleteVat,
+    onRestStoreData,
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [vats, setVats] = useState([]);
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpenDialog(false);
+      setVats([]);
+      onRestStoreData();
     }
   };
 
   useEffect(() => {
     onFetchVatList();
-  }, [onFetchVatList])
+    setVats(vatList)
+    // eslint-disable-next-line
+  }, [onFetchVatList, vats])
+
+  useEffect(() => {
+    setOpen(true)
+  }, [error])
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onAddNewVat = () => {
     setId(0);
@@ -77,7 +100,8 @@ const VatList = (props) => {
     const answer = window.confirm(`Are you sure you want to delete Vat with id: ${vatId}?`);
     if (answer === true) {
       onDeleteVat(vatId);
-      history.go(0);
+      setVats([]);
+      onRestStoreData();
     }
   }
 
@@ -92,6 +116,12 @@ const VatList = (props) => {
       >
         Add new Vat
       </Button>
+      {error ? 
+      <DisplayAlert 
+        error={error}
+        open={open}
+        setOpen={setOpen}
+      /> : null}
       {!isPending ?
         <div>
           <TableContainer component={Paper}>
@@ -141,8 +171,7 @@ const VatList = (props) => {
           />
         </div>
         :
-        <h3>Loading data ...</h3>}
-      {error ? <div style={{ color: 'red', textAlign: 'center', margin: 20, fontSize: '2em' }}>Error! Something went wrong!!!</div> : null}
+        <ProgressLoading />}
     </div>
   );
 }
