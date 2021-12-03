@@ -215,6 +215,283 @@ const Vendor = (props) => {
     }
   }
 
+  const renderFormContent = () => (
+    !isPending ?
+    <div className="container w-80 center mt4">
+      <Form onSubmit={onSubmitVendor}>
+        <Form.Row>
+          <Form.Group
+            as={Col}
+            controlId="formGridCompanyName"
+          >
+            Company Name
+            <Form.Control
+              type="text"
+              placeholder="Enter Company Name"
+              size="sm"
+              required={true}
+              value={vendor.name}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidCompanyName}
+              aria-describedby={COMPANY_NAME_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidCompanyName}
+                message={"Vendor name should contain only letters and numbers."}
+                ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridRegion">
+            Region
+            <Form.Control
+              as="select"
+              size="sm"
+              required={true}
+              value={selectedRegion}
+              onChange={onChangeVendorValues}
+            >
+              <option>{'--Select Vendor Region--'}</option>
+              {regions.map((region) => (
+                <option key={region.id} value={region.id}>{region.name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridBankName">
+            Bank Name
+            <Form.Control
+              type="text"
+              placeholder="Enter Bank Name"
+              size="sm"
+              required={true}
+              value={vendor.bank}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidBankName}
+              aria-describedby={BANK_NAME_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidBankName}
+                message={"Bank should contain only letters, numbers, . and -."}
+                ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridPhoneNumber">
+            Phone Number
+            <Form.Control
+              type="text"
+              placeholder="Enter Phone Number"
+              size="sm"
+              required={true}
+              value={vendor.phoneNumber}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidPhoneNumber}
+              aria-describedby={PHONE_NUMBER_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidPhoneNumber}
+                message={"Phone number should contain only numbers and dash. Example 254-548-52."}
+                ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
+              />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridFiscalCode">
+            Fiscal Code
+            <Form.Control
+              type="text"
+              placeholder="Enter Fiscal Code"
+              size="sm"
+              required={true}
+              value={vendor.fiscalCode}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidFiscalCode}
+              aria-describedby={FISCAL_CODE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidFiscalCode}
+                message={"Fiscal code should contain only numbers."}
+                ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridPostalCode">
+            Postal Code
+            <Form.Control
+              type="text"
+              placeholder="Enter Postal Code"
+              size="sm"
+              required={true}
+              value={vendor.postalCode}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidPostalCode}
+              aria-describedby={POSTAL_CODE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidPostalCode}
+                message={"Postal code should contain only letters, numbers and -."}
+                ariaDescribedbyId={POSTAL_CODE_HELP_BLOCK}
+              />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridBankAccount">
+            Bank Account
+            <Form.Control
+              type="text"
+              placeholder="Enter Bank Account"
+              size="sm"
+              required={true}
+              value={vendor.bankAccount}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidBankAccount}
+              aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidBankAccount}
+                message={"Bank account should contain only numbers."}
+                ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridBusinessAddress">
+            Business Address
+            <Form.Control
+              type="text"
+              placeholder="Enter Business Address"
+              size="sm"
+              required={true}
+              value={vendor.businessAddress}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidBusinessAddress}
+              aria-describedby={BUSINESS_ADDRESS_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidBusinessAddress}
+                message={"Business address should contain only letters, numbers, ', \", -, :."}
+                ariaDescribedbyId={BUSINESS_ADDRESS_HELP_BLOCK}
+              />
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridCurrency">
+            Currency
+            <Form.Control
+              as="select"
+              size="sm"
+              required={true}
+              value={vendor.currency}
+              onChange={onChangeVendorValues}
+            >
+              {currencies.map((item, index) => (
+                <option key={`${index}_${item}`} value={item}>{item}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridVendorType">
+            VendorType
+            <Form.Control
+              as="select"
+              size="sm"
+              required={true}
+              value={vendor.vendorType}
+              onChange={onChangeVendorValues}
+            >
+              {vendorTypes.map((item, index) => (
+                <option key={`${index}_${item}`} value={item}>{item}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridVatCode">
+            VAT Code
+            <Form.Control
+              type="text"
+              placeholder="Enter VAT Code"
+              size="sm"
+              required={true}
+              value={vendor.vatCode}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidVatCode}
+              aria-describedby={VAT_CODE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidVatCode}
+                message={"Vat code should contain only numbers."}
+                ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridVendorLegalType">
+            Vendor Legal Type
+            <Form.Control
+              as="select"
+              size="sm"
+              required={true}
+              value={vendor.vendorLegalType}
+              onChange={onChangeVendorValues}
+            >
+              {vendorLegalTypes.map((item, index) => (
+                <option key={`${index}_${item}`} value={item}>{item}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridCity">
+            City
+            <Form.Control
+              type="text"
+              placeholder="Enter City"
+              size="sm"
+              required={true}
+              value={vendor.city}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidCity}
+              aria-describedby={CITY_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidCity}
+                message={"City should contain only letters and numbers."}
+                ariaDescribedbyId={CITY_HELP_BLOCK}
+              />
+          </Form.Group>
+          <Form.Group as={Col} controlId="formGridNote">
+            Note
+            <Form.Control
+              type="text"
+              placeholder="Enter Note"
+              size="sm"
+              value={vendor.note}
+              onChange={onChangeVendorValues}
+              isInvalid={invalidNote}
+              aria-describedby={NOTE_HELP_BLOCK}
+              />
+              <InvalidFieldText 
+                isInvalid={invalidNote}
+                message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+                ariaDescribedbyId={NOTE_HELP_BLOCK}
+              />
+          </Form.Group>
+        </Form.Row>
+        <div>
+          <Button
+            className="mr5 w4"
+            variant="primary"
+            type="submit"
+          >
+            Submit
+          </Button>
+          <Button
+            className="btn btn-warning ml5 w4"
+            onClick={onClickCancel}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Form>
+    </div>
+    : <ProgressLoading />
+  )
+
   return (
     <div>
       <DisplayAlert
@@ -222,281 +499,7 @@ const Vendor = (props) => {
           open={openAlert}
           setOpen={setOpenAlert}
         />
-      {!isPending ?
-        <div className="container w-80 center mt4">
-          <Form onSubmit={onSubmitVendor}>
-            <Form.Row>
-              <Form.Group
-                as={Col}
-                controlId="formGridCompanyName"
-              >
-                Company Name
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Company Name"
-                  size="sm"
-                  required={true}
-                  value={vendor.name}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidCompanyName}
-                  aria-describedby={COMPANY_NAME_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidCompanyName}
-                    message={"Vendor name should contain only letters and numbers."}
-                    ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridRegion">
-                Region
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={selectedRegion}
-                  onChange={onChangeVendorValues}
-                >
-                  <option>{'--Select Vendor Region--'}</option>
-                  {regions.map((region) => (
-                    <option key={region.id} value={region.id}>{region.name}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridBankName">
-                Bank Name
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Bank Name"
-                  size="sm"
-                  required={true}
-                  value={vendor.bank}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidBankName}
-                  aria-describedby={BANK_NAME_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidBankName}
-                    message={"Bank should contain only letters, numbers, . and -."}
-                    ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPhoneNumber">
-                Phone Number
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Phone Number"
-                  size="sm"
-                  required={true}
-                  value={vendor.phoneNumber}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidPhoneNumber}
-                  aria-describedby={PHONE_NUMBER_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidPhoneNumber}
-                    message={"Phone number should contain only numbers and dash. Example 254-548-52."}
-                    ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
-                  />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridFiscalCode">
-                Fiscal Code
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Fiscal Code"
-                  size="sm"
-                  required={true}
-                  value={vendor.fiscalCode}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidFiscalCode}
-                  aria-describedby={FISCAL_CODE_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidFiscalCode}
-                    message={"Fiscal code should contain only numbers."}
-                    ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridPostalCode">
-                Postal Code
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Postal Code"
-                  size="sm"
-                  required={true}
-                  value={vendor.postalCode}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidPostalCode}
-                  aria-describedby={POSTAL_CODE_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidPostalCode}
-                    message={"Postal code should contain only letters, numbers and -."}
-                    ariaDescribedbyId={POSTAL_CODE_HELP_BLOCK}
-                  />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridBankAccount">
-                Bank Account
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Bank Account"
-                  size="sm"
-                  required={true}
-                  value={vendor.bankAccount}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidBankAccount}
-                  aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidBankAccount}
-                    message={"Bank account should contain only numbers."}
-                    ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridBusinessAddress">
-                Business Address
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Business Address"
-                  size="sm"
-                  required={true}
-                  value={vendor.businessAddress}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidBusinessAddress}
-                  aria-describedby={BUSINESS_ADDRESS_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidBusinessAddress}
-                    message={"Business address should contain only letters, numbers, ', \", -, :."}
-                    ariaDescribedbyId={BUSINESS_ADDRESS_HELP_BLOCK}
-                  />
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridCurrency">
-                Currency
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={vendor.currency}
-                  onChange={onChangeVendorValues}
-                >
-                  {currencies.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridVendorType">
-                VendorType
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={vendor.vendorType}
-                  onChange={onChangeVendorValues}
-                >
-                  {vendorTypes.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridVatCode">
-                VAT Code
-                <Form.Control
-                  type="text"
-                  placeholder="Enter VAT Code"
-                  size="sm"
-                  required={true}
-                  value={vendor.vatCode}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidVatCode}
-                  aria-describedby={VAT_CODE_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidVatCode}
-                    message={"Vat code should contain only numbers."}
-                    ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridVendorLegalType">
-                Vendor Legal Type
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={vendor.vendorLegalType}
-                  onChange={onChangeVendorValues}
-                >
-                  {vendorLegalTypes.map((item, index) => (
-                    <option key={`${index}_${item}`} value={item}>{item}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridCity">
-                City
-                <Form.Control
-                  type="text"
-                  placeholder="Enter City"
-                  size="sm"
-                  required={true}
-                  value={vendor.city}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidCity}
-                  aria-describedby={CITY_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidCity}
-                    message={"City should contain only letters and numbers."}
-                    ariaDescribedbyId={CITY_HELP_BLOCK}
-                  />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridNote">
-                Note
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Note"
-                  size="sm"
-                  value={vendor.note}
-                  onChange={onChangeVendorValues}
-                  isInvalid={invalidNote}
-                  aria-describedby={NOTE_HELP_BLOCK}
-                  />
-                  <InvalidFieldText 
-                    isInvalid={invalidNote}
-                    message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
-                    ariaDescribedbyId={NOTE_HELP_BLOCK}
-                  />
-              </Form.Group>
-            </Form.Row>
-            <div>
-              <Button
-                className="mr5 w4"
-                variant="primary"
-                type="submit"
-              >
-                Submit
-              </Button>
-              <Button
-                className="btn btn-warning ml5 w4"
-                onClick={onClickCancel}
-              >
-                Cancel
-              </Button>
-            </div>
-          </Form>
-        </div>
-        : <ProgressLoading />
-      }
+      {initialVendor.status === 403 ? history.push("/forbidden") : renderFormContent()}
     </div>
   );
 }

@@ -173,6 +173,190 @@ const MyOrganizations = (props) => {
     }
   }
 
+  const renderFormContent = () => (
+    !isPending ?
+    <Form onSubmit={onSubmitMyOrganization}>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridCompanyName">
+          <Form.Label>Company Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Company Name"
+            value={myOrg.name}
+            required={true}
+            isInvalid={invalidCompanyName}
+            onChange={onChangeOrgValues}
+            aria-describedby={COMPANY_NAME_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidCompanyName}
+            message={"My Organization name should contain only letters, numbers and spaces."}
+            ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridVatCode">
+          <Form.Label>VAT Code</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter VAT Code"
+            value={myOrg.vatCode}
+            required={true}
+            isInvalid={invalidVatCode}
+            onChange={onChangeOrgValues}
+            aria-describedby={VAT_CODE_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidVatCode}
+            message={"Vat Code should contain only numbers."}
+            ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
+          />
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridBankName">
+          <Form.Label>Bank Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Bank Name"
+            value={myOrg.bank}
+            required={true}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidBankName}
+            aria-describedby={BANK_NAME_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidBankName}
+            message={"Bank should contain only letters, numbers, . and -."}
+            ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridCity">
+          <Form.Label>City</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter City"
+            value={myOrg.city}
+            required={true}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidCity}
+            aria-describedby={CITY_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidCity}
+            message={"City should contain only letters and numbers."}
+            ariaDescribedbyId={CITY_HELP_BLOCK}
+          />
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridFiscalCode">
+          <Form.Label>Fiscal Code</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Fiscal Code"
+            value={myOrg.fiscalCode}
+            required={true}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidFiscalCode}
+            aria-describedby={FISCAL_CODE_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidFiscalCode}
+            message={"Fiscal Code should contain only numbers."}
+            ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridPhoneNumber">
+          <Form.Label>Phone Number</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Phone Number"
+            value={myOrg.phoneNumber}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidPhoneNumber}
+            aria-describedby={PHONE_NUMBER_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidPhoneNumber}
+            message={"Phone number should contain only dash and numbers. Example: 255-545-54"}
+            ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
+          />
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridBankAccount">
+          <Form.Label>Bank Account</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Bank Account"
+            value={myOrg.bankAccount}
+            required={true}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidBankAccount}
+            aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidBankAccount}
+            message={"Bank Account should contain only numbers."}
+            ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridEmail">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={myOrg.email}
+            onChange={onChangeOrgValues}
+            isInvalid={invalidEmail}
+            aria-describedby={EMAIL_HELP_BLOCK}
+          />
+          <InvalidFieldText 
+            isInvalid={invalidEmail}
+            message={"Email should respect the pattern: email@email.com."}
+            ariaDescribedbyId={EMAIL_HELP_BLOCK}
+          />
+        </Form.Group>
+      </Form.Row>
+      <Form.Group
+        as={Col}
+        controlId="formGridNote"
+        style={{ padding: 0 }}
+      >
+        <Form.Label>Note</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter note"
+          value={checkForNull(myOrg)}
+          onChange={onChangeOrgValues}
+          isInvalid={invalidNote}
+          aria-describedby={NOTE_HELP_BLOCK}
+        />
+        <InvalidFieldText 
+          isInvalid={invalidNote}
+          message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+          ariaDescribedbyId={NOTE_HELP_BLOCK}
+        />
+      </Form.Group>
+      <div>
+        <Button
+          className="mr5 w4"
+          variant="primary"
+          type="submit"
+        >
+          Submit
+        </Button>
+        <Button
+          className="btn btn-warning ml5 w4"
+          onClick={onClickCancel}
+        >
+          Cancel
+        </Button>
+      </div>
+    </Form>
+    : <ProgressLoading />
+  )
+
   return (
     <div className="w-60 center mt4">
       <DisplayAlert
@@ -180,188 +364,7 @@ const MyOrganizations = (props) => {
           open={openAlert}
           setOpen={setOpenAlert}
         />
-      {!isPending ?
-        <Form onSubmit={onSubmitMyOrganization}>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridCompanyName">
-              <Form.Label>Company Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Company Name"
-                value={myOrg.name}
-                required={true}
-                isInvalid={invalidCompanyName}
-                onChange={onChangeOrgValues}
-                aria-describedby={COMPANY_NAME_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidCompanyName}
-                message={"My Organization name should contain only letters, numbers and spaces."}
-                ariaDescribedbyId={COMPANY_NAME_HELP_BLOCK}
-              />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridVatCode">
-              <Form.Label>VAT Code</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter VAT Code"
-                value={myOrg.vatCode}
-                required={true}
-                isInvalid={invalidVatCode}
-                onChange={onChangeOrgValues}
-                aria-describedby={VAT_CODE_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidVatCode}
-                message={"Vat Code should contain only numbers."}
-                ariaDescribedbyId={VAT_CODE_HELP_BLOCK}
-              />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridBankName">
-              <Form.Label>Bank Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Bank Name"
-                value={myOrg.bank}
-                required={true}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidBankName}
-                aria-describedby={BANK_NAME_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidBankName}
-                message={"Bank should contain only letters, numbers, . and -."}
-                ariaDescribedbyId={BANK_NAME_HELP_BLOCK}
-              />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridCity">
-              <Form.Label>City</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter City"
-                value={myOrg.city}
-                required={true}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidCity}
-                aria-describedby={CITY_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidCity}
-                message={"City should contain only letters and numbers."}
-                ariaDescribedbyId={CITY_HELP_BLOCK}
-              />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridFiscalCode">
-              <Form.Label>Fiscal Code</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Fiscal Code"
-                value={myOrg.fiscalCode}
-                required={true}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidFiscalCode}
-                aria-describedby={FISCAL_CODE_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidFiscalCode}
-                message={"Fiscal Code should contain only numbers."}
-                ariaDescribedbyId={FISCAL_CODE_HELP_BLOCK}
-              />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridPhoneNumber">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Phone Number"
-                value={myOrg.phoneNumber}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidPhoneNumber}
-                aria-describedby={PHONE_NUMBER_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidPhoneNumber}
-                message={"Phone number should contain only dash and numbers. Example: 255-545-54"}
-                ariaDescribedbyId={PHONE_NUMBER_HELP_BLOCK}
-              />
-            </Form.Group>
-          </Form.Row>
-          <Form.Row>
-            <Form.Group as={Col} controlId="formGridBankAccount">
-              <Form.Label>Bank Account</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter Bank Account"
-                value={myOrg.bankAccount}
-                required={true}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidBankAccount}
-                aria-describedby={BANK_ACCOUNT_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidBankAccount}
-                message={"Bank Account should contain only numbers."}
-                ariaDescribedbyId={BANK_ACCOUNT_HELP_BLOCK}
-              />
-            </Form.Group>
-            <Form.Group as={Col} controlId="formGridEmail">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={myOrg.email}
-                onChange={onChangeOrgValues}
-                isInvalid={invalidEmail}
-                aria-describedby={EMAIL_HELP_BLOCK}
-              />
-              <InvalidFieldText 
-                isInvalid={invalidEmail}
-                message={"Email should respect the pattern: email@email.com."}
-                ariaDescribedbyId={EMAIL_HELP_BLOCK}
-              />
-            </Form.Group>
-          </Form.Row>
-          <Form.Group
-            as={Col}
-            controlId="formGridNote"
-            style={{ padding: 0 }}
-          >
-            <Form.Label>Note</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter note"
-              value={checkForNull(myOrg)}
-              onChange={onChangeOrgValues}
-              isInvalid={invalidNote}
-              aria-describedby={NOTE_HELP_BLOCK}
-            />
-            <InvalidFieldText 
-              isInvalid={invalidNote}
-              message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
-              ariaDescribedbyId={NOTE_HELP_BLOCK}
-            />
-          </Form.Group>
-          <div>
-            <Button
-              className="mr5 w4"
-              variant="primary"
-              type="submit"
-            >
-              Submit
-            </Button>
-            <Button
-              className="btn btn-warning ml5 w4"
-              onClick={onClickCancel}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Form>
-        : <ProgressLoading />
-      }
+      {myOrganization.status === 403 ? history.push("/forbidden") : renderFormContent()}
     </div>
   );
 }

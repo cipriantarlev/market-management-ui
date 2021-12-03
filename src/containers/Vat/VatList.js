@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -58,6 +58,7 @@ const VatList = (props) => {
   } = props;
 
   const classes = useStyles();
+  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
@@ -105,6 +106,59 @@ const VatList = (props) => {
     }
   }
 
+  const renderTableContent = () => (
+    !isPending ?
+    <div>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} size="small" aria-label="simple table">
+          <TableHead style={{ backgroundColor: "#808080ad" }}>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Value</TableCell>
+              <TableCell align="center">Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {vatList.map((element) => (
+              <TableRow key={element.id}>
+                <TableCell component="th" scope="row">
+                  <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)} >
+                    {element.id}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)}>
+                    {element.name}
+                  </Link>
+                </TableCell>
+                <TableCell>{element.value}</TableCell>
+                <TableCell align="center">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => removeVat(element.id)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Vat
+        open={openDialog}
+        handleClose={handleClose}
+        id={id}
+      />
+    </div>
+    :
+    <ProgressLoading />
+  )
+
   return (
     <div style={{ width: 500, margin: 'auto', marginTop: 30 }}>
       <Button
@@ -122,56 +176,7 @@ const VatList = (props) => {
         open={open}
         setOpen={setOpen}
       /> : null}
-      {!isPending ?
-        <div>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} size="small" aria-label="simple table">
-              <TableHead style={{ backgroundColor: "#808080ad" }}>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Value</TableCell>
-                  <TableCell align="center">Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {vatList.map((element) => (
-                  <TableRow key={element.id}>
-                    <TableCell component="th" scope="row">
-                      <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)} >
-                        {element.id}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link className="no-underline" to="#" onClick={() => onUpdateVat(element.id)}>
-                        {element.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{element.value}</TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => removeVat(element.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Vat
-            open={openDialog}
-            handleClose={handleClose}
-            id={id}
-          />
-        </div>
-        :
-        <ProgressLoading />}
+      {vatList.status === 403 ? history.push("/forbidden") : renderTableContent()}
     </div>
   );
 }

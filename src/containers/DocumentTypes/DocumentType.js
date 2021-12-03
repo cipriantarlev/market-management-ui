@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -10,12 +11,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+import { 
+  validateInputValueAndShowErrorMessage,
+  onForbidden
+ } from '../../common/utils';
 
 import {
   fetchDocumentType,
   createDocumentType,
   updateDocumentType,
+  restStoreData,
 } from '../actions';
 
 const mapStateToProps = (state) => {
@@ -31,6 +36,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchDocumentType: (id) => dispatch(fetchDocumentType(id)),
     onCreateDocumentType: (documentType) => dispatch(createDocumentType(documentType)),
     onUpdateDocumentType: (documentType) => dispatch(updateDocumentType(documentType)),
+    onResetData: () => dispatch(restStoreData()),
   }
 }
 
@@ -45,7 +51,10 @@ const DocumentType = (props) => {
     onFetchDocumentType,
     onCreateDocumentType,
     onUpdateDocumentType,
+    onResetData,
   } = props;
+
+  const history = useHistory();
 
   const [documentType, setDocumentType] = useState({});
   const [openAlert, setOpenAlert] = useState(true);
@@ -123,6 +132,7 @@ const DocumentType = (props) => {
         <DialogTitle id="form-dialog-title">Add New Document Type</DialogTitle>
         :
         <ProgressLoading />}
+        {initialDocumentType.status === 403 ? onForbidden(history, onResetData) :
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new document type.
@@ -141,7 +151,7 @@ const DocumentType = (props) => {
           onChange={onChangeDocumentTypeName}
           onKeyPress={onPressEnter}
         />
-      </DialogContent>
+      </DialogContent>}
       <DialogActions>
         <Button
           onClick={onSubmitDocumentType}
