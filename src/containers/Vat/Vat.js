@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -12,11 +13,15 @@ import {
   fetchVat,
   createVat,
   updateVat,
+  restStoreData,
 } from '../actions';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+import { 
+  validateInputValueAndShowErrorMessage,
+  onForbidden
+ } from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -31,6 +36,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchVat: (id) => dispatch(fetchVat(id)),
     onCreateVat: (vat) => dispatch(createVat(vat)),
     onUpdateVat: (vat) => dispatch(updateVat(vat)),
+    onResetData: () => dispatch(restStoreData()),
   }
 }
 
@@ -46,7 +52,10 @@ const Vat = (props) => {
     onFetchVat,
     onCreateVat,
     onUpdateVat,
+    onResetData,
   } = props;
+
+  const history = useHistory();
 
   const [vat, setVat] = useState({});
   const [openAlert, setOpenAlert] = useState(true);
@@ -137,6 +146,7 @@ const Vat = (props) => {
         <DialogTitle id="form-dialog-title">Add New Vat</DialogTitle>
         :
         <ProgressLoading />}
+        {initialVat.status === 403 ? onForbidden(history, onResetData) :
       <DialogContent>
         <DialogContentText>
           Please enter the values for a new vat.
@@ -167,7 +177,7 @@ const Vat = (props) => {
           onChange={onChangeVatValues}
           onKeyPress={onPressEnter}
         />
-      </DialogContent>
+      </DialogContent>}
       <DialogActions>
         <Button
           onClick={onSubmitVat}

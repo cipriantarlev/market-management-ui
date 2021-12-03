@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -11,12 +12,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+import { 
+  validateInputValueAndShowErrorMessage,
+  onForbidden
+ } from '../../common/utils';
 
 import {
   fetchMeasuringUnit,
   createMeasuringUnit,
   updateMeasuringUnit,
+  restStoreData,
 } from '../actions';
 
 const mapStateToProps = (state) => {
@@ -32,6 +37,7 @@ const mapDispatchToProps = (dispatch) => {
     onFetchMeasuringUnit: (id) => dispatch(fetchMeasuringUnit(id)),
     onCreateMeasuringUnit: (measuringUnit) => dispatch(createMeasuringUnit(measuringUnit)),
     onUpdateMeasuringUnit: (measuringUnit) => dispatch(updateMeasuringUnit(measuringUnit)),
+    onResetData: () => dispatch(restStoreData()),
   }
 }
 const MeasuringUnit = (props) => {
@@ -45,7 +51,10 @@ const MeasuringUnit = (props) => {
     onFetchMeasuringUnit,
     onCreateMeasuringUnit,
     onUpdateMeasuringUnit,
+    onResetData,
   } = props;
+
+  const history = useHistory();
 
   const [measuringUnit, setMeasuringUnit] = useState({});
   const [openAlert, setOpenAlert] = useState(true);
@@ -125,6 +134,7 @@ const MeasuringUnit = (props) => {
         <DialogTitle id="form-dialog-title">Add New Measuring Unit</DialogTitle>
         :
         <ProgressLoading />}
+        {initialMeasuringUnit.status === 403 ? onForbidden(history, onResetData) :
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new measuring unit.
@@ -143,7 +153,7 @@ const MeasuringUnit = (props) => {
           onChange={onChangeMeasuringUnitValues}
           onKeyPress={onPressEnter}
         />
-      </DialogContent>
+      </DialogContent>}
       <DialogActions>
         <Button
           onClick={onSubmitMeasuringUnit}

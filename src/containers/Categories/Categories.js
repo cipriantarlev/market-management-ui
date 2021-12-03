@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -60,6 +60,7 @@ const Categories = (props) => {
   } = props;
 
   const classes = useStyles();
+  const history = useHistory();
 
   const [openDialog, setOpenDialog] = useState(false);
   const [id, setId] = useState(0);
@@ -122,24 +123,8 @@ const Categories = (props) => {
     }
   }
 
-  return (
-    <div style={{ width: 500, margin: 'auto', marginTop: 30 }}>
-      <Button
-        variant="contained"
-        className="mb-4"
-        style={{ backgroundColor: '#2aa839', color: 'white' }}
-        startIcon={<AddCircleOutlineIcon />}
-        onClick={onAddNewCategory}
-      >
-        Add new Category
-      </Button>
-      {error ?
-        <DisplayAlert
-          error={error}
-          open={open}
-          setOpen={setOpen}
-        /> : null}
-      {!isPending ?
+  const renderTableContent = () => (
+    !isPending ?
         <div>
           <TableContainer component={Paper}>
             <Table className={classes.table} size="small" aria-label="simple table">
@@ -200,7 +185,27 @@ const Categories = (props) => {
           />
         </div>
         :
-        <ProgressLoading />}
+        <ProgressLoading />
+  )
+
+  return (
+    <div style={{ width: 500, margin: 'auto', marginTop: 30 }}>
+      <Button
+        variant="contained"
+        className="mb-4"
+        style={{ backgroundColor: '#2aa839', color: 'white' }}
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={onAddNewCategory}
+      >
+        Add new Category
+      </Button>
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        /> : null}
+      {categories.status === 403 ? history.push("/forbidden") : renderTableContent()}
     </div>
   );
 }

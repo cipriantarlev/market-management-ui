@@ -18,7 +18,7 @@ import {
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
 import InvalidFieldText from '../../common/InvalidFieldText';
-import { 
+import {
   validateInputValue,
   preventSubmitIfInvalidInput
 } from '../../common/utils';
@@ -177,6 +177,105 @@ const User = (props) => {
     }
   }
 
+  const renderUserForm = () => (
+    !isPending ?
+      <Form onSubmit={onSubmitUser}>
+        <Form.Group as={Col} controlId="formGridUsername">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Username"
+            value={user.username}
+            required={true}
+            onChange={onChangeUserValues}
+            isInvalid={invalidUsername}
+            aria-describedby={USERNAME_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidUsername}
+            message={"Username should contain only letters and numbers"}
+            ariaDescribedbyId={USERNAME_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={user.password}
+            required={true}
+            onChange={onChangeUserValues}
+            isInvalid={invalidPassword}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridConfirmPassword">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            required={true}
+            isInvalid={invalidPassword}
+            onChange={onChangeUserValues}
+            aria-describedby={PASSWORD_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidPassword}
+            message={"Passwords don't match"}
+            ariaDescribedbyId={PASSWORD_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridEmail">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={user.email}
+            onChange={onChangeUserValues}
+            required={true}
+            isInvalid={invalidEmail}
+            aria-describedby={EMAIL_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidEmail}
+            message={"Email should respect the patter: email@email.com"}
+            ariaDescribedbyId={EMAIL_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridMultipleOptions">
+          <Form.Label>Roles</Form.Label>
+          <Form.Control
+            as="select"
+            htmlSize={2}
+            multiple
+            value={selectedRoles}
+            onChange={onSelectValue}
+          >
+            {roles.map(role => (
+              <option key={role.id} value={role.id}>{role.role}</option>
+            ))}
+
+          </Form.Control>
+        </Form.Group>
+        <div>
+          <Button
+            className="ml3 w4"
+            variant="primary"
+            type="submit"
+          >
+            Submit
+          </Button>
+          <Button
+            className="btn btn-warning ml5 w4"
+            onClick={onClickCancel}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Form>
+      : <ProgressLoading />
+  )
+
   return (
     <div className="w-40 center mt4">
       {error ?
@@ -185,102 +284,8 @@ const User = (props) => {
           open={openAlert}
           setOpen={setOpenAlert}
         /> : null}
-      {!isPending ?
-        <Form onSubmit={onSubmitUser}>
-          <Form.Group as={Col} controlId="formGridUsername">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Username"
-              value={user.username}
-              required={true}
-              onChange={onChangeUserValues}
-              isInvalid={invalidUsername}
-              aria-describedby={USERNAME_HELP_BLOCK}
-            />
-            <InvalidFieldText
-              isInvalid={invalidUsername}
-              message={"Username should contain only letters and numbers"}
-              ariaDescribedbyId={USERNAME_HELP_BLOCK}
-            />
-          </Form.Group>
-          <Form.Group as={Col} controlId="formGridPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={user.password}
-              required={true}
-              onChange={onChangeUserValues}
-              isInvalid={invalidPassword}
-            />
-          </Form.Group>
-          <Form.Group as={Col} controlId="formGridConfirmPassword">
-            <Form.Label>Confirm Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              required={true}
-              isInvalid={invalidPassword}
-              onChange={onChangeUserValues}
-              aria-describedby={PASSWORD_HELP_BLOCK}
-            />
-            <InvalidFieldText
-              isInvalid={invalidPassword}
-              message={"Passwords don't match"}
-              ariaDescribedbyId={PASSWORD_HELP_BLOCK}
-            />
-          </Form.Group>
-          <Form.Group as={Col} controlId="formGridEmail">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              value={user.email}
-              onChange={onChangeUserValues}
-              required={true}
-              isInvalid={invalidEmail}
-              aria-describedby={EMAIL_HELP_BLOCK}
-            />
-            <InvalidFieldText
-              isInvalid={invalidEmail}
-              message={"Email should respect the patter: email@email.com"}
-              ariaDescribedbyId={EMAIL_HELP_BLOCK}
-            />
-          </Form.Group>
-          <Form.Group as={Col} controlId="formGridMultipleOptions">
-            <Form.Label>Roles</Form.Label>
-            <Form.Control
-              as="select"
-              htmlSize={2}
-              multiple
-              value={selectedRoles}
-              onChange={onSelectValue}
-            >
-              {roles.map(role => (
-                <option key={role.id} value={role.id}>{role.role}</option>
-              ))}
-
-            </Form.Control>
-          </Form.Group>
-          <div>
-            <Button
-              className="ml3 w4"
-              variant="primary"
-              type="submit"
-            >
-              Submit
-            </Button>
-            <Button
-              className="btn btn-warning ml5 w4"
-              onClick={onClickCancel}
-            >
-              Cancel
-            </Button>
-          </div>
-        </Form>
-        : <ProgressLoading />}
+      {(initialUser.status === 403 || roles.status === 403) ? history.push("/forbidden") 
+      : renderUserForm()}
     </div>
   );
 }

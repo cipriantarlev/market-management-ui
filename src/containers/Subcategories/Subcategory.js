@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -12,12 +13,16 @@ import {
   fetchSubcategory,
   createSubcategory,
   updateSubcategory,
-  fetchCategories
+  fetchCategories,
+  restStoreData
 } from '../actions';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+import { 
+  validateInputValueAndShowErrorMessage,
+  onForbidden
+ } from '../../common/utils';;
 
 const mapStateToProps = (state) => {
   return {
@@ -34,6 +39,7 @@ const mapDispatchToProps = (dispatch) => {
     onCreateSubcategory: (subcategory) => dispatch(createSubcategory(subcategory)),
     onUpdateSubcategory: (subcategory) => dispatch(updateSubcategory(subcategory)),
     onFetchCategories: () => dispatch(fetchCategories()),
+    onResetData: () => dispatch(restStoreData()),
   }
 }
 
@@ -50,7 +56,10 @@ const Subcategory = (props) => {
     onCreateSubcategory,
     onUpdateSubcategory,
     onFetchCategories,
+    onResetData,
   } = props;
+
+  const history = useHistory();
 
   const [subccategory, setSubcategory] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(1);
@@ -152,6 +161,7 @@ const Subcategory = (props) => {
         <DialogTitle id="form-dialog-title">Add New Subcategory</DialogTitle>
         :
         <ProgressLoading />}
+        {initialSubcategory.status === 403 ? onForbidden(history, onResetData) :
       <DialogContent>
         <DialogContentText>
           Please enter the name for a new subccategory.
@@ -184,7 +194,7 @@ const Subcategory = (props) => {
             <option className="pointer dim black" key={category.id} value={category.id}>{category.name}</option>
           ))}
         </TextField>
-      </DialogContent>
+      </DialogContent>}
       <DialogActions>
         <Button
           onClick={!showNameError ? onSubmitSubcategory : null}

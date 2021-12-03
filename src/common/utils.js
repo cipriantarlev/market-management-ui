@@ -57,3 +57,8 @@ export const preventSubmitIfInvalidInput = (event) => {
   event.stopPropagation();
   alert('You have provided invalid data. Please correct and submit again.');
 }
+
+export const onForbidden = (history, onResetData) => {
+  history.push("/forbidden");
+  onResetData();
+}
