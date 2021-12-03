@@ -149,6 +149,7 @@ const Vendors = (props) => {
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
+      {vendors.status === 403 ? history.push("/forbidden") : 
       <div className="center mt-3" style={{ height: '34em', width: '77rem' }}>
         <Button
           variant="contained"
@@ -184,7 +185,7 @@ const Vendors = (props) => {
           rowHeight={30}
           onSelectionModelChange={onSelectVendors}
         />
-      </div>
+      </div>}
     </div>
   );
 }
