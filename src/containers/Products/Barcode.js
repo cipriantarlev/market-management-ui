@@ -8,6 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { validateInputValueAndShowErrorMessage } from '../../common/utils';
+import { checkIfBarcodeExistsService } from './helper';
 
 const Barcode = (props) => {
 
@@ -52,7 +53,7 @@ const Barcode = (props) => {
 
   const onPressEnter = (event) => {
     if (event.charCode === 13) {
-      onSubmitBarcode();
+      onSubmit();
     }
   }
 
@@ -60,19 +61,44 @@ const Barcode = (props) => {
     barcodes.filter((element, index) => index !== barcodeIndex)
   )
 
-  const onSubmitBarcode = () => {
-    console.log("barcodeIndex", barcodeIndex);
-    console.log("barcodes", barcodes);
-    console.log("barcode", barcode);
-    if (!showError) {
-      if (barcodes[barcodeIndex] !== undefined) {
-        setBarcodes([...updateBarcodeList(), barcode]);
+  const checkIfBarcodeExistsInDb = () => (
+    new Promise((resolve) => {
+      resolve(checkIfBarcodeExistsService(barcode.value));
+    })
+  )
+
+  const checkIfBarcodeExistsInMemory = () => {
+    const resultedArray = barcodes.filter((element) => barcode.value === element.value);
+    return barcodes.includes(resultedArray[0]);
+  }
+
+  const onSubmit = async () => {
+    if (checkIfBarcodeExistsInMemory()) {
+      alert(`Barcode has been already added. Please try another.`);
+    } else {
+      if (barcode?.value !== undefined) {
+        const barcodeByValue = await checkIfBarcodeExistsInDb();
+        onSubmitBarcode(barcodeByValue);
       } else {
-        setBarcodes(oldValue => ([...oldValue, barcode]));
+        alert(`You didn't provide a value for barcode. Please try again.`);
       }
-      setBarocode({});
-      setBarcodeIndex(-1);
-      handleClose();
+    }
+  }
+
+  const onSubmitBarcode = (barcodeByValue) => {
+    if (!showError) {
+      if (!barcodeByValue) {
+        if (barcodes[barcodeIndex] !== undefined) {
+          setBarcodes([...updateBarcodeList(), barcode]);
+        } else {
+          setBarcodes(oldValue => ([...oldValue, barcode]));
+        }
+        setBarocode({});
+        setBarcodeIndex(-1);
+        handleClose();
+      } else {
+        alert(`Barcode already exists in database. Please try another.`);
+      }
     }
   }
 
@@ -105,7 +131,7 @@ const Barcode = (props) => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={onSubmitBarcode}
+          onClick={onSubmit}
           className="mr5 w4"
           variant="contained"
           color="primary"

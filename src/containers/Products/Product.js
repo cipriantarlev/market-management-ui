@@ -43,6 +43,11 @@ import {
   preventSubmitIfInvalidInput
 } from '../../common/utils';
 
+import {
+  checkIfProductByNameRom,
+  checkIfProductByNameRus,
+} from './helper';
+
 const mapStateToProps = (state) => {
   return {
     isPending: state.manageProducts.isPending,
@@ -134,6 +139,9 @@ const Product = (props) => {
   const [invalidMeasuringUnit, setInvalidMeasuringUnit] = useState(false);
   const [invalidVat, setInvalidVat] = useState(false);
   const [invalidBarcode, setInvalidBarcode] = useState(false);
+
+  const [isRomNameInDb, setIsRomNameInDb] = useState(false);
+  const [isRusNameInDb, setIsRusNameInDb] = useState(false);
 
   const [product, setProduct] = useState({});
   const [barcodes, setBarcodes] = useState([]);
@@ -423,15 +431,30 @@ const Product = (props) => {
     Object.assign(product, product, { tradeMargin: tradeMargin })
   }
 
+  const onTabPressOrBlur = (event) => {
+    if (event.keyCode === 9 || event.type === "blur") {
+      if (event.target.id === "formGridNameRomanian")
+        checkIfProductByNameRom(product.nameRom)
+          .then(result => setIsRomNameInDb(result));
+      if (event.target.id === "formGridNameRussian")
+        checkIfProductByNameRus(product.nameRus)
+          .then(result => setIsRusNameInDb(result));
+    }
+  }
+
   const onSubmitProduct = (event) => {
     if (isProductReadyToBeSubmitted()) {
-      assignProductProperties();
-      if (id !== "0") {
-        onUpdateProduct(product);
+      if (!isRomNameInDb || !isRusNameInDb) {
+        assignProductProperties();
+        if (id !== "0") {
+          onUpdateProduct(product);
+        } else {
+          onCreateProduct(product);
+        }
+        resetAllAndGoBack();
       } else {
-        onCreateProduct(product);
+        alert(`Romanian and/or Russian product name already exists in database. Please try another.`);
       }
-      resetAllAndGoBack();
     } else {
       preventSubmitIfInvalidInput(event);
       markIvalidFields();
@@ -509,6 +532,7 @@ const Product = (props) => {
                   id="formGridNameRomanian"
                   value={product.nameRom}
                   onChange={onChangeProductValues}
+                  onBlur={onTabPressOrBlur}
                   isInvalid={invalidRomName}
                   aria-describedby={ROM_NAME_HELP_BLOCK}
                 />
@@ -571,6 +595,7 @@ const Product = (props) => {
                   required={true}
                   value={product.nameRus}
                   onChange={onChangeProductValues}
+                  onBlur={onTabPressOrBlur}
                   isInvalid={invalidRusName}
                   aria-describedby={RUS_NAME_HELP_BLOCK}
                 />
