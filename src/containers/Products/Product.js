@@ -444,7 +444,7 @@ const Product = (props) => {
 
   const onSubmitProduct = (event) => {
     if (isProductReadyToBeSubmitted()) {
-      if (!isRomNameInDb || !isRusNameInDb) {
+      if (!isRomNameInDb && !isRusNameInDb) {
         assignProductProperties();
         if (id !== "0") {
           onUpdateProduct(product);
