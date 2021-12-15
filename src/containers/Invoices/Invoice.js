@@ -186,6 +186,10 @@ const Invoice = (props) => {
     }
   }
 
+  const addNewVendor = () => {
+    history.push("/vendors/0");
+  }
+
   const getDropDownValue = (itemId, itemList, setItem) => {
     setItem(itemId);
     return itemList.find(item => item.id === itemId);
@@ -306,7 +310,7 @@ const Invoice = (props) => {
                   paddingBottom: 0
                 }}
               >Vendor</Form.Label>
-              <Col sm="9">
+              <Col sm="8">
                 <Form.Control
                   as="select"
                   size="sm"
@@ -319,6 +323,16 @@ const Invoice = (props) => {
                     <option key={item.id} value={item.id}>{item.name}</option>
                   ))}
                 </Form.Control>
+              </Col>
+              <Col sm="1">
+                <Form.Control
+                  type="button"
+                  size="sm"
+                  id="AddVendor"
+                  className="form-button"
+                  value={"+"}
+                  onClick={addNewVendor}
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} controlId="formGridDateCreated">

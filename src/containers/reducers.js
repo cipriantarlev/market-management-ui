@@ -381,6 +381,8 @@ export const manageVendors = (state = initialStateVendor, action = {}) => {
       return Object.assign({}, state, { regions: action.payload, isPending: false });
     case REQUEST_REGIONS_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case RESET_DATA:
+      return initialStateVendor;
     default:
       return state;
   }

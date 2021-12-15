@@ -12,7 +12,8 @@ import {
   createVendor,
   updateVendor,
   fetchRegions,
-  fetchVendors
+  fetchVendors,
+  restStoreData
 } from '../actions';
 
 import DisplayAlert from '../../common/DisplayAlert';
@@ -39,6 +40,7 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateVendor: (vendor) => dispatch(updateVendor(vendor)),
     onFetchRegions: () => dispatch(fetchRegions()),
     onFetchVendors: () => dispatch(fetchVendors()),
+    onRestStoreData: () => dispatch(restStoreData(),)
   }
 }
 
@@ -53,7 +55,8 @@ const Vendor = (props) => {
     onCreateVendor,
     onUpdateVendor,
     onFetchRegions,
-    onFetchVendors
+    onFetchVendors,
+    onRestStoreData,
   } = props;
 
   const COMPANY_NAME_HELP_BLOCK = "companyNameHelpBlock";
@@ -85,11 +88,6 @@ const Vendor = (props) => {
   const [invalidBusinessAddress, setInvalidBusinessAddress] = useState(false);
   const [invalidNote, setInvalidNote] = useState(false);
   const [invalidPostalCode, setInvalidPostalCode] = useState(false);
-
-  const onClickCancel = () => {
-    const answer = window.confirm('Are you sure you want to cancel?');
-    return answer === true ? history.push("/vendors") : null;
-  }
 
   const currencies = ['--Select Currency Value--', 'MDL', 'USD', 'EURO'];
   const vendorTypes = ['--Select Vendor Type Value--', 'Supplier', 'Buyer'];
@@ -188,6 +186,13 @@ const Vendor = (props) => {
     }
   }
 
+  const onClickCancel = () => {
+    if(window.confirm('Are you sure you want to cancel?')){
+      history.goBack();
+      onRestStoreData();
+    }
+  }
+
   const isMyOrganizationReadyToBeSubmitted = () => {
     return invalidCompanyName === false &&
       invalidVatCode === false &&
@@ -209,7 +214,8 @@ const Vendor = (props) => {
         onCreateVendor(vendor);
       }
       onFetchVendors();
-      history.push("/vendors");
+      onRestStoreData();
+      history.goBack();
     } else {
       preventSubmitIfInvalidInput(event);
     }
@@ -218,7 +224,7 @@ const Vendor = (props) => {
   const renderFormContent = () => (
     !isPending ?
     <div className="container w-80 center mt4">
-      <Form onSubmit={onSubmitVendor}>
+      <Form>
         <Form.Row>
           <Form.Group
             as={Col}
@@ -476,7 +482,8 @@ const Vendor = (props) => {
           <Button
             className="mr5 w4"
             variant="primary"
-            type="submit"
+            type="button"
+            onClick={onSubmitVendor}
           >
             Submit
           </Button>
