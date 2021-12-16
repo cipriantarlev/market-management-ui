@@ -52,9 +52,7 @@ export const validateInputValueAndShowErrorMessage = (setInvalidValue, validatio
   }
 }
 
-export const preventSubmitIfInvalidInput = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
+export const preventSubmitIfInvalidInput = () => {
   alert('You have provided invalid data. Please correct and submit again.');
 }
 

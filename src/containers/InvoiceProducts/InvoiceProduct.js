@@ -37,6 +37,7 @@ const mapStateToProps = (state) => {
     error: state.manageInvoiceProducts.error,
     measuringUnits: state.manageMeasuringUnits.measuringUnits,
     productByBarcode: state.manageProducts.product,
+    invoiceProducts: state.manageInvoiceProducts.invoiceProducts,
   }
 }
 
@@ -58,12 +59,14 @@ const InvoiceProduct = (props) => {
     error,
     measuringUnits,
     productByBarcode,
+    invoiceProducts,
     onFetchInvoiceProduct,
     onCreateInvoiceProduct,
     onUpdateInvoiceProduct,
     onFetchMeasuringUnits,
     onFetchProductByBarcode,
     onRestData,
+    onFetchInvoiceProducts,
   } = props;
 
   const BARCODE_HELP_BLOCK = "barcodeHelpBlock";
@@ -125,6 +128,11 @@ const InvoiceProduct = (props) => {
   useEffect(() => {
     setOpenAlert(false)
   }, [])
+
+  useEffect(() => {
+    onFetchInvoiceProducts(invoiceId);
+    // eslint-disable-next-line
+  }, [invoiceId])
 
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
@@ -331,13 +339,37 @@ const InvoiceProduct = (props) => {
     setInvalidTradeMargin(tradeMarginProduct === 0);
   }
 
+  const checkIfProductIsAlreadyAdded = () => (
+    invoiceProducts.find(item => item.product.id === product.id)
+  )
+
+  const updateQuantityAndInvoiceProduct = (foundItem) => {
+    Object.assign(foundItem, foundItem, {
+      product: {
+        ...product,
+        stock: Number(invoiceProduct.quantity) + Number(foundItem.product.stock),
+      },
+      quantity: Number(invoiceProduct.quantity) + Number(foundItem.quantity),
+      totalDiscountPrice: Math.round(sum * 100) / 100 + foundItem.totalDiscountPrice,
+      totalRetailPrice: Math.round(retailPrice * invoiceProduct.quantity * 100) / 100 + foundItem.totalRetailPrice,
+      vatSum: Math.round((vatSumProduct + foundItem.vatSum) * 100) / 100,
+    });
+    onUpdateInvoiceProduct(foundItem);
+  }
+
   const onSubmitInvoiceProduct = (event) => {
     if (isInvoiceProductReadyToBeSubmitted()) {
       prepareInvoiceProductForSubmit();
+      const foundItem = checkIfProductIsAlreadyAdded();
       if (id !== "0") {
         onUpdateInvoiceProduct(invoiceProduct);
       } else {
-        onCreateInvoiceProduct(invoiceProduct);
+        if (foundItem === undefined) {
+          onCreateInvoiceProduct(invoiceProduct);
+        } else {
+          if (window.confirm(`That product has been already added to this invoice. Would you like to update the quantity? If no, you can update the product.`))
+            updateQuantityAndInvoiceProduct(foundItem);
+        }
       }
       resetAllAndGoBack();
     } else {
@@ -367,7 +399,7 @@ const InvoiceProduct = (props) => {
       {!isPending ?
         <div className="container w-50 center mt3">
           <h3 className="mb4">Add New Product to Invoice</h3>
-          <Form onSubmit={onSubmitInvoiceProduct}>
+          <Form>
             <Form.Group as={Row} controlId="formGridInvoiceNumber">
               <Form.Label
                 column
@@ -712,7 +744,7 @@ const InvoiceProduct = (props) => {
               <Button
                 className="mr5 w4 mt4"
                 variant="primary"
-                type="submit"
+                onClick={onSubmitInvoiceProduct}
               >
                 Submit
               </Button>
