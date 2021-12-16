@@ -90,11 +90,17 @@ const InvoiceProducts = (props) => {
   const [invoiceToUpdate, setInvoiceToUpdate] = useState({});
   const [invoiceValues, setInvoiceValue] = useState({});
 
-  const addLinkToIdCell = (params) => (
-    <Link className="no-underline" to={`/invoice-products/${id}/product/${params.id}`}>
-      {params.value}
-    </Link>
-  );
+  const addLinkToIdCell = (params) => {
+    if (location.pathname.includes('/income-invoice-products')) {
+      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+        {params?.value}
+      </Link>
+    } else if (location.pathname.includes('/outcome-invoice-products')) {
+      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+        {params?.value}
+      </Link>
+    }
+  }
 
   const renderBarcodes = (params) => {
     if (location.pathname.includes('/income-invoice-products')) {
@@ -110,11 +116,11 @@ const InvoiceProducts = (props) => {
 
   const renderProductName = (params) => {
     if (location.pathname.includes('/income-invoice-products')) {
-      return <Link className="no-underline" to={`/income-products/${id}/product/${params.id}`}>
+      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
         {params?.row?.product?.nameRom}
       </Link>
     } else if (location.pathname.includes('/outcome-invoice-products')) {
-      return <Link className="no-underline" to={`/outcome-products/${id}/product/${params.id}`}>
+      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
         {params?.row?.product?.nameRom}
       </Link>
     }
@@ -228,6 +234,11 @@ const InvoiceProducts = (props) => {
   useEffect(() => {
     onFetchInvoiceProducts(id);
   }, [onFetchInvoiceProducts, id])
+
+  useEffect(() => {
+    onFetchInvoiceProducts(id);
+    // eslint-disable-next-line
+  }, [])
 
   useEffect(() => {
     setOpen(true)
@@ -368,6 +379,7 @@ const InvoiceProducts = (props) => {
       )
       onUpdateInvoice(invoiceToUpdate);
     }
+    onRestData();
     pushHistory(`/income-invoices`, `/outcome-invoices`);
   }
 
