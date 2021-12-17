@@ -5,6 +5,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DescriptionIcon from '@material-ui/icons/Description';
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -20,11 +22,13 @@ import {
   deleteInvoice,
   fetchIncomeInvoices,
   fetchOutComeInvoices,
+  updateInvoiceIsApprovedMarker,
 } from '../actions';
 
 import DisplayAlert from '../../common/DisplayAlert';
 
 import './style.css';
+import { grey } from '@material-ui/core/colors';
 
 const drawerWidth = 240;
 const marginTop = 56;
@@ -32,6 +36,13 @@ const marginTop = 56;
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+    '& .super-app-theme--false': {
+      backgroundColor: grey['400'],
+      '&:hover': {
+        backgroundColor: grey['600']
+      },
+
+    },
   },
   drawer: {
     width: drawerWidth,
@@ -62,6 +73,8 @@ const mapDispatchToProps = (dispatch) => {
     onFetchIncomeInvoices: () => dispatch(fetchIncomeInvoices()),
     onFetchOutComeInvoices: () => dispatch(fetchOutComeInvoices()),
     onDeleteInvoice: (id) => dispatch(deleteInvoice(id)),
+    onUpdateInvoiceIsApprovedMarker: (invoiceId, isApproved) =>
+      dispatch(updateInvoiceIsApprovedMarker(invoiceId, isApproved)),
   }
 }
 
@@ -74,6 +87,7 @@ const Invoices = (props) => {
     onFetchIncomeInvoices,
     onFetchOutComeInvoices,
     onDeleteInvoice,
+    onUpdateInvoiceIsApprovedMarker,
   } = props;
 
   const history = useHistory();
@@ -116,7 +130,22 @@ const Invoices = (props) => {
     new Date(params.value).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('/', '.')
   )
 
+  const renderIsApproved = (params) => {
+    console.log("params", params)
+    return params.value === true ? "Yes" : "No"
+  }
+
   const columns = [
+    {
+      field: 'approved',
+      headerName: 'Apv',
+      width: 60,
+      disableColumnMenu: 'true',
+      sortable: 'false',
+      disableReorder: 'true',
+      hideSortIcons: 'true',
+      renderCell: renderIsApproved,
+    },
     {
       field: 'id',
       headerName: 'ID',
@@ -269,6 +298,28 @@ const Invoices = (props) => {
     }
   }
 
+  const onApproveSelectedInvoice = () => {
+    if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
+      selectedInvoices.forEach(invoiceId => {
+        onUpdateInvoiceIsApprovedMarker(invoiceId, true);
+      })
+      history.go(0);
+    } else {
+      alert("You didn't select an invoice or selected more than one. Please try again.");
+    }
+  }
+
+  const onDisapproveSelectedInvoice = () => {
+    if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
+      selectedInvoices.forEach(invoiceId => {
+        onUpdateInvoiceIsApprovedMarker(invoiceId, false);
+      })
+      history.go(0);
+    } else {
+      alert("You didn't select an invoice or selected more than one. Please try again.");
+    }
+  }
+
   return (
     <div style={{ height: '100%', width: '100%' }}>
       <div className={classes.root}>
@@ -311,6 +362,22 @@ const Invoices = (props) => {
               <ListItem
                 button
                 divider
+                onClick={onApproveSelectedInvoice}
+              >
+                <ListItemIcon>{<DoneIcon />}</ListItemIcon>
+                <ListItemText primary={'Approve Invoice'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
+                onClick={onDisapproveSelectedInvoice}
+              >
+                <ListItemIcon>{<CloseIcon />}</ListItemIcon>
+                <ListItemText primary={'Disapprove Invoice'} />
+              </ListItem>
+              <ListItem
+                button
+                divider
                 onClick={onDeleteSelectedInvoices}
               >
                 <ListItemIcon>{<DeleteIcon />}</ListItemIcon>
@@ -335,6 +402,8 @@ const Invoices = (props) => {
             disableSelectionOnClick={true}
             rowHeight={30}
             onSelectionModelChange={onSelectInvoices}
+            getRowClassName={(params) =>
+              `super-app-theme--${params.getValue(params.id, 'approved')}`}
           />
         </div>
       </div>

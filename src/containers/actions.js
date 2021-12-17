@@ -188,6 +188,9 @@ import {
   REQUEST_INVOICES_VENDORS_PENDING,
   REQUEST_INVOICES_VENDORS_SUCCESS,
   REQUEST_INVOICES_VENDORS_FAILED,
+  UPDATE_INVOICE_IS_APPROVED_PENDING,
+  UPDATE_INVOICE_IS_APPROVED_SUCCESS,
+  UPDATE_INVOICE_IS_APPROVED_FAILED,
   REQUEST_INVOICE_PRODUCTS_PENDING,
   REQUEST_INVOICE_PRODUCTS_SUCCESS,
   REQUEST_INVOICE_PRODUCTS_FAILED,
@@ -711,6 +714,14 @@ export const fetchInvoiceVendors = () => (dispatch) => {
     .then(response => response.json())
     .then(data => checkStatusCode(data, REQUEST_INVOICES_VENDORS_SUCCESS, dispatch))
     .catch(error => dispatch({ type: REQUEST_INVOICES_VENDORS_FAILED, payload: error }))
+}
+
+export const updateInvoiceIsApprovedMarker = (invoiceId, isApproved) => (dispatch) => {
+  dispatch({ type: UPDATE_INVOICE_IS_APPROVED_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/invoices/isApproved/${invoiceId}/${isApproved}`, dataApi('put'))
+    .then(response => response.json())
+    .then(data => checkStatusCode(data, UPDATE_INVOICE_IS_APPROVED_SUCCESS, dispatch))
+    .catch(error => dispatch({ type: UPDATE_INVOICE_IS_APPROVED_FAILED, payload: error }))
 }
 
 export const fetchInvoiceProducts = (invoiceId) => (dispatch) => {

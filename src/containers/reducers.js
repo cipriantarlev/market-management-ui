@@ -186,6 +186,9 @@ import {
   REQUEST_INVOICES_VENDORS_PENDING,
   REQUEST_INVOICES_VENDORS_SUCCESS,
   REQUEST_INVOICES_VENDORS_FAILED,
+  UPDATE_INVOICE_IS_APPROVED_PENDING,
+  UPDATE_INVOICE_IS_APPROVED_SUCCESS,
+  UPDATE_INVOICE_IS_APPROVED_FAILED,
   REQUEST_INVOICE_PRODUCTS_PENDING,
   REQUEST_INVOICE_PRODUCTS_SUCCESS,
   REQUEST_INVOICE_PRODUCTS_FAILED,
@@ -764,6 +767,7 @@ const initialStateInvoice = {
   invoiceVendors: [],
   invoiceVendorsIsPending: false,
   invoiceVendorsError: false,
+  isApprovedModified: 0,
 }
 
 export const manageInvoices = (state = initialStateInvoice, action = {}) => {
@@ -822,6 +826,12 @@ export const manageInvoices = (state = initialStateInvoice, action = {}) => {
       return Object.assign({}, state, { invoiceVendors: action.payload, invoiceVendorsIsPending: false });
     case REQUEST_INVOICES_VENDORS_FAILED:
       return Object.assign({}, state, { invoiceVendorsError: action.payload, invoiceVendorsIsPending: false });
+    case UPDATE_INVOICE_IS_APPROVED_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case UPDATE_INVOICE_IS_APPROVED_SUCCESS:
+      return Object.assign({}, state, { isApprovedModified: action.payload, isPending: false });
+    case UPDATE_INVOICE_IS_APPROVED_FAILED:
+      return Object.assign({}, state, { error: action.payload, isPending: false });
     case RESET_DATA:
       return initialStateInvoice;
     default:
