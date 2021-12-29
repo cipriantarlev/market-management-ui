@@ -298,6 +298,8 @@ const InvoiceProduct = (props) => {
       retailPrice: Math.round(retailPrice * 100) / 100,
       tradeMargin: Math.round(tradeMarginProduct * 100) / 100,
       stock: invoiceProduct.quantity,
+      defaultVendorId: invoice?.vendor?.id,
+      vendors: [...product?.vendors, { id: invoice?.vendor?.id }],
     })
 
     Object.assign(invoiceProduct, invoiceProduct, {

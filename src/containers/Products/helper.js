@@ -33,6 +33,12 @@ export const checkIfProductByNameRus = (nameRus) => (
         .catch(error => error)
 )
 
+export const a11yProps = (index) => {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
 
 const checkStatusCode = (data) => {
     if (data[0]?.statusCode !== undefined && data[0]?.statusCode !== 200) {

@@ -16,6 +16,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import {
   fetchProduct,
@@ -34,6 +37,8 @@ import {
 import './style.css';
 
 import Barcode from './Barcode';
+import TabPanel from './TabPanel';
+import VendorHistory from './VendorHistory';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -46,6 +51,7 @@ import {
 import {
   checkIfProductByNameRom,
   checkIfProductByNameRus,
+  a11yProps,
 } from './helper';
 
 const mapStateToProps = (state) => {
@@ -79,7 +85,11 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+  },
   table: {
     minWidth: 100,
   },
@@ -89,6 +99,10 @@ const useStyles = makeStyles(() => ({
   buttons: {
     width: 109
   },
+  tabIndicator: {
+    backgroundColor: 'black',
+    top: 0,
+  }
 }));
 
 const Product = (props) => {
@@ -157,6 +171,8 @@ const Product = (props) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
 
+  const [tabValue, setTabValue] = useState(0);
+
   const handleClose = (event, reason) => {
     if (reason !== "backdropClick") {
       setOpenDialog(false);
@@ -207,6 +223,10 @@ const Product = (props) => {
       setSelectedCategory(initialProduct.category.id);
     }
   }
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const intializeSubcategoryValue = () => {
     if (initialProduct.subcategory !== undefined) {
@@ -461,6 +481,276 @@ const Product = (props) => {
     }
   }
 
+  const renderForm = () => (
+    <Form>
+      <Form.Row>
+        <Form.Group
+          as={Col}
+        >
+          Category
+          <Form.Control
+            as="select"
+            size="sm"
+            className="mb-3"
+            required={true}
+            id="formGridCategory"
+            value={selectedCategory}
+            isInvalid={invalidCategory}
+            onChange={onChangeProductValues}
+          >
+            <option>{"--Select Category Value--"}</option>
+            {categories.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </Form.Control>
+          Subcategory
+          <Form.Control
+            as="select"
+            size="sm"
+            className="mb-3"
+            required={true}
+            id="formGridSubcategory"
+            value={selectedSubcategory}
+            isInvalid={invalidSubcategory}
+            onChange={onChangeProductValues}
+          >
+            <option>{"--Select Subcategory Value--"}</option>
+            {subcategoriesInitial.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </Form.Control>
+          Product Code
+          <Form.Control
+            type="text"
+            placeholder="Click to generate Product Code"
+            className="mb-3"
+            size="sm"
+            readOnly
+            isInvalid={invalidProductCode}
+            required={true}
+            style={{
+              cursor: 'pointer'
+            }}
+            id="formGridProductCode"
+            value={getProductCode()}
+            onClick={generateNewProductCode}
+          />
+          Name (Romanian)
+          <Form.Control
+            type="text"
+            placeholder="Enter Name (Romanian)"
+            size="sm"
+            required={true}
+            id="formGridNameRomanian"
+            value={product.nameRom}
+            onChange={onChangeProductValues}
+            onBlur={onTabPressOrBlur}
+            isInvalid={invalidRomName}
+            aria-describedby={ROM_NAME_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidRomName}
+            message={"Romanian Name should contain only letters, numbers and dash."}
+            ariaDescribedbyId={ROM_NAME_HELP_BLOCK}
+          />
+        </Form.Group>
+        <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242, border: invalidBarcode }}>
+          <Table className={classes.table} stickyHeader size="small" aria-label="a dense table sticky table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.header}>Barcodes</TableCell>
+                <TableCell className={classes.buttons}>
+                  <Button
+                    style={{ marginRight: 2 }}
+                    onClick={onAddNewBarcode}
+                  >+</Button>
+                  <Button onClick={generateNewBarCode}>G</Button>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {barcodes.map((item, index) => (
+                <TableRow key={`${item.value}_${index}`}>
+                  <TableCell component="th" scope="row">
+                    <Link className="no-underline" to="#" onClick={() => onUpdateBarcode(index)}>
+                      {item.value}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <BarcodeButton
+                      variant="contained"
+                      color="secondary"
+                      style={{
+                        height: 22,
+                        width: 80,
+                        fontSize: 'smaller'
+                      }}
+                      startIcon={<DeleteIcon style={{ fontSize: 17 }} />}
+                      onClick={() => deleteBarcode(item.value)}
+                    >
+                      Delete
+                    </BarcodeButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridNameRussian">
+          Name (Russian)
+          <Form.Control
+            type="text"
+            placeholder="Enter Name (Russian)"
+            size="sm"
+            required={true}
+            value={product.nameRus}
+            onChange={onChangeProductValues}
+            onBlur={onTabPressOrBlur}
+            isInvalid={invalidRusName}
+            aria-describedby={RUS_NAME_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidRusName}
+            message={"Russian Name should contain only letters, numbers and dash."}
+            ariaDescribedbyId={RUS_NAME_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridMeasuringUnit">
+          Measuring Unit
+          <Form.Control
+            as="select"
+            size="sm"
+            required={true}
+            value={selectedMeasuringUnit}
+            isInvalid={invalidMeasuringUnit}
+            onChange={onChangeProductValues}
+          >
+            <option>{"--Select Measuring Unit Value--"}</option>
+            {measuringUnits.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridRetailPrice">
+          Retail Price
+          <Form.Control
+            type="number"
+            as="input"
+            defaultValue="0.00"
+            placeholder="Enter Retail Price"
+            size="sm"
+            value={formate2DecimalNumber(product.retailPrice)}
+            onChange={onChangeProductValues}
+            isInvalid={invalidRetailPrice}
+            aria-describedby={RETAIL_PRICE_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidRetailPrice}
+            message={"Retail Price fromat should have 5 integer digits and 2 digits."}
+            ariaDescribedbyId={RETAIL_PRICE_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridVat">
+          VAT
+          <Form.Control
+            as="select"
+            size="sm"
+            required={true}
+            value={selectedVat}
+            isInvalid={invalidVat}
+            onChange={onChangeProductValues}
+          >
+            <option>{"--Select VAT Value--"}</option>
+            {vatList.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridDiscountPrice">
+          Discount Price
+          <Form.Control
+            type="number"
+            as="input"
+            defaultValue="0.00"
+            placeholder="Enter Discount Price"
+            size="sm"
+            value={formate2DecimalNumber(product.discountPrice)}
+            onChange={onChangeProductValues}
+            isInvalid={invalidDiscountPrice}
+            aria-describedby={DISCOUNT_PRICE_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidDiscountPrice}
+            message={"Discount Price fromat should have 5 integer digits and 2 digits."}
+            ariaDescribedbyId={DISCOUNT_PRICE_HELP_BLOCK}
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridNote">
+          PLU
+          <InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Click '+' to generate new PLU"
+              size="sm"
+              readOnly
+              disabled
+              value={getPlu()}
+              onChange={onChangeProductValues}
+            />
+            <InputGroup.Append>
+              <InputGroup.Text
+                style={{
+                  cursor: 'pointer',
+                  height: 31
+                }}
+                onClick={onGeneratePlu}
+              >
+                +
+              </InputGroup.Text>
+            </InputGroup.Append>
+          </InputGroup>
+        </Form.Group>
+      </Form.Row>
+      <Form.Row>
+        <Form.Group as={Col} controlId="formGridTradeMargin">
+          Trade Margin (%)
+          <Form.Control
+            type="text"
+            size="sm"
+            value={getTradeMarging()}
+            readOnly
+            disabled
+          />
+        </Form.Group>
+        <Form.Group as={Col} controlId="formGridStock">
+          Stock
+          <Form.Control
+            type="number"
+            as="input"
+            defaultValue="0.0000"
+            placeholder="Enter Stock"
+            size="sm"
+            value={product.stock}
+            onChange={onChangeProductValues}
+            isInvalid={invalidStock}
+            aria-describedby={STOCK_HELP_BLOCK}
+          />
+          <InvalidFieldText
+            isInvalid={invalidStock}
+            message={"Stock fromat should have 6 integer digits and 4 digits."}
+            ariaDescribedbyId={STOCK_HELP_BLOCK}
+          />
+        </Form.Group>
+      </Form.Row>
+    </Form>
+  )
+
   return (
     <div>
       <DisplayAlert
@@ -470,288 +760,55 @@ const Product = (props) => {
       />
       {!isPending ?
         <div className="container w-80 center mt2">
-          <Form>
-            <Form.Row>
-              <Form.Group
-                as={Col}
+          <div className={classes.root}>
+            <TabPanel value={tabValue} index={0}>
+              {renderForm()}
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              <VendorHistory 
+                isPending={isPending}
+                productVendors={product.vendors}
+                defaultVendorId={product.defaultVendorId}
+              />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+              Item Three
+            </TabPanel>
+            <AppBar position="static">
+              <Tabs
+                classes={{
+                  indicator: classes.tabIndicator
+                }}
+                value={tabValue}
+                onChange={handleTabChange}
+                aria-label="simple tabs example"
+                indicatorColor="primary"
+                selectionFollowsFocus='true'
+                style={{
+                  backgroundColor: 'grey'
+                }}
               >
-                Category
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  className="mb-3"
-                  required={true}
-                  id="formGridCategory"
-                  value={selectedCategory}
-                  isInvalid={invalidCategory}
-                  onChange={onChangeProductValues}
-                >
-                  <option>{"--Select Category Value--"}</option>
-                  {categories.map((item) => (
-                    <option key={item.id} value={item.id}>{item.name}</option>
-                  ))}
-                </Form.Control>
-                Subcategory
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  className="mb-3"
-                  required={true}
-                  id="formGridSubcategory"
-                  value={selectedSubcategory}
-                  isInvalid={invalidSubcategory}
-                  onChange={onChangeProductValues}
-                >
-                  <option>{"--Select Subcategory Value--"}</option>
-                  {subcategoriesInitial.map((item) => (
-                    <option key={item.id} value={item.id}>{item.name}</option>
-                  ))}
-                </Form.Control>
-                Product Code
-                <Form.Control
-                  type="text"
-                  placeholder="Click to generate Product Code"
-                  className="mb-3"
-                  size="sm"
-                  readOnly
-                  isInvalid={invalidProductCode}
-                  required={true}
-                  style={{
-                    cursor: 'pointer'
-                  }}
-                  id="formGridProductCode"
-                  value={getProductCode()}
-                  onClick={generateNewProductCode}
-                />
-                Name (Romanian)
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Name (Romanian)"
-                  size="sm"
-                  required={true}
-                  id="formGridNameRomanian"
-                  value={product.nameRom}
-                  onChange={onChangeProductValues}
-                  onBlur={onTabPressOrBlur}
-                  isInvalid={invalidRomName}
-                  aria-describedby={ROM_NAME_HELP_BLOCK}
-                />
-                <InvalidFieldText
-                  isInvalid={invalidRomName}
-                  message={"Romanian Name should contain only letters, numbers and dash."}
-                  ariaDescribedbyId={ROM_NAME_HELP_BLOCK}
-                />
-              </Form.Group>
-              <TableContainer component={Paper} className="w-50 mt-4" style={{ maxHeight: 242, border: invalidBarcode }}>
-                <Table className={classes.table} stickyHeader size="small" aria-label="a dense table sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className={classes.header}>Barcodes</TableCell>
-                      <TableCell className={classes.buttons}>
-                        <Button
-                          style={{ marginRight: 2 }}
-                          onClick={onAddNewBarcode}
-                        >+</Button>
-                        <Button onClick={generateNewBarCode}>G</Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {barcodes.map((item, index) => (
-                      <TableRow key={`${item.value}_${index}`}>
-                        <TableCell component="th" scope="row">
-                          <Link className="no-underline" to="#" onClick={() => onUpdateBarcode(index)}>
-                            {item.value}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <BarcodeButton
-                            variant="contained"
-                            color="secondary"
-                            style={{
-                              height: 22,
-                              width: 80,
-                              fontSize: 'smaller'
-                            }}
-                            startIcon={<DeleteIcon style={{ fontSize: 17 }} />}
-                            onClick={() => deleteBarcode(item.value)}
-                          >
-                            Delete
-                          </BarcodeButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridNameRussian">
-                Name (Russian)
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Name (Russian)"
-                  size="sm"
-                  required={true}
-                  value={product.nameRus}
-                  onChange={onChangeProductValues}
-                  onBlur={onTabPressOrBlur}
-                  isInvalid={invalidRusName}
-                  aria-describedby={RUS_NAME_HELP_BLOCK}
-                />
-                <InvalidFieldText
-                  isInvalid={invalidRusName}
-                  message={"Russian Name should contain only letters, numbers and dash."}
-                  ariaDescribedbyId={RUS_NAME_HELP_BLOCK}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridMeasuringUnit">
-                Measuring Unit
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={selectedMeasuringUnit}
-                  isInvalid={invalidMeasuringUnit}
-                  onChange={onChangeProductValues}
-                >
-                  <option>{"--Select Measuring Unit Value--"}</option>
-                  {measuringUnits.map((item) => (
-                    <option key={item.id} value={item.id}>{item.name}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridRetailPrice">
-                Retail Price
-                <Form.Control
-                  type="number"
-                  as="input"
-                  defaultValue="0.00"
-                  placeholder="Enter Retail Price"
-                  size="sm"
-                  value={formate2DecimalNumber(product.retailPrice)}
-                  onChange={onChangeProductValues}
-                  isInvalid={invalidRetailPrice}
-                  aria-describedby={RETAIL_PRICE_HELP_BLOCK}
-                />
-                <InvalidFieldText
-                  isInvalid={invalidRetailPrice}
-                  message={"Retail Price fromat should have 5 integer digits and 2 digits."}
-                  ariaDescribedbyId={RETAIL_PRICE_HELP_BLOCK}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridVat">
-                VAT
-                <Form.Control
-                  as="select"
-                  size="sm"
-                  required={true}
-                  value={selectedVat}
-                  isInvalid={invalidVat}
-                  onChange={onChangeProductValues}
-                >
-                  <option>{"--Select VAT Value--"}</option>
-                  {vatList.map((item) => (
-                    <option key={item.id} value={item.id}>{item.name}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridDiscountPrice">
-                Discount Price
-                <Form.Control
-                  type="number"
-                  as="input"
-                  defaultValue="0.00"
-                  placeholder="Enter Discount Price"
-                  size="sm"
-                  value={formate2DecimalNumber(product.discountPrice)}
-                  onChange={onChangeProductValues}
-                  isInvalid={invalidDiscountPrice}
-                  aria-describedby={DISCOUNT_PRICE_HELP_BLOCK}
-                />
-                <InvalidFieldText
-                  isInvalid={invalidDiscountPrice}
-                  message={"Discount Price fromat should have 5 integer digits and 2 digits."}
-                  ariaDescribedbyId={DISCOUNT_PRICE_HELP_BLOCK}
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridNote">
-                PLU
-                <InputGroup>
-                  <Form.Control
-                    type="text"
-                    placeholder="Click '+' to generate new PLU"
-                    size="sm"
-                    readOnly
-                    disabled
-                    value={getPlu()}
-                    onChange={onChangeProductValues}
-                  />
-                  <InputGroup.Append>
-                    <InputGroup.Text
-                      style={{
-                        cursor: 'pointer',
-                        height: 31
-                      }}
-                      onClick={onGeneratePlu}
-                    >
-                      +
-                    </InputGroup.Text>
-                  </InputGroup.Append>
-                </InputGroup>
-              </Form.Group>
-            </Form.Row>
-            <Form.Row>
-              <Form.Group as={Col} controlId="formGridTradeMargin">
-                Trade Margin (%)
-                <Form.Control
-                  type="text"
-                  size="sm"
-                  value={getTradeMarging()}
-                  readOnly
-                  disabled
-                />
-              </Form.Group>
-              <Form.Group as={Col} controlId="formGridStock">
-                Stock
-                <Form.Control
-                  type="number"
-                  as="input"
-                  defaultValue="0.0000"
-                  placeholder="Enter Stock"
-                  size="sm"
-                  value={product.stock}
-                  onChange={onChangeProductValues}
-                  isInvalid={invalidStock}
-                  aria-describedby={STOCK_HELP_BLOCK}
-                />
-                <InvalidFieldText
-                  isInvalid={invalidStock}
-                  message={"Stock fromat should have 6 integer digits and 4 digits."}
-                  ariaDescribedbyId={STOCK_HELP_BLOCK}
-                />
-              </Form.Group>
-            </Form.Row>
-            <div>
-              <Button
-                className="mr5 w4"
-                variant="primary"
-                onClick={onSubmitProduct}
-              >
-                Submit
-              </Button>
-              <Button
-                className="btn btn-warning ml5 w4"
-                onClick={onClickCancel}
-              >
-                Cancel
-              </Button>
-            </div>
-          </Form>
+                <Tab label="Product Info" {...a11yProps(0)} />
+                <Tab label="Vendors" {...a11yProps(1)} />
+                <Tab label="Price History" {...a11yProps(2)} />
+              </Tabs>
+            </AppBar>
+          </div>
+          <div className='mt4'>
+            <Button
+              className="mr5 w4"
+              variant="primary"
+              onClick={onSubmitProduct}
+            >
+              Submit
+            </Button>
+            <Button
+              className="btn btn-warning ml5 w4"
+              onClick={onClickCancel}
+            >
+              Cancel
+            </Button>
+          </div>
           <Barcode
             open={openDialog}
             handleClose={handleClose}

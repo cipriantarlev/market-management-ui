@@ -131,7 +131,6 @@ const Invoices = (props) => {
   )
 
   const renderIsApproved = (params) => {
-    console.log("params", params)
     return params.value === true ? "Yes" : "No"
   }
 
