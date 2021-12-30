@@ -39,6 +39,7 @@ import './style.css';
 import Barcode from './Barcode';
 import TabPanel from './TabPanel';
 import VendorHistory from './VendorHistory';
+import ProductHistory from './ProductHistory';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -310,7 +311,7 @@ const Product = (props) => {
       case "formGridDiscountPrice":
         if (validateInputValue(setInvalidDiscountPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
           if (product.retailPrice !== null || product.retailPrice !== undefined) {
-            setTradeMargin((product.retailPrice * 100) / event.target.value - 100);
+            setTradeMargin(Number((product.retailPrice * 100) / event.target.value - 100).toFixed(2));
           } else {
             setTradeMargin(0);
           }
@@ -413,8 +414,10 @@ const Product = (props) => {
   }
 
   const formate2DecimalNumber = (numberToDisplay) => {
-    if (!isNaN(numberToDisplay)) {
+    if (!isNaN(numberToDisplay) && numberToDisplay !== null) {
       return numberToDisplay.toLocaleString(navigator.language, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    } else {
+      return Number(0).toFixed(2);
     }
   }
 
@@ -772,7 +775,9 @@ const Product = (props) => {
               />
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
-              Item Three
+              <ProductHistory 
+                productId={id}
+              />
             </TabPanel>
             <AppBar position="static">
               <Tabs

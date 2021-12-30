@@ -82,8 +82,8 @@ const Products = (props) => {
       renderCell: addLinkToCell,
     },
     {
-      field: 'discrountPrice',
-      headerName: 'Discrount Price',
+      field: 'discountPrice',
+      headerName: 'Discount Price',
       width: 180,
     },
     {
