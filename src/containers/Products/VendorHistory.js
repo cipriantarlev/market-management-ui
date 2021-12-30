@@ -55,7 +55,6 @@ const VendorHistory = (props) => {
                                             checked={element.id === defaultVendorId}
                                             disabled='true'
                                         />
-                                        {/* {defaultVendorId} */}
                                     </TableCell>
                                 </TableRow>
                             ))}
