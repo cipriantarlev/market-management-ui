@@ -146,6 +146,9 @@ import {
   GENERATE_BARCODE_PENDING,
   GENERATE_BARCODE_SUCCESS,
   GENERATE_BARCODE_FAILED,
+  REQUEST_PRODUCT_HISTORY_PENDING,
+  REQUEST_PRODUCT_HISTORY_SUCCESS,
+  REQUEST_PRODUCT_HISTORY_FAILED,
   REQUEST_DOCUMENT_TYPES_PENDING,
   REQUEST_DOCUMENT_TYPES_SUCCESS,
   REQUEST_DOCUMENT_TYPES_FAILED,
@@ -604,6 +607,14 @@ export const generateBarcode = (barcode) => (dispatch) => {
     .then(response => response.json())
     .then(data => checkStatusCode(data, GENERATE_BARCODE_SUCCESS, dispatch))
     .catch(error => dispatch({ type: GENERATE_BARCODE_FAILED, payload: error }))
+}
+
+export const fetchProductHistory = (id) => (dispatch) => {
+  dispatch({ type: REQUEST_PRODUCT_HISTORY_PENDING });
+  fetch(`${ROOT_CONTEXT_PATH}/products/product-history/${id}`, authorizationData())
+    .then(response => response.json())
+    .then(data => checkStatusCode(data, REQUEST_PRODUCT_HISTORY_SUCCESS, dispatch))
+    .catch(error => dispatch({ type: REQUEST_PRODUCT_HISTORY_FAILED, payload: error }))
 }
 
 export const fetchDocumentTypes = () => (dispatch) => {

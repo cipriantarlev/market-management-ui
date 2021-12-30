@@ -144,6 +144,9 @@ import {
   GENERATE_BARCODE_PENDING,
   GENERATE_BARCODE_SUCCESS,
   GENERATE_BARCODE_FAILED,
+  REQUEST_PRODUCT_HISTORY_PENDING,
+  REQUEST_PRODUCT_HISTORY_SUCCESS,
+  REQUEST_PRODUCT_HISTORY_FAILED,
   REQUEST_DOCUMENT_TYPES_PENDING,
   REQUEST_DOCUMENT_TYPES_SUCCESS,
   REQUEST_DOCUMENT_TYPES_FAILED,
@@ -602,6 +605,9 @@ const initialStateProduct = {
   error: false,
   product: {},
   status: '',
+  isPendingProductHistory: false,
+  productHistory: [],
+  errorProductHistory: false,
 }
 
 export const manageProducts = (state = initialStateProduct, action = {}) => {
@@ -642,6 +648,12 @@ export const manageProducts = (state = initialStateProduct, action = {}) => {
       return Object.assign({}, state, { product: action.payload, isPending: false });
     case REQUEST_PRODUCT_BY_BARCODE_FAILED:
       return Object.assign({}, state, { error: action.payload, isPending: false });
+    case REQUEST_PRODUCT_HISTORY_PENDING:
+      return Object.assign({}, state, { isPendingProductHistory: true });
+    case REQUEST_PRODUCT_HISTORY_SUCCESS:
+      return Object.assign({}, state, { productHistory: action.payload, isPendingProductHistory: false });
+    case REQUEST_PRODUCT_HISTORY_FAILED:
+      return Object.assign({}, state, { errorProductHistory: action.payload, isPendingProductHistory: false });
     case RESET_DATA:
       return initialStateProduct;
     default:
