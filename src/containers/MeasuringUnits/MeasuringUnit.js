@@ -12,17 +12,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { 
+import {
   validateInputValueAndShowErrorMessage,
   onForbidden
- } from '../../common/utils';
+} from '../../common/utils';
 
 import {
   fetchMeasuringUnit,
   createMeasuringUnit,
   updateMeasuringUnit,
-  restStoreData,
-} from '../actions';
+} from '../../actions/measuringUnitAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 const mapStateToProps = (state) => {
   return {
@@ -134,26 +134,26 @@ const MeasuringUnit = (props) => {
         <DialogTitle id="form-dialog-title">Add New Measuring Unit</DialogTitle>
         :
         <ProgressLoading />}
-        {initialMeasuringUnit.status === 403 ? onForbidden(history, onResetData) :
-      <DialogContent>
-        <DialogContentText>
-          Please enter the name for a new measuring unit.
-        </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          placeholder="Name"
-          type="text"
-          fullWidth
-          required={true}
-          error={showError}
-          helperText={errorMessage}
-          value={measuringUnit.name}
-          onChange={onChangeMeasuringUnitValues}
-          onKeyPress={onPressEnter}
-        />
-      </DialogContent>}
+      {initialMeasuringUnit.status === 403 ? onForbidden(history, onResetData) :
+        <DialogContent>
+          <DialogContentText>
+            Please enter the name for a new measuring unit.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            placeholder="Name"
+            type="text"
+            fullWidth
+            required={true}
+            error={showError}
+            helperText={errorMessage}
+            value={measuringUnit.name}
+            onChange={onChangeMeasuringUnitValues}
+            onKeyPress={onPressEnter}
+          />
+        </DialogContent>}
       <DialogActions>
         <Button
           onClick={onSubmitMeasuringUnit}

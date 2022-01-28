@@ -13,15 +13,15 @@ import {
   fetchCategory,
   createCategory,
   updateCategory,
-  restStoreData,
-} from '../actions';
+} from '../../actions/categoryAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { 
+import {
   validateInputValueAndShowErrorMessage,
   onForbidden
- } from '../../common/utils';
+} from '../../common/utils';
 
 const mapStateToProps = (state) => {
   return {
@@ -117,23 +117,23 @@ const Category = (props) => {
   }
 
   return (
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-        disableEscapeKeyDown={true}
-      >
-        {error ?
-          <DisplayAlert
-            error={error}
-            open={openAlert}
-            setOpen={setOpenAlert}
-          /> : null}
-        {!isPending ?
-          <DialogTitle id="form-dialog-title">Add New Category</DialogTitle>
-          :
-          <ProgressLoading />}
-          {initialCategory.status === 403 ? onForbidden(history, onResetData) :
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      disableEscapeKeyDown={true}
+    >
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={openAlert}
+          setOpen={setOpenAlert}
+        /> : null}
+      {!isPending ?
+        <DialogTitle id="form-dialog-title">Add New Category</DialogTitle>
+        :
+        <ProgressLoading />}
+      {initialCategory.status === 403 ? onForbidden(history, onResetData) :
         <DialogContent>
           <DialogContentText>
             Please enter the name for a new category.
@@ -153,29 +153,29 @@ const Category = (props) => {
             onKeyPress={onPressEnter}
           />
         </DialogContent>}
-        <DialogActions>
-          <Button
-            onClick={onSubmitCategory}
-            className="mr5 w4"
-            variant="contained"
-            color="primary"
-          >
-            Submit
-          </Button>
-          <Button
-            onClick={onCancel}
-            variant="contained"
-            className="btn btn-warning ml5 w4"
-            style={{
-              color: '#212529',
-              backgroundColor: '#ffc107',
-              borderColor: '#ffc107',
-            }}
-          >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DialogActions>
+        <Button
+          onClick={onSubmitCategory}
+          className="mr5 w4"
+          variant="contained"
+          color="primary"
+        >
+          Submit
+        </Button>
+        <Button
+          onClick={onCancel}
+          variant="contained"
+          className="btn btn-warning ml5 w4"
+          style={{
+            color: '#212529',
+            backgroundColor: '#ffc107',
+            borderColor: '#ffc107',
+          }}
+        >
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

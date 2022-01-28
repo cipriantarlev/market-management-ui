@@ -1,56 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { createLogger } from 'redux-logger';
-import thunkMiddleware from 'redux-thunk';
-
 import App from './containers/App/App';
 import reportWebVitals from './reportWebVitals';
 
-import { 
-  requestLogin, 
-  requestLogout, 
-  fetchUsers, 
-  manageMyOrganizations,
-  manageVendors,
-  manageCategories,
-  manageSubcategories,
-  manageVat,
-  manageMeasuringUnits,
-  manageProducts,
-  generateProductCode,
-  generatePlu,
-  generateBarcode,
-  manageDocumentTypes,
-  manageInvoices,
-  manageInvoiceProducts,
- } from './containers/reducers';
 import './index.css';
 import 'tachyons';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import configureStore from './store';
 
-const logger = createLogger();
-const rootReducer = combineReducers({
-  requestLogin, 
-  requestLogout, 
-  fetchUsers, 
-  manageMyOrganizations,
-  manageVendors,
-  manageCategories,
-  manageSubcategories,
-  manageVat,
-  manageMeasuringUnits,
-  manageProducts,
-  generateProductCode,
-  generatePlu,
-  generateBarcode,
-  manageDocumentTypes,
-  manageInvoices,
-  manageInvoiceProducts,
-});
-const store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
-
+const store = configureStore();
 
 ReactDOM.render(
     <Provider store={store}>

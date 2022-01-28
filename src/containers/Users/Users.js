@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import {
   fetchUsers,
   deleteUser,
-} from '../actions';
+} from '../../actions/userAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';

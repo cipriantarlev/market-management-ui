@@ -13,8 +13,8 @@ import {
   fetchVat,
   createVat,
   updateVat,
-  restStoreData,
-} from '../actions';
+} from '../../actions/vatAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';

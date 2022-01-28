@@ -1,4 +1,4 @@
-import { ROOT_CONTEXT_PATH } from '../constants';
+import { ROOT_CONTEXT_PATH } from '../../constants';
 
 import { authorizationData } from '../../common/utils';
 

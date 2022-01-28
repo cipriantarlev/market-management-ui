@@ -24,15 +24,15 @@ import {
   fetchProduct,
   createProduct,
   updateProduct,
-  fetchCategories,
-  fetchSubcategoriesCategory,
-  fetchVatList,
-  fetchMeasuringUnits,
-  generateProductCode,
-  generatePlu,
-  generateBarcode,
-  restStoreData,
-} from '../actions';
+} from '../../actions/productAction';
+import { fetchCategories } from '../../actions/categoryAction';
+import { fetchSubcategoriesCategory } from '../../actions/subcategoryAction';
+import { fetchVatList } from '../../actions/vatAction';
+import { fetchMeasuringUnits } from '../../actions/measuringUnitAction';
+import { generateProductCode } from '../../actions/productCodeAction';
+import { generatePlu } from '../../actions/pluAction';
+import { generateBarcode } from '../../actions/barcodeAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import './style.css';
 
@@ -768,14 +768,14 @@ const Product = (props) => {
               {renderForm()}
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
-              <VendorHistory 
+              <VendorHistory
                 isPending={isPending}
                 productVendors={product.vendors}
                 defaultVendorId={product.defaultVendorId}
               />
             </TabPanel>
             <TabPanel value={tabValue} index={2}>
-              <ProductHistory 
+              <ProductHistory
                 productId={id}
               />
             </TabPanel>

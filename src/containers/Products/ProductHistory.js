@@ -17,7 +17,7 @@ import DisplayAlert from '../../common/DisplayAlert';
 
 import {
     fetchProductHistory
-} from '../actions';
+} from '../../actions/productAction';
 
 const mapStateToProps = (state) => {
     return {

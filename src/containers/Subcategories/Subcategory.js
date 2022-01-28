@@ -13,16 +13,16 @@ import {
   fetchSubcategory,
   createSubcategory,
   updateSubcategory,
-  fetchCategories,
-  restStoreData
-} from '../actions';
+} from '../../actions/subcategoryAction';
+import { fetchCategories } from '../../actions/categoryAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
-import { 
+import {
   validateInputValueAndShowErrorMessage,
   onForbidden
- } from '../../common/utils';;
+} from '../../common/utils';;
 
 const mapStateToProps = (state) => {
   return {
@@ -117,8 +117,8 @@ const Subcategory = (props) => {
 
   const setCategoryValue = (selectedId) => {
     let categoryObj = categories.find(category => category.id === Number(selectedId));
-      setSelectedCategory(Number(selectedId));
-      setSubcategory(Object.assign(subccategory, subccategory, { category: categoryObj }));
+    setSelectedCategory(Number(selectedId));
+    setSubcategory(Object.assign(subccategory, subccategory, { category: categoryObj }));
   }
 
   const onCancel = () => {
@@ -136,7 +136,7 @@ const Subcategory = (props) => {
     if (id !== 0) {
       onUpdateSubcategory(subccategory);
     } else {
-      if(selectedCategory === 1) {
+      if (selectedCategory === 1) {
         setCategoryValue(1);
       }
       onCreateSubcategory(subccategory);
@@ -161,40 +161,40 @@ const Subcategory = (props) => {
         <DialogTitle id="form-dialog-title">Add New Subcategory</DialogTitle>
         :
         <ProgressLoading />}
-        {initialSubcategory.status === 403 ? onForbidden(history, onResetData) :
-      <DialogContent>
-        <DialogContentText>
-          Please enter the name for a new subccategory.
-        </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          placeholder="Subcategory Name"
-          type="text"
-          fullWidth
-          required={true}
-          error={showNameError}
-          helperText={nameErrorMessage}
-          value={subccategory.name}
-          onChange={onChangeSubcategory}
-        />
-        <TextField
-          margin="dense"
-          id="category"
-          label="Category Name"
-          type="text"
-          fullWidth
-          required={true}
-          select={true}
-          value={selectedCategory}
-          onChange={onChangeSubcategory}
-        >
-          {categories.map(category => (
-            <option className="pointer dim black" key={category.id} value={category.id}>{category.name}</option>
-          ))}
-        </TextField>
-      </DialogContent>}
+      {initialSubcategory.status === 403 ? onForbidden(history, onResetData) :
+        <DialogContent>
+          <DialogContentText>
+            Please enter the name for a new subccategory.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            placeholder="Subcategory Name"
+            type="text"
+            fullWidth
+            required={true}
+            error={showNameError}
+            helperText={nameErrorMessage}
+            value={subccategory.name}
+            onChange={onChangeSubcategory}
+          />
+          <TextField
+            margin="dense"
+            id="category"
+            label="Category Name"
+            type="text"
+            fullWidth
+            required={true}
+            select={true}
+            value={selectedCategory}
+            onChange={onChangeSubcategory}
+          >
+            {categories.map(category => (
+              <option className="pointer dim black" key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </TextField>
+        </DialogContent>}
       <DialogActions>
         <Button
           onClick={!showNameError ? onSubmitSubcategory : null}

@@ -13,8 +13,8 @@ import {
   updateVendor,
   fetchRegions,
   fetchVendors,
-  restStoreData
-} from '../actions';
+} from '../../actions/vendorAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';

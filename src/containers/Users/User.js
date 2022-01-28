@@ -13,7 +13,7 @@ import {
   createUser,
   updateUser,
   fetchUsers
-} from '../actions';
+} from '../../actions/userAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';

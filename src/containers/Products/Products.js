@@ -6,7 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Link, useHistory } from 'react-router-dom';
 
-import { fetchProducts, deleteProduct } from '../actions';
+import { fetchProducts, deleteProduct } from '../../actions/productAction';
 
 import './style.css';
 

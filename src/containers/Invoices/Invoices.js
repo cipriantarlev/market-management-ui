@@ -23,7 +23,7 @@ import {
   fetchIncomeInvoices,
   fetchOutComeInvoices,
   updateInvoiceIsApprovedMarker,
-} from '../actions';
+} from '../../actions/invoiceAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 

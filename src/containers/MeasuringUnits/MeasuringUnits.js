@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Link, useHistory} from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -14,11 +14,11 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
-import { 
-  fetchMeasuringUnits, 
+import {
+  fetchMeasuringUnits,
   deleteMeasuringUnit,
-  restStoreData,
-} from '../actions';
+} from '../../actions/measuringUnitAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import MeasuringUnit from './MeasuringUnit';
 
@@ -108,53 +108,53 @@ const MeasuringUnits = (props) => {
 
   const renderTableContent = () => (
     !isPending ?
-        <div>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} size="small" aria-label="simple table">
-              <TableHead style={{ backgroundColor: "#808080ad" }}>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell align="center">Action</TableCell>
+      <div>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} size="small" aria-label="simple table">
+            <TableHead style={{ backgroundColor: "#808080ad" }}>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell align="center">Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {measuringUnits.map((element) => (
+                <TableRow key={element.id}>
+                  <TableCell component="th" scope="row">
+                    <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)} >
+                      {element.id}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)}>
+                      {element.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size="small"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => removeMeasuringUnit(element.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {measuringUnits.map((element) => (
-                  <TableRow key={element.id}>
-                    <TableCell component="th" scope="row">
-                      <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)} >
-                        {element.id}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link className="no-underline" to="#" onClick={() => onUpdateMeasuringUnit(element.id)}>
-                        {element.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => removeMeasuringUnit(element.id)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <MeasuringUnit
-            open={openDialog}
-            handleClose={handleClose}
-            id={id}
-          />
-        </div>
-        :
-        <ProgressLoading />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <MeasuringUnit
+          open={openDialog}
+          handleClose={handleClose}
+          id={id}
+        />
+      </div>
+      :
+      <ProgressLoading />
   )
 
   return (
@@ -168,12 +168,12 @@ const MeasuringUnits = (props) => {
       >
         Add new Measuring Unit
       </Button>
-      {error ? 
-      <DisplayAlert 
-        error={error}
-        open={open}
-        setOpen={setOpen}
-      /> : null}
+      {error ?
+        <DisplayAlert
+          error={error}
+          open={open}
+          setOpen={setOpen}
+        /> : null}
       {measuringUnits.status === 403 ? history.push("/forbidden") : renderTableContent()}
     </div>
   );

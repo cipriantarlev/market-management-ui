@@ -12,11 +12,11 @@ import {
   fetchInvoiceProduct,
   createInvoiceProduct,
   updateInvoiceProduct,
-  fetchMeasuringUnits,
   fetchInvoiceProducts,
-  fetchProductByBarcode,
-  restStoreData,
-} from '../actions';
+} from '../../actions/invoiceProductAction';
+import { fetchMeasuringUnits } from '../../actions/measuringUnitAction';
+import { fetchProductByBarcode } from '../../actions/productAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import FindProduct from './FindProduct';
 
