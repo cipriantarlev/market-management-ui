@@ -18,8 +18,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {
   fetchDocumentTypes,
   deleteDocumentType,
-  restStoreData,
-} from '../actions';
+} from '../../actions/documentTypeAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 import DocumentType from './DocumentType';
 
 import DisplayAlert from '../../common/DisplayAlert';

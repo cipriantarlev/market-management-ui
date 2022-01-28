@@ -12,11 +12,11 @@ import {
   fetchInvoice,
   createInvoice,
   updateInvoice,
-  fetchDocumentTypes,
   fetchInvoiceOrganizations,
   fetchInvoiceVendors,
-  restStoreData,
-} from '../actions';
+} from '../../actions/invoiceAction';
+import { restStoreData } from '../../actions/restoreDataAction';
+import { fetchDocumentTypes } from '../../actions/documentTypeAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';

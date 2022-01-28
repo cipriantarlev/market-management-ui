@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import {
   fetchMyOrganizations,
   deleteMyOrganization
-} from '../actions';
+} from '../../actions/myOrganizationAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';

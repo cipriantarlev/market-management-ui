@@ -20,8 +20,8 @@ import {
   fetchDocumentType,
   createDocumentType,
   updateDocumentType,
-  restStoreData,
-} from '../actions';
+} from '../../actions/documentTypeAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 const mapStateToProps = (state) => {
   return {

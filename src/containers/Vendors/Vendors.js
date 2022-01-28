@@ -6,7 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { Link, useHistory } from 'react-router-dom';
 
-import { fetchVendors, deleteVendor } from '../actions';
+import { fetchVendors, deleteVendor } from '../../actions/vendorAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 

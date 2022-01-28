@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import './style.css';
 
-import { handleLogout } from '../actions';
+import { handleLogout } from '../../actions/authAction';
 
 const mapStateToProps = (state) => {
   return {

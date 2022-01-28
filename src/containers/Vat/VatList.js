@@ -16,8 +16,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { 
   fetchVatList, 
   deleteVat, 
-  restStoreData 
-} from '../actions';
+} from '../../actions/vatAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import Vat from './Vat';
 

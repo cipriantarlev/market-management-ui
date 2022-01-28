@@ -12,7 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {
   fetchProducts,
   fetchProduct,
-} from '../actions';
+} from '../../actions/productAction';
 
 const mapStateToProps = (state) => {
   return {

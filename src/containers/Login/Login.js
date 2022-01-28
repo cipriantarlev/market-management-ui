@@ -11,7 +11,7 @@ import Container from '@material-ui/core/Container';
 import { useStyles } from './style';
 import './login.css';
 
-import { handleLogin } from '../actions';
+import { handleLogin } from '../../actions/authAction';
 
 const mapStateToProps = (state) => {
   return {
@@ -59,7 +59,7 @@ const Login = (props) => {
   }
 
   const onPressEnter = (event) => {
-    if(event.charCode === 13){
+    if (event.charCode === 13) {
       handleSignin();
     }
   }
@@ -74,7 +74,7 @@ const Login = (props) => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        {loginError ? <h4 style={{color: 'red', marginTop: 15, marginBottom: -5}}>Incorrect Username or password</h4> : null}
+        {loginError ? <h4 style={{ color: 'red', marginTop: 15, marginBottom: -5 }}>Incorrect Username or password</h4> : null}
         <form className={classes.form} noValidate>
           <TextField
             variant="outlined"

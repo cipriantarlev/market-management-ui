@@ -18,8 +18,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import {
   fetchSubcategories,
   deleteSubcategory,
-  restStoreData,
-} from '../actions';
+} from '../../actions/subcategoryAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import Subcategory from './Subcategory';
 
@@ -124,69 +124,69 @@ const Subcategories = (props) => {
 
   const renderTableContent = () => (
     !isPending ?
-    <div>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} size="small" aria-label="simple table">
-          <TableHead style={{ backgroundColor: "#808080ad" }}>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Category Name</TableCell>
-              <TableCell align="center">Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {subcategories
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((element) => (
-                <TableRow key={element.id}>
-                  <TableCell component="th" scope="row">
-                    <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)} >
-                      {element.id}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)}>
-                      {element.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{element.category.name}</TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      size="small"
-                      startIcon={<DeleteIcon />}
-                      onClick={() => removeSubcategory(element.id)}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 50]}
-                rowsPerPage={rowsPerPage}
-                count={totalRows}
-                page={page}
-                onChangePage={changePage}
-                onChangeRowsPerPage={(event) => setRowsPerPage(event.target.value)}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
-      <Subcategory
-        open={openDialog}
-        handleClose={handleClose}
-        id={id}
-      />
-    </div>
-    :
-    <ProgressLoading />
+      <div>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} size="small" aria-label="simple table">
+            <TableHead style={{ backgroundColor: "#808080ad" }}>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Category Name</TableCell>
+                <TableCell align="center">Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {subcategories
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((element) => (
+                  <TableRow key={element.id}>
+                    <TableCell component="th" scope="row">
+                      <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)} >
+                        {element.id}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Link className="no-underline" to="#" onClick={() => onUpdateSubcategory(element.id)}>
+                        {element.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{element.category.name}</TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => removeSubcategory(element.id)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 50]}
+                  rowsPerPage={rowsPerPage}
+                  count={totalRows}
+                  page={page}
+                  onChangePage={changePage}
+                  onChangeRowsPerPage={(event) => setRowsPerPage(event.target.value)}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+        <Subcategory
+          open={openDialog}
+          handleClose={handleClose}
+          id={id}
+        />
+      </div>
+      :
+      <ProgressLoading />
   )
 
   return (

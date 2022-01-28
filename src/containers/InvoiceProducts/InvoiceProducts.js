@@ -21,10 +21,10 @@ import { useParams } from 'react-router';
 
 import {
   fetchInvoiceProducts,
-  deleteInvoiceProduct,
-  updateInvoice,
-  restStoreData
-} from '../actions';
+  deleteInvoiceProduct
+} from '../../actions/invoiceProductAction';
+import { updateInvoice } from '../../actions/invoiceAction';
+import { restStoreData } from '../../actions/restoreDataAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 
