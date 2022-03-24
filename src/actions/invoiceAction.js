@@ -108,9 +108,9 @@ export const fetchInvoiceVendors = () => (dispatch) => {
         .catch(error => dispatch({ type: REQUEST_INVOICES_VENDORS_FAILED, payload: error }))
 }
 
-export const updateInvoiceIsApprovedMarker = (invoiceId, isApproved) => (dispatch) => {
+export const updateInvoiceIsApprovedMarker = (invoicesToUpdate) => (dispatch) => {
     dispatch({ type: UPDATE_INVOICE_IS_APPROVED_PENDING });
-    fetch(`${ROOT_CONTEXT_PATH}/invoices/isApproved/${invoiceId}/${isApproved}`, dataApi('put'))
+    fetch(`${ROOT_CONTEXT_PATH}/invoices/isApproved`, dataApi('put', invoicesToUpdate))
         .then(response => response.json())
         .then(data => checkStatusCode(data, UPDATE_INVOICE_IS_APPROVED_SUCCESS, dispatch))
         .catch(error => dispatch({ type: UPDATE_INVOICE_IS_APPROVED_FAILED, payload: error }))

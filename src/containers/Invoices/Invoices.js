@@ -298,10 +298,8 @@ const Invoices = (props) => {
   }
 
   const onApproveSelectedInvoice = () => {
-    if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
-      selectedInvoices.forEach(invoiceId => {
-        onUpdateInvoiceIsApprovedMarker(invoiceId, true);
-      })
+    if (selectedInvoices !== undefined && selectedInvoices.length > 0) {
+      onUpdateInvoiceIsApprovedMarker({"true": selectedInvoices});
       history.go(0);
     } else {
       alert("You didn't select an invoice or selected more than one. Please try again.");
@@ -309,10 +307,8 @@ const Invoices = (props) => {
   }
 
   const onDisapproveSelectedInvoice = () => {
-    if (selectedInvoices !== undefined && selectedInvoices.length === 1) {
-      selectedInvoices.forEach(invoiceId => {
-        onUpdateInvoiceIsApprovedMarker(invoiceId, false);
-      })
+    if (selectedInvoices !== undefined && selectedInvoices.length > 0) {
+      onUpdateInvoiceIsApprovedMarker({"false": selectedInvoices});
       history.go(0);
     } else {
       alert("You didn't select an invoice or selected more than one. Please try again.");
