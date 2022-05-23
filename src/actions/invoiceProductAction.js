@@ -15,6 +15,9 @@ import {
     DELETE_INVOICE_PRODUCT_PENDING,
     DELETE_INVOICE_PRODUCT_SUCCESS,
     DELETE_INVOICE_PRODUCT_FAILED,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_PENDING,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_SUCCESS,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_FAILED,
 } from '../constants';
 
 import {
@@ -53,6 +56,14 @@ export const updateInvoiceProduct = (invoiceProduct) => (dispatch) => {
         .then(response => response.json())
         .then(data => checkStatusCode(data, UPDATE_INVOICE_PRODUCT_SUCCESS, dispatch))
         .catch(error => dispatch({ type: UPDATE_INVOICE_PRODUCT_FAILED, payload: error }))
+}
+
+export const updateIsInvoiceProductChecked = (invoiceProductIds) => (dispatch) => {
+    dispatch({ type: UPDATE_IS_INVOICE_PRODUCT_CHECKED_PENDING });
+    fetch(`${ROOT_CONTEXT_PATH}/invoice-products/isChecked`, dataApi('put', invoiceProductIds))
+        .then(response => response.json())
+        .then(data => checkStatusCode(data, UPDATE_IS_INVOICE_PRODUCT_CHECKED_SUCCESS, dispatch))
+        .catch(error => dispatch({ type: UPDATE_IS_INVOICE_PRODUCT_CHECKED_FAILED, payload: error }))
 }
 
 export const deleteInvoiceProduct = (id) => (dispatch) => {

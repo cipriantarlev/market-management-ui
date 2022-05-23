@@ -15,6 +15,9 @@ import {
     DELETE_INVOICE_PRODUCT_SUCCESS,
     DELETE_INVOICE_PRODUCT_FAILED,
     RESET_DATA,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_PENDING,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_SUCCESS,
+    UPDATE_IS_INVOICE_PRODUCT_CHECKED_FAILED,
 } from '../constants';
 
 const initialStateInvoiceProducts = {
@@ -23,6 +26,7 @@ const initialStateInvoiceProducts = {
     error: false,
     invoiceProduct: {},
     status: '',
+    updatedInvoiceProducts: 0
 }
 
 export const manageInvoiceProducts = (state = initialStateInvoiceProducts, action = {}) => {
@@ -56,6 +60,12 @@ export const manageInvoiceProducts = (state = initialStateInvoiceProducts, actio
         case DELETE_INVOICE_PRODUCT_SUCCESS:
             return Object.assign({}, state, { status: action.payload, isPending: false });
         case DELETE_INVOICE_PRODUCT_FAILED:
+            return Object.assign({}, state, { error: action.payload, isPending: false });
+        case UPDATE_IS_INVOICE_PRODUCT_CHECKED_PENDING:
+            return Object.assign({}, state, { isPending: true });
+        case UPDATE_IS_INVOICE_PRODUCT_CHECKED_SUCCESS:
+            return Object.assign({}, state, { updatedInvoiceProducts: action.payload, isPending: false });
+        case UPDATE_IS_INVOICE_PRODUCT_CHECKED_FAILED:
             return Object.assign({}, state, { error: action.payload, isPending: false });
         case RESET_DATA:
             return initialStateInvoiceProducts;

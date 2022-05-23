@@ -21,6 +21,9 @@ import {
     REQUEST_PRODUCT_HISTORY_SUCCESS,
     REQUEST_PRODUCT_HISTORY_FAILED,
     RESET_DATA,
+    UPDATE_IS_PRODUCT_CHECKED_PENDING,
+    UPDATE_IS_PRODUCT_CHECKED_SUCCESS,
+    UPDATE_IS_PRODUCT_CHECKED_FAILED,
 } from '../constants';
 
 const initialStateProduct = {
@@ -32,6 +35,7 @@ const initialStateProduct = {
     isPendingProductHistory: false,
     productHistory: [],
     errorProductHistory: false,
+    updatedProducts: 0,
 }
 
 export const manageProducts = (state = initialStateProduct, action = {}) => {
@@ -78,6 +82,12 @@ export const manageProducts = (state = initialStateProduct, action = {}) => {
             return Object.assign({}, state, { productHistory: action.payload, isPendingProductHistory: false });
         case REQUEST_PRODUCT_HISTORY_FAILED:
             return Object.assign({}, state, { errorProductHistory: action.payload, isPendingProductHistory: false });
+        case UPDATE_IS_PRODUCT_CHECKED_PENDING:
+            return Object.assign({}, state, { isPending: true });
+        case UPDATE_IS_PRODUCT_CHECKED_SUCCESS:
+            return Object.assign({}, state, { updatedProducts: action.payload, isPending: false });
+        case UPDATE_IS_PRODUCT_CHECKED_FAILED:
+            return Object.assign({}, state, { error: action.payload, isPending: false });
         case RESET_DATA:
             return initialStateProduct;
         default:

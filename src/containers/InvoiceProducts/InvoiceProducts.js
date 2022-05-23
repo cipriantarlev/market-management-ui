@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { DataGrid } from '@material-ui/data-grid';
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpdateIcon from '@material-ui/icons/Update';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DescriptionIcon from '@material-ui/icons/Description';
 import BackspaceIcon from '@material-ui/icons/Backspace';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -21,7 +23,8 @@ import { useParams } from 'react-router';
 
 import {
   fetchInvoiceProducts,
-  deleteInvoiceProduct
+  deleteInvoiceProduct,
+  updateIsInvoiceProductChecked,
 } from '../../actions/invoiceProductAction';
 import { updateInvoice } from '../../actions/invoiceAction';
 import { restStoreData } from '../../actions/restoreDataAction';
@@ -64,6 +67,7 @@ const mapDispatchToProps = (dispatch) => {
     onDeleteInvoiceProduct: (id) => dispatch(deleteInvoiceProduct(id)),
     onUpdateInvoice: (invoice) => dispatch(updateInvoice(invoice)),
     onRestData: () => dispatch(restStoreData()),
+    onUpdateIsProductChecked: (listOfIds) => dispatch(updateIsInvoiceProductChecked(listOfIds)),
   }
 }
 const InvoiceProducts = (props) => {
@@ -73,6 +77,7 @@ const InvoiceProducts = (props) => {
     error,
     onFetchInvoiceProducts,
     onDeleteInvoiceProduct,
+    onUpdateIsProductChecked,
     onUpdateInvoice,
     onRestData
   } = props;
@@ -236,9 +241,12 @@ const InvoiceProducts = (props) => {
   }, [onFetchInvoiceProducts, id])
 
   useEffect(() => {
-    onFetchInvoiceProducts(id);
+    // onFetchInvoiceProducts(id);
+    setSelectedInvoiceProduct(selectedProducts());
     // eslint-disable-next-line
-  }, [])
+  }, [invoiceProducts])
+
+  console.log("displayInvoiceProducts", displayInvoiceProducts)
 
   useEffect(() => {
     setOpen(true)
@@ -315,8 +323,6 @@ const InvoiceProducts = (props) => {
     // eslint-disable-next-line 
   }, [invoiceProducts])
 
-
-
   const onAddNewInvoiceProduct = () => {
     onRestData();
     pushHistory(`/income-invoice-products/${id}/product/0`,
@@ -366,6 +372,21 @@ const InvoiceProducts = (props) => {
     }
   }
 
+  const onUpdateCheckedProduct = () => {
+    if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length > 0) {
+        let unchecked = invoiceProducts.filter(element => !selectedInvoiceProducts.includes(element?.id))
+        .map(element => element?.product?.id);
+
+        let checked = invoiceProducts.filter(element => selectedInvoiceProducts.includes(element?.id))
+        .map(element => element?.product?.id);
+
+        onUpdateIsProductChecked({
+          true: checked,
+          false: unchecked
+        });
+    }
+  }
+
   const backToInvoices = () => {
     if (displayInvoiceProducts.length > 1) {
       Object.assign(
@@ -377,11 +398,17 @@ const InvoiceProducts = (props) => {
         vatSum: Math.round(invoiceValues.vatSum * 100) / 100,
       }
       )
+      onUpdateCheckedProduct();
       onUpdateInvoice(invoiceToUpdate);
     }
     onRestData();
     pushHistory(`/income-invoices`, `/outcome-invoices`);
   }
+
+  const selectedProducts = () => (invoiceProducts?.filter(element => (element?.product?.checked === true))
+  .map(element => element.id))
+  
+  console.log("selectedInvoiceProducts", selectedInvoiceProducts);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
@@ -456,9 +483,10 @@ const InvoiceProducts = (props) => {
             // sortingOrder={['asc', 'desc', null]}
             disableSelectionOnClick={true}
             rowHeight={30}
-            isRowSelectable={(params) => params.row.id !== 0}
+            isRowSelectable={(params) => params?.row?.id !== 0}
             onSelectionModelChange={onSelectInvoiceProduct}
             disableColumnMenu
+            selectionModel={selectedInvoiceProducts}
           />
         </div>
       </div>

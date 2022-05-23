@@ -21,6 +21,9 @@ import {
     REQUEST_PRODUCT_HISTORY_PENDING,
     REQUEST_PRODUCT_HISTORY_SUCCESS,
     REQUEST_PRODUCT_HISTORY_FAILED,
+    UPDATE_IS_PRODUCT_CHECKED_PENDING,
+    UPDATE_IS_PRODUCT_CHECKED_SUCCESS,
+    UPDATE_IS_PRODUCT_CHECKED_FAILED,
 } from '../constants';
 import {
     authorizationData,
@@ -81,4 +84,12 @@ export const fetchProductHistory = (id) => (dispatch) => {
         .then(response => response.json())
         .then(data => checkStatusCode(data, REQUEST_PRODUCT_HISTORY_SUCCESS, dispatch))
         .catch(error => dispatch({ type: REQUEST_PRODUCT_HISTORY_FAILED, payload: error }))
+}
+
+export const updateIsProductChecked = (listOfIds) => (dispatch) => {
+    dispatch({ type: UPDATE_IS_PRODUCT_CHECKED_PENDING });
+    fetch(`${ROOT_CONTEXT_PATH}/products/isChecked`, dataApi('put', listOfIds))
+        .then(response => response.json())
+        .then(data => checkStatusCode(data, UPDATE_IS_PRODUCT_CHECKED_SUCCESS, dispatch))
+        .catch(error => dispatch({ type: UPDATE_IS_PRODUCT_CHECKED_FAILED, payload: error }))
 }
