@@ -246,8 +246,6 @@ const InvoiceProducts = (props) => {
     // eslint-disable-next-line
   }, [invoiceProducts])
 
-  console.log("displayInvoiceProducts", displayInvoiceProducts)
-
   useEffect(() => {
     setOpen(true)
   }, [error])
@@ -407,8 +405,6 @@ const InvoiceProducts = (props) => {
 
   const selectedProducts = () => (invoiceProducts?.filter(element => (element?.product?.checked === true))
   .map(element => element.id))
-  
-  console.log("selectedInvoiceProducts", selectedInvoiceProducts);
 
   return (
     <div style={{ height: '100%', width: '100%' }}>

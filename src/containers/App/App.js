@@ -31,6 +31,7 @@ import NotFound from "../NotFound/NotFound";
 import Copyright from '../../common/Copyright';
 import NavigationBar from '../NavBar/NavigationBar';
 import Forbidden from '../Forbidden/Forbidden';
+import MarkedProducts from '../MarkedProducts/MarkedProducts';
 
 const mapStateToProps = (state) => {
   return {
@@ -81,6 +82,9 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route path="/products/:id" >
           {loggedIn ? <Product /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/marked-products" >
+          {loggedIn ? <MarkedProducts /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/document-types" >
           {loggedIn ? <DocumentTypes /> : <Redirect to="/login" />}

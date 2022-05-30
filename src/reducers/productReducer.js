@@ -24,6 +24,9 @@ import {
     UPDATE_IS_PRODUCT_CHECKED_PENDING,
     UPDATE_IS_PRODUCT_CHECKED_SUCCESS,
     UPDATE_IS_PRODUCT_CHECKED_FAILED,
+    REQUEST_MARKED_PRODUCTS_PENDING,
+    REQUEST_MARKED_PRODUCTS_SUCCESS,
+    REQUEST_MARKED_PRODUCTS_FAILED,
 } from '../constants';
 
 const initialStateProduct = {
@@ -36,6 +39,7 @@ const initialStateProduct = {
     productHistory: [],
     errorProductHistory: false,
     updatedProducts: 0,
+    markedProducts: [],
 }
 
 export const manageProducts = (state = initialStateProduct, action = {}) => {
@@ -87,6 +91,12 @@ export const manageProducts = (state = initialStateProduct, action = {}) => {
         case UPDATE_IS_PRODUCT_CHECKED_SUCCESS:
             return Object.assign({}, state, { updatedProducts: action.payload, isPending: false });
         case UPDATE_IS_PRODUCT_CHECKED_FAILED:
+            return Object.assign({}, state, { error: action.payload, isPending: false });
+        case REQUEST_MARKED_PRODUCTS_PENDING:
+            return Object.assign({}, state, { isPending: true });
+        case REQUEST_MARKED_PRODUCTS_SUCCESS:
+            return Object.assign({}, state, { markedProducts: action.payload, isPending: false });
+        case REQUEST_MARKED_PRODUCTS_FAILED:
             return Object.assign({}, state, { error: action.payload, isPending: false });
         case RESET_DATA:
             return initialStateProduct;

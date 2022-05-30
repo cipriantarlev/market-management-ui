@@ -24,6 +24,9 @@ import {
     UPDATE_IS_PRODUCT_CHECKED_PENDING,
     UPDATE_IS_PRODUCT_CHECKED_SUCCESS,
     UPDATE_IS_PRODUCT_CHECKED_FAILED,
+    REQUEST_MARKED_PRODUCTS_PENDING,
+    REQUEST_MARKED_PRODUCTS_SUCCESS,
+    REQUEST_MARKED_PRODUCTS_FAILED,
 } from '../constants';
 import {
     authorizationData,
@@ -92,4 +95,12 @@ export const updateIsProductChecked = (listOfIds) => (dispatch) => {
         .then(response => response.json())
         .then(data => checkStatusCode(data, UPDATE_IS_PRODUCT_CHECKED_SUCCESS, dispatch))
         .catch(error => dispatch({ type: UPDATE_IS_PRODUCT_CHECKED_FAILED, payload: error }))
+}
+
+export const fetchMarkedProducts = () => (dispatch) => {
+    dispatch({ type: REQUEST_MARKED_PRODUCTS_PENDING });
+    fetch(`${ROOT_CONTEXT_PATH}/products/isChecked`, authorizationData())
+        .then(response => response.json())
+        .then(data => checkStatusCode(data, REQUEST_MARKED_PRODUCTS_SUCCESS, dispatch))
+        .catch(error => dispatch({ type: REQUEST_MARKED_PRODUCTS_FAILED, payload: error }))
 }

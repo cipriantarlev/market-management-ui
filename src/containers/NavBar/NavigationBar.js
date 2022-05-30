@@ -59,15 +59,18 @@ const NavigationBar = (props) => {
       case "products":
         history.push("/products");
         break;
+      case "markedProducts":
+        history.push("/marked-products");
+        break;  
       case "documentTypes":
         history.push("/document-types");
         break;
       case "incomeInvoices":
-        history.push("/income-invoices"); 
-        break; 
-        case "outcomeInvoices":
-          history.push("/outcome-invoices");
-          break;  
+        history.push("/income-invoices");
+        break;
+      case "outcomeInvoices":
+        history.push("/outcome-invoices");
+        break;
       default:
         history.push("/");
         break;
@@ -87,6 +90,7 @@ const NavigationBar = (props) => {
           </NavDropdown>
           <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="products" onClick={onClickDropdownList}>Products</NavDropdown.Item>
+            <NavDropdown.Item id="markedProducts" onClick={onClickDropdownList}>Marked Products</NavDropdown.Item>
             <NavDropdown.Item id="categories" onClick={onClickDropdownList}>Categories</NavDropdown.Item>
             <NavDropdown.Item id="subcategories" onClick={onClickDropdownList}>Subcategories</NavDropdown.Item>
             <NavDropdown.Item id="vat" onClick={onClickDropdownList}>VAT Settings</NavDropdown.Item>
