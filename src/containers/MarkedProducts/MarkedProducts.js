@@ -22,9 +22,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
+import { saveAs } from 'file-saver';
+
 import {
     fetchMarkedProducts,
     updateIsProductChecked,
+    printMarkedProducts,
 } from '../../actions/productAction';
 import { restStoreData } from '../../actions/restoreDataAction';
 
@@ -56,6 +61,7 @@ const mapStateToProps = (state) => {
     return {
         isPending: state.manageProducts.isPending,
         markedProducts: state.manageProducts.markedProducts,
+        markedProductsToPring: state.manageProducts.markedProductsToPring,
         error: state.manageProducts.error,
     }
 }
@@ -65,6 +71,7 @@ const mapDispatchToProps = (dispatch) => {
         onFetchMarkedProducts: () => dispatch(fetchMarkedProducts()),
         onRestData: () => dispatch(restStoreData()),
         onUpdateIsProductChecked: (listOfIds) => dispatch(updateIsProductChecked(listOfIds)),
+        onPrintMarkedProducts: (listOfIds) => dispatch(printMarkedProducts(listOfIds)),
     }
 }
 
@@ -72,9 +79,11 @@ const MarkedProducts = (props) => {
     const {
         isPending,
         markedProducts,
+        markedProductsToPring,
         error,
         onFetchMarkedProducts,
         onUpdateIsProductChecked,
+        onPrintMarkedProducts,
         onRestData
     } = props;
 
@@ -216,9 +225,31 @@ const MarkedProducts = (props) => {
 
     const printPriceLable = () => {
         if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length > 0) {
-            let printList = markedProducts.filter(element => selectedInvoiceProducts.includes(element?.id))
-                .map(element => ({[element.id]: element.stock}));   
-            console.log("printList", printList);
+            let printList = {};
+            markedProducts.filter(element => selectedInvoiceProducts.includes(element?.id))
+                .forEach(element => {
+                    printList[element.id] = element.stock;
+                });
+            onPrintMarkedProducts(printList);
+        }
+    }
+
+    useEffect(() => {
+        showDocxFile()
+        // eslint-disable-next-line
+    }, [markedProductsToPring])
+
+    const showDocxFile = () => {
+        if (markedProductsToPring.byteLength > 0) {
+            const bytes = new Uint8Array(markedProductsToPring);
+            let zip = new PizZip(bytes);
+            let doc = new Docxtemplater().loadZip(zip);
+            let outDocx = doc.getZip().generate({
+                type: "blob",
+                mimeType:
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            });
+            saveAs(outDocx, 'priceLablel.docx');
         }
     }
 

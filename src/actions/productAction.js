@@ -27,6 +27,9 @@ import {
     REQUEST_MARKED_PRODUCTS_PENDING,
     REQUEST_MARKED_PRODUCTS_SUCCESS,
     REQUEST_MARKED_PRODUCTS_FAILED,
+    PRINT_MARKED_PRODUCT_PENDING,
+    PRINT_MARKED_PRODUCT_SUCCESS,
+    PRINT_MARKED_PRODUCT_FAILED
 } from '../constants';
 import {
     authorizationData,
@@ -103,4 +106,12 @@ export const fetchMarkedProducts = () => (dispatch) => {
         .then(response => response.json())
         .then(data => checkStatusCode(data, REQUEST_MARKED_PRODUCTS_SUCCESS, dispatch))
         .catch(error => dispatch({ type: REQUEST_MARKED_PRODUCTS_FAILED, payload: error }))
+}
+
+export const printMarkedProducts = (markedProducts) => (dispatch) => {
+    dispatch({ type: PRINT_MARKED_PRODUCT_PENDING });
+    fetch(`${ROOT_CONTEXT_PATH}/products/printProducts`, dataApi('post', markedProducts))
+        .then(response => response.arrayBuffer())
+        .then(data => checkStatusCode(data, PRINT_MARKED_PRODUCT_SUCCESS, dispatch))
+        .catch(error => dispatch({ type: PRINT_MARKED_PRODUCT_FAILED, payload: error }))
 }
