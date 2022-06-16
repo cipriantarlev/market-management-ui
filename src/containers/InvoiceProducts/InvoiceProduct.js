@@ -17,6 +17,7 @@ import {
 import { fetchMeasuringUnits } from '../../actions/measuringUnitAction';
 import { fetchProductByBarcode } from '../../actions/productAction';
 import { restStoreData } from '../../actions/restoreDataAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import FindProduct from './FindProduct';
 
@@ -50,6 +51,8 @@ const mapDispatchToProps = (dispatch) => {
     onFetchInvoiceProducts: (invoiceId) => dispatch(fetchInvoiceProducts(invoiceId)),
     onFetchProductByBarcode: (barcode) => dispatch(fetchProductByBarcode(barcode)),
     onRestData: () => dispatch(restStoreData()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 const InvoiceProduct = (props) => {
@@ -67,6 +70,8 @@ const InvoiceProduct = (props) => {
     onFetchProductByBarcode,
     onRestData,
     onFetchInvoiceProducts,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const BARCODE_HELP_BLOCK = "barcodeHelpBlock";
@@ -126,7 +131,12 @@ const InvoiceProduct = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpenAlert(false)
+    setOpenAlert(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   useEffect(() => {

@@ -36,13 +36,14 @@ import MarkedProducts from '../MarkedProducts/MarkedProducts';
 const mapStateToProps = (state) => {
   return {
     loggedIn: state.requestLogin.user,
+    showNavBar: state.handleNavBar.showNavBar,
   }
 }
 
-const App = ({ loggedIn }) => {
+const App = ({ loggedIn, showNavBar }) => {
   return (
     <Router>
-      {loggedIn ? <NavigationBar /> : null}
+      {(loggedIn && showNavBar) ? <NavigationBar /> : null}
       <Switch>
         <Route exact path="/" >
           {loggedIn ? <Home /> : <Redirect to="/login" />}
@@ -121,14 +122,14 @@ const App = ({ loggedIn }) => {
         </Route>
         <Route component={NotFound} />
       </Switch>
-      <Box style={{
+      {(loggedIn && showNavBar) ? <Box style={{
         position: "fixed",
         bottom: "20px",
         left: 0,
         right: 0
       }}>
         <Copyright />
-      </Box>
+      </Box> : null}
     </Router>
   )
 }

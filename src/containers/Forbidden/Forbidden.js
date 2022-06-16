@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 import './style.css'
 
-const Forbidden = () => {
-  return(
+const mapDispatchToProps = (dispatch) => {
+	return {
+	  hideNavBar: () => dispatch(hideNavBar()),
+	  showNavBar: () => dispatch(showNavBar()),
+	}
+  }
+
+const Forbidden = ({ hideNavBar, showNavBar }) => {
+  
+	useEffect(() => {
+		hideNavBar();
+		return () => {
+			showNavBar();
+		}
+		// eslint-disable-next-line
+	  }, [])
+	  
+	return(
     <div id="notfound">
 		<div className="notfound">
 			<div className="notfound-404">
@@ -16,4 +34,4 @@ const Forbidden = () => {
   );
 }
 
-export default Forbidden;
+export default connect(null, mapDispatchToProps)(Forbidden);

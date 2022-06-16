@@ -13,6 +13,8 @@ import {
   fetchMyOrganizations
 } from '../../actions/myOrganizationAction';
 
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
+
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -35,6 +37,8 @@ const mapDispatchToProps = (dispatch) => {
     onCreateMyOrganization: (myOrg) => dispatch(createMyOrganization(myOrg)),
     onUpdateMyOrganization: (myOrg) => dispatch(updateMyOrganization(myOrg)),
     onFetchMyOrganizations: () => dispatch(fetchMyOrganizations()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 
@@ -47,7 +51,9 @@ const MyOrganizations = (props) => {
     onFetchMyOrganization,
     onCreateMyOrganization,
     onUpdateMyOrganization,
-    onFetchMyOrganizations
+    onFetchMyOrganizations,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const COMPANY_NAME_HELP_BLOCK = "companyNameHelpBlock";
@@ -93,7 +99,12 @@ const MyOrganizations = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpenAlert(false)
+    setOpenAlert(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const onClickCancel = () => {

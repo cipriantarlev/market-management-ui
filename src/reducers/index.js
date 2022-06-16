@@ -19,6 +19,7 @@ import { generateBarcode } from './barcodeReducer';
 import { manageDocumentTypes } from './documentTypeReducer';
 import { manageInvoices } from './invoiceReducer';
 import { manageInvoiceProducts } from './invoiceProductReducer';
+import { handleNavBar } from './navBarReducer';
 
 export const rootReducer = combineReducers({
     requestLogin,
@@ -37,4 +38,5 @@ export const rootReducer = combineReducers({
     manageDocumentTypes,
     manageInvoices,
     manageInvoiceProducts,
+    handleNavBar,
 });

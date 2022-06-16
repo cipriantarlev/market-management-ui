@@ -47,7 +47,7 @@ const MyOrganizations = (props) => {
     isPending,
     error,
     onFetchMyOrganizations,
-    onDeleteMyOrganization
+    onDeleteMyOrganization,
   } = props;
 
   const classes = useStyles();
