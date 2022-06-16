@@ -33,6 +33,7 @@ import { generateProductCode } from '../../actions/productCodeAction';
 import { generatePlu } from '../../actions/pluAction';
 import { generateBarcode } from '../../actions/barcodeAction';
 import { restStoreData } from '../../actions/restoreDataAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import './style.css';
 
@@ -83,6 +84,8 @@ const mapDispatchToProps = (dispatch) => {
     onGeneratePlu: () => dispatch(generatePlu()),
     onGenerateBarcode: (barcode) => dispatch(generateBarcode(barcode)),
     onRestData: () => dispatch(restStoreData()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 
@@ -129,6 +132,8 @@ const Product = (props) => {
     onGeneratePlu,
     onGenerateBarcode,
     onRestData,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const ROM_NAME_HELP_BLOCK = "romNameHelpBlock";
@@ -216,7 +221,12 @@ const Product = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpenAlert(false)
+    setOpenAlert(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const intializeCategoryValue = () => {

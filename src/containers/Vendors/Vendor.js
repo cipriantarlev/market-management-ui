@@ -15,6 +15,7 @@ import {
   fetchVendors,
 } from '../../actions/vendorAction';
 import { restStoreData } from '../../actions/restoreDataAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -40,7 +41,9 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateVendor: (vendor) => dispatch(updateVendor(vendor)),
     onFetchRegions: () => dispatch(fetchRegions()),
     onFetchVendors: () => dispatch(fetchVendors()),
-    onRestStoreData: () => dispatch(restStoreData(),)
+    onRestStoreData: () => dispatch(restStoreData()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 
@@ -57,6 +60,8 @@ const Vendor = (props) => {
     onFetchRegions,
     onFetchVendors,
     onRestStoreData,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const COMPANY_NAME_HELP_BLOCK = "companyNameHelpBlock";
@@ -108,7 +113,12 @@ const Vendor = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpenAlert(false)
+    setOpenAlert(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const intializeRegionValue = () => {

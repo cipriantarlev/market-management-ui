@@ -15,6 +15,8 @@ import {
   fetchUsers
 } from '../../actions/userAction';
 
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
+
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -38,7 +40,9 @@ const mapDispatchToProps = (dispatch) => {
     onFetchRoles: () => dispatch(fetchRoles()),
     onCreateUser: (user) => dispatch(createUser(user)),
     onUpdateUser: (user) => dispatch(updateUser(user)),
-    onFetchUsers: () => dispatch(fetchUsers())
+    onFetchUsers: () => dispatch(fetchUsers()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 
@@ -53,7 +57,9 @@ const User = (props) => {
     onFetchRoles,
     onCreateUser,
     onUpdateUser,
-    onFetchUsers
+    onFetchUsers,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const USERNAME_HELP_BLOCK = "usernameHelpBlock";
@@ -104,6 +110,11 @@ const User = (props) => {
 
   useEffect(() => {
     setOpenAlert(false)
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const onClickCancel = () => {

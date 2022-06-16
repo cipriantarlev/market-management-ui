@@ -28,6 +28,7 @@ import {
 } from '../../actions/invoiceProductAction';
 import { updateInvoice } from '../../actions/invoiceAction';
 import { restStoreData } from '../../actions/restoreDataAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 
@@ -45,7 +46,6 @@ const useStyles = makeStyles(() => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    marginTop: marginTop,
     zIndex: 0
   },
   drawerContainer: {
@@ -68,6 +68,8 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateInvoice: (invoice) => dispatch(updateInvoice(invoice)),
     onRestData: () => dispatch(restStoreData()),
     onUpdateIsProductChecked: (listOfIds) => dispatch(updateIsInvoiceProductChecked(listOfIds)),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 const InvoiceProducts = (props) => {
@@ -79,7 +81,9 @@ const InvoiceProducts = (props) => {
     onDeleteInvoiceProduct,
     onUpdateIsProductChecked,
     onUpdateInvoice,
-    onRestData
+    onRestData,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const history = useHistory();
@@ -251,7 +255,12 @@ const InvoiceProducts = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpen(false)
+    setOpen(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const addOrderNumberToInvoiceProduct = () => {

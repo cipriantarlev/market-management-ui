@@ -32,6 +32,7 @@ import {
     printMarkedProducts,
 } from '../../actions/productAction';
 import { restStoreData } from '../../actions/restoreDataAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 
@@ -49,7 +50,6 @@ const useStyles = makeStyles(() => ({
     },
     drawerPaper: {
         width: drawerWidth,
-        marginTop: marginTop,
         zIndex: 0
     },
     drawerContainer: {
@@ -72,6 +72,8 @@ const mapDispatchToProps = (dispatch) => {
         onRestData: () => dispatch(restStoreData()),
         onUpdateIsProductChecked: (listOfIds) => dispatch(updateIsProductChecked(listOfIds)),
         onPrintMarkedProducts: (listOfIds) => dispatch(printMarkedProducts(listOfIds)),
+        hideNavBar: () => dispatch(hideNavBar()),
+        showNavBar: () => dispatch(showNavBar()),
     }
 }
 
@@ -84,7 +86,9 @@ const MarkedProducts = (props) => {
         onFetchMarkedProducts,
         onUpdateIsProductChecked,
         onPrintMarkedProducts,
-        onRestData
+        onRestData,
+        hideNavBar,
+        showNavBar,
     } = props;
 
     const classes = useStyles();
@@ -162,6 +166,10 @@ const MarkedProducts = (props) => {
     useEffect(() => {
         setOpen(false)
         onFetchMarkedProducts();
+        hideNavBar();
+        return () => {
+            showNavBar();
+        }
         // eslint-disable-next-line
     }, [])
 

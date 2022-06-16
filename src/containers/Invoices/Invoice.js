@@ -17,6 +17,7 @@ import {
 } from '../../actions/invoiceAction';
 import { restStoreData } from '../../actions/restoreDataAction';
 import { fetchDocumentTypes } from '../../actions/documentTypeAction';
+import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -46,6 +47,8 @@ const mapDispatchToProps = (dispatch) => {
     onFetchInvoiceOrganizations: () => dispatch(fetchInvoiceOrganizations()),
     onFetchInvoiceVendors: () => dispatch(fetchInvoiceVendors()),
     onRestData: () => dispatch(restStoreData()),
+    hideNavBar: () => dispatch(hideNavBar()),
+    showNavBar: () => dispatch(showNavBar()),
   }
 }
 
@@ -64,6 +67,8 @@ const Invoice = (props) => {
     onFetchInvoiceOrganizations,
     onFetchInvoiceVendors,
     onRestData,
+    hideNavBar,
+    showNavBar,
   } = props;
 
   const INVOICE_NUMBER_HELP_BLOCK = "invoiceNumberHelpBlock";
@@ -119,7 +124,12 @@ const Invoice = (props) => {
   }, [error])
 
   useEffect(() => {
-    setOpenAlert(false)
+    setOpenAlert(false);
+    hideNavBar();
+    return () => {
+        showNavBar();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const intializeDocumentTYpeValue = () => {
