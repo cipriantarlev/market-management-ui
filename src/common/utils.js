@@ -1,5 +1,7 @@
+import Cookies from 'js-cookie';
+
 export const authorizationData = () => {
-  return { headers: { 'Authorization': localStorage.getItem('user') } }
+  return { headers: { 'Authorization': Cookies.get('user') } }
 }
 
 export const dataApi = (method, data) => {
@@ -7,14 +9,14 @@ export const dataApi = (method, data) => {
     return {
       method: method,
       headers: {
-        'Authorization': localStorage.getItem('user')
+        'Authorization': Cookies.get('user')
       }
     }
   } else {
     return {
       method: method,
       headers: {
-        'Authorization': localStorage.getItem('user'),
+        'Authorization': Cookies.get('user'),
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)

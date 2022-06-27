@@ -46,7 +46,6 @@ const checkStatusCode = (data) => {
     } else if (data !== undefined && data.statusCode === 403) {
         throw data;
     } else {
-        console.log("data", data);
         return data;
     }
 }
