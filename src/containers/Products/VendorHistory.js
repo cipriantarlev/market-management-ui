@@ -25,8 +25,6 @@ const VendorHistory = (props) => {
         defaultVendorId
     } = props;
 
-    console.log("props", props)
-
     const classes = useStyles();
 
     return (

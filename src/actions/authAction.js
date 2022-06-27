@@ -10,7 +10,6 @@ import Cookies from 'js-cookie';
 export const handleLogin = (username, password) => (dispatch) => {
     const expireTime = new Date();
     expireTime.setHours(expireTime.getHours() + 15);
-    console.log("expireTime", expireTime)
     dispatch({ type: REQUEST_LOGIN_PENDING });
     fetch(`${ROOT_CONTEXT_PATH}/login`, {
         headers: { 'Authorization': `Basic ${window.btoa(username + ':' + password)}` }
