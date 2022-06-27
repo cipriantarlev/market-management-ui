@@ -4,12 +4,13 @@ import {
     REQUEST_LOGIN_FAILED,
     REQUEST_LOG_OUT,
 } from '../constants';
+import Cookies from 'js-cookie';
 
 const initialStateLogin = {
     isPeding: false,
     response: {},
     error: false,
-    user: localStorage.getItem('user') ? true : false
+    user: Cookies.get('user') ? true : false
 }
 
 export const requestLogin = (state = initialStateLogin, action = {}) => {
@@ -17,7 +18,7 @@ export const requestLogin = (state = initialStateLogin, action = {}) => {
         case REQUEST_LOGIN_PENDING:
             return Object.assign({}, state, { isPeding: true });
         case REQUEST_LOGIN_SUCCESS:
-            return Object.assign({}, state, { response: action.payload, isPeding: false, user: localStorage.getItem('user') });
+            return Object.assign({}, state, { response: action.payload, isPeding: false, user: Cookies.get('user') });
         case REQUEST_LOGIN_FAILED:
             return Object.assign({}, state, { error: action.payload, isPeding: false });
         default:
@@ -26,7 +27,7 @@ export const requestLogin = (state = initialStateLogin, action = {}) => {
 }
 
 const initialStateLogout = {
-    user: localStorage.getItem('user')
+    user: Cookies.get('user')
 }
 
 export const requestLogout = (state = initialStateLogout, action = {}) => {
