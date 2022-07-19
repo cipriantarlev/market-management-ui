@@ -127,7 +127,7 @@ const Invoice = (props) => {
     setOpenAlert(false);
     hideNavBar();
     return () => {
-        showNavBar();
+      showNavBar();
     }
     // eslint-disable-next-line
   }, [])
@@ -357,7 +357,6 @@ const Invoice = (props) => {
               <Col sm="9">
                 <Form.Control
                   type="date"
-                  placeholder="Enter Phone Number"
                   size="sm"
                   defaultValue={getTodayDate()}
                   value={invoice.dateCreated}
