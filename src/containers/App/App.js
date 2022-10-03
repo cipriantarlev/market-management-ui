@@ -34,6 +34,8 @@ import Forbidden from '../Forbidden/Forbidden';
 import MarkedProducts from '../MarkedProducts/MarkedProducts';
 import PriceChangingActs from '../PriceChangingActs/PriceChangingActs';
 import PriceChangingAct from '../PriceChangingActs/PriceChangingAct';
+import PriceChangingActProducts from "../PriceChangingActProducts/PriceChangingActProducts";
+import PriceChangingActProduct from "../PriceChangingActProducts/PriceChangingActProduct";
 
 const mapStateToProps = (state) => {
   return {
@@ -121,6 +123,12 @@ const App = ({ loggedIn, showNavBar }) => {
         </Route>
         <Route exact path="/price-changing-acts/:id" >
           {loggedIn ? <PriceChangingAct /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/price-changing-act-products/:priceChangingActId" >
+          {loggedIn ? <PriceChangingActProducts /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/price-changing-act-products/:priceChangingActId/product/:id" >
+          {loggedIn ? <PriceChangingActProduct /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           {!loggedIn ? <Login /> : <Redirect to="/" />}

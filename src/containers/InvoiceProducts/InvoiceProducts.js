@@ -72,6 +72,7 @@ const mapDispatchToProps = (dispatch) => {
     showNavBar: () => dispatch(showNavBar()),
   }
 }
+
 const InvoiceProducts = (props) => {
   const {
     isPending,

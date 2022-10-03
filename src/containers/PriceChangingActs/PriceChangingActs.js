@@ -93,23 +93,25 @@ const PriceChangingActs = (props) => {
     const [selectedPriceChangingActs, setSelectedPriceChangingActs] = useState([]);
 
     const addLinkToCell = (params) => (
-        <Link className="no-underline" to={`/price-changing-acts/${params.id}`}>
+        <Link className="no-underline" to={`/price-changing-act-products/${params.id}`}>
             {params.value.name}
         </Link>
     );
 
     const addLinkToIdCell = (params) => (
-        <Link className="no-underline" to={`/price-changing-acts/${params.id}`}>
-            {params.value}
+        <Link className="no-underline" to={`/price-changing-act-products/${params.id}`}>
+            {params.row.orderNumber}
         </Link>
-    );
+    )
 
     const formateSumCell = (params) => (
         Number(params.value).toFixed(2)
     )
 
     const formateDateCell = (params) => (
-        new Date(params.value).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('/', '.')
+        <Link className="no-underline" to={`/price-changing-act-products/${params.id}`}>
+            {new Date(params.value).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('/', '.')}
+        </Link>
     )
 
     const renderIsApproved = (params) => {
@@ -129,7 +131,7 @@ const PriceChangingActs = (props) => {
         },
         {
             field: 'id',
-            headerName: 'ID',
+            headerName: '№',
             width: 75,
             renderCell: addLinkToIdCell,
             disableColumnMenu: 'true',
@@ -179,7 +181,7 @@ const PriceChangingActs = (props) => {
     }, [onFetchPriceChangingActs])
 
     useEffect(() => {
-        setDisplayPriceChangingActs(priceChangingActs);
+        setDisplayPriceChangingActs(addOrderNumberToPriceChangingAct(priceChangingActs));
     }, [priceChangingActs])
 
     useEffect(() => {
@@ -193,6 +195,14 @@ const PriceChangingActs = (props) => {
     const onAddPriceChangingActInvoice = () => {
         history.push("price-changing-acts/00000000-0000-0000-0000-000000000000");
     }
+
+    const addOrderNumberToPriceChangingAct = (priceChangingActs) => (
+        priceChangingActs.map((item, index) => (
+            Object.assign(item, item, {
+                orderNumber: index += 1
+            })
+        ))
+    )
 
     const onSelectPriceChangingActs = (selectedPriceChangingActsArray) => (setSelectedPriceChangingActs(selectedPriceChangingActsArray.selectionModel));
 
@@ -219,15 +229,15 @@ const PriceChangingActs = (props) => {
         }
     }
 
-    // const onUpdateSelectedInvoiceProducts = () => {
-    //     if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length === 1) {
-    //         selectedPriceChangingActs.forEach(invoiceId => {
-    //             pushHistory(`/income-invoice-products/${invoiceId}`, `/outcome-invoice-products/${invoiceId}`);
-    //         })
-    //     } else {
-    //         alert("You didn't select an invoice or selected more than one. Please try again.");
-    //     }
-    // }
+    const onUpdateSelectedPriceChangingActProducts = () => {
+        if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length === 1) {
+            selectedPriceChangingActs.forEach(invoiceId => {
+                history.push(`/price-changing-act-products/${invoiceId}`);
+            })
+        } else {
+            alert("You didn't select a price changing act or selected more than one. Please try again.");
+        }
+    }
 
     const onApproveSelectedPriceChangingAct = () => {
         if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length > 0) {
@@ -273,7 +283,7 @@ const PriceChangingActs = (props) => {
                             <ListItem
                                 button
                                 divider
-                            // onClick={onUpdateSelectedPriceChangingActs}
+                            onClick={onUpdateSelectedPriceChangingActProducts}
                             >
                                 <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
                                 <ListItemText primary={'Update'} />
