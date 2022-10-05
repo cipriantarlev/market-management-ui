@@ -19,7 +19,7 @@ import { fetchProductByBarcode } from '../../actions/productAction';
 import { restStoreData } from '../../actions/restoreDataAction';
 import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
-import FindProduct from './FindProduct';
+import FindProduct from '../../common/FindProduct';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
@@ -55,6 +55,7 @@ const mapDispatchToProps = (dispatch) => {
     showNavBar: () => dispatch(showNavBar()),
   }
 }
+
 const InvoiceProduct = (props) => {
   const {
     isPending,
@@ -291,7 +292,7 @@ const InvoiceProduct = (props) => {
   }
 
   const onPressEnterBarcodeField = (event) => {
-    if (Math.ceil(Math.log10(event.target.value + 1)) < 14) {
+    if (event.target.value.length < 14) {
       if (event.keyCode === 13 || event.keyCode === 9) {
         validateInputValue(setInvalidBarcode, "^[0-9]+$", event);
         onFetchProductByBarcode(event.target.value)

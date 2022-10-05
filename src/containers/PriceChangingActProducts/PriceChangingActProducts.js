@@ -30,6 +30,8 @@ import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
 import DisplayAlert from '../../common/DisplayAlert';
 
+import { DEFAULT_UUID_ID } from '../../constants'
+
 const drawerWidth = 240;
 const marginTop = 56;
 
@@ -201,7 +203,7 @@ const PriceChangingActProducts = (props) => {
 
     const onAddNewPriceChangingActProduct = () => {
         onRestData();
-        history.push(`/price-changing-act-products/${priceChangingActId}/product/00000000-0000-0000-0000-000000000000`);
+        history.push(`/price-changing-act-products/${priceChangingActId}/product/${DEFAULT_UUID_ID}`);
     }
 
     const onSelectPriceChangingActProduct = (selectedPriceChangingActProducts) => (setSelectedPriceChangingActProducts(selectedPriceChangingActProducts.selectionModel));
