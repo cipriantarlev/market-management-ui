@@ -205,14 +205,16 @@ const PriceChangingActProduct = (props) => {
         }
     }
 
+    const isStockAndDiscountPriceValid = (product?.stock !== null || product?.stock !== undefined) &&
+                        (product?.discountPrice !== null || product?.discountPrice !== undefined);
+
     const onChangePriceChangingActProductValues = (event) => {
         switch (event.target.id) {
             case "formGridOldPriceSum":
                 if (validateInputValue(setInvalidOldPriceSum, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
-                    if ((priceChangingActProduct?.product?.stock !== null || priceChangingActProduct.product?.stock !== undefined) &&
-                        (priceChangingActProduct?.product?.discountPrice !== null || priceChangingActProduct?.product?.discountPrice !== undefined)) {
-                        setOldRetailPrice(event.target.value / priceChangingActProduct?.product?.stock);
-                        setTradeMargin(((event.target.value / priceChangingActProduct?.product?.stock * 100) / priceChangingActProduct?.product?.discountPrice - 100));
+                    if (isStockAndDiscountPriceValid) {
+                        setOldRetailPrice(event.target.value / product?.stock);
+                        setTradeMargin(((event.target.value / product?.stock * 100) / product?.discountPrice - 100));
                         setPriceDifference(newPriceSum - event.target.value);
                     }
                 }
@@ -220,21 +222,19 @@ const PriceChangingActProduct = (props) => {
                 break;
             case "formGridOldRetailPrice":
                 if (validateInputValue(setInvalidOldRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
-                    if ((priceChangingActProduct?.product?.stock !== null || priceChangingActProduct.product?.stock !== undefined) &&
-                        (priceChangingActProduct?.product?.discountPrice !== null || priceChangingActProduct?.product?.discountPrice !== undefined)) {
-                        setTradeMargin(((event.target.value * 100) / priceChangingActProduct?.product?.discountPrice - 100));
-                        setOldPriceSum(event.target.value * priceChangingActProduct?.product?.stock);
-                        setPriceDifference(newPriceSum - (event.target.value * priceChangingActProduct?.product?.stock));
+                    if (isStockAndDiscountPriceValid) {
+                        setTradeMargin(((event.target.value * 100) / product?.discountPrice - 100));
+                        setOldPriceSum(event.target.value * product?.stock);
+                        setPriceDifference(newPriceSum - (event.target.value * product?.stock));
                     }
                 }
                 setOldRetailPrice(event.target.value);
                 break;
             case "formGridNewPriceSum":
                 if (validateInputValue(setInvalidNewPriceSum, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
-                    if ((priceChangingActProduct?.product?.stock !== null || priceChangingActProduct.product?.stock !== undefined) &&
-                        (priceChangingActProduct?.product?.discountPrice !== null || priceChangingActProduct?.product?.discountPrice !== undefined)) {
-                        setNewRetailPrice(event.target.value / priceChangingActProduct?.product?.stock);
-                        setTradeMargin(((event.target.value / priceChangingActProduct?.product?.stock * 100) / priceChangingActProduct?.product?.discountPrice - 100));
+                    if (isStockAndDiscountPriceValid) {
+                        setNewRetailPrice(event.target.value / product?.stock);
+                        setTradeMargin(((event.target.value / product?.stock * 100) / product?.discountPrice - 100));
                         setPriceDifference(event.target.value - oldPriceSum);
                     }
                 }
@@ -242,11 +242,10 @@ const PriceChangingActProduct = (props) => {
                 break;
             case "formGridNewRetailPrice":
                 if (validateInputValue(setInvalidNewRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
-                    if ((priceChangingActProduct?.product?.stock !== null || priceChangingActProduct.product?.stock !== undefined) &&
-                        (priceChangingActProduct?.product?.discountPrice !== null || priceChangingActProduct?.product?.discountPrice !== undefined)) {
-                        setTradeMargin(((event.target.value * 100) / priceChangingActProduct?.product?.discountPrice - 100));
-                        setNewPriceSum(event.target.value * priceChangingActProduct?.product?.stock);
-                        setPriceDifference((event.target.value * priceChangingActProduct?.product?.stock) - oldPriceSum);
+                    if (isStockAndDiscountPriceValid) {
+                        setTradeMargin(((event.target.value * 100) / product?.discountPrice - 100));
+                        setNewPriceSum(event.target.value * product?.stock);
+                        setPriceDifference((event.target.value * product?.stock) - oldPriceSum);
                     }
                 }
                 setNewRetailPrice(event.target.value);
@@ -268,24 +267,22 @@ const PriceChangingActProduct = (props) => {
             setInvalidBarcode(true);
         }
     }
-    /// TODO: sa verific
-    const preparePriceChangingActProductForSubmit = () => {
-        // Object.assign(product, product, {
-        //     discountPrice: Math.round(vendorPrice * 100) / 100,
-        //     retailPrice: Math.round(oldRetailPrice * 100) / 100,
-        //     tradeMargin: Math.round(tradeMarginProduct * 100) / 100,
-        //     stock: priceChangingActProduct.quantity,
-        //     defaultVendorId: priceChangingAct?.vendor?.id,
-        //     vendors: [...product?.vendors, { id: priceChangingAct?.vendor?.id }],
-        // })
 
-        // Object.assign(priceChangingActProduct, priceChangingActProduct, {
-        //     invoice: priceChangingAct,
-        //     product: product,
-        //     totalDiscountPrice: Math.round(oldPriceSum * 100) / 100,
-        //     totalRetailPrice: Math.round(oldRetailPrice * priceChangingActProduct.quantity * 100) / 100,
-        //     vatSum: Math.round(vatSumProduct * 100) / 100,
-        // })
+    const preparePriceChangingActProductForSubmit = () => {
+        Object.assign(product, product, {
+            retailPrice: Math.round(newRetailPrice * 100) / 100,
+            tradeMargin: Math.round(tradeMarginProduct * 100) / 100
+        })
+
+        Object.assign(priceChangingActProduct, priceChangingActProduct, {
+            priceChangingAct: priceChangingAct,
+            product: product,
+            oldPrice: Math.round(oldRetailPrice * 100) / 100,
+            priceDifference: Math.round(priceDifference * 100) / 100,
+        })
+
+        console.log("productTest1", product)
+        console.log("priceChangingActProductTest1", priceChangingActProduct)
     }
 
     const resetAllAndGoBack = () => {
@@ -332,6 +329,7 @@ const PriceChangingActProduct = (props) => {
                     onCreatePriceChangingActProduct(priceChangingActProduct);
                 } else {
                     alert(`The product ${foundItem.nameRom} has been already added to this Price Chanigng Act.`)
+                    return
                 }
             }
             resetAllAndGoBack();
