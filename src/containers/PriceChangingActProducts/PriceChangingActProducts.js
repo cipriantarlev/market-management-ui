@@ -98,17 +98,25 @@ const PriceChangingActProducts = (props) => {
     // eslint-disable-next-line
     const [priceChangingActValues, setriceChangingActValue] = useState({ oldPrices: 0, newPrices: 0, pricesDifference: 0 });
 
-    const renderBarcodes = (params) => (
-        <Link className="no-underline" to={`/price-changing-act-products/${priceChangingActId}/product/${params.id}`}>
-            {params?.row?.product?.barcodes[0].value}
-        </Link>
-    )
+    const renderBarcodes = (params) => {
+        if (!priceChangingActProducts[0]?.priceChangingAct?.approved) {
+            return <Link className="no-underline" to={`/price-changing-act-products/${priceChangingActId}/product/${params.id}`}>
+                {params?.row?.product?.barcodes[0].value}
+            </Link>
+        } else {
+            return params?.row?.product?.barcodes[0].value
+        }
+    }
 
-    const renderProductName = (params) => (
-        <Link className="no-underline" to={`/price-changing-act-products/${priceChangingActId}/product/${params.id}`}>
-            {params?.row?.product?.nameRom}
-        </Link>
-    )
+    const renderProductName = (params) => {
+        if (!priceChangingActProducts[0]?.priceChangingAct?.approved) {
+            return <Link className="no-underline" to={`/price-changing-act-products/${priceChangingActId}/product/${params.id}`}>
+                {params?.row?.product?.nameRom}
+            </Link>
+        } else {
+            return params?.row?.product?.nameRom
+        }
+    }
 
     const renderFormatedPrice = (params) => {
         if (params.row.id !== 0) {
@@ -202,32 +210,44 @@ const PriceChangingActProducts = (props) => {
     }, [priceChangingActProducts])
 
     const onAddNewPriceChangingActProduct = () => {
-        onRestData();
-        history.push(`/price-changing-act-products/${priceChangingActId}/product/${DEFAULT_UUID_ID}`);
+        if (priceChangingActProducts[0]?.priceChangingAct?.approved) {
+            alert(`Price Changing Act is approved. You're not allowed to add a new product.`)
+        } else {
+            onRestData();
+            history.push(`/price-changing-act-products/${priceChangingActId}/product/${DEFAULT_UUID_ID}`);
+        }
     }
 
     const onSelectPriceChangingActProduct = (selectedPriceChangingActProducts) => (setSelectedPriceChangingActProducts(selectedPriceChangingActProducts.selectionModel));
 
     const onDeleteSelectedPriceChangingActProduct = () => {
-        if (selectedPriceChangingActProducts !== undefined && selectedPriceChangingActProducts.length > 0) {
-            if (window.confirm(`Are you sure you want to delete selected product?`)) {
-                selectedPriceChangingActProducts.forEach(priceChangingActProductId => {
-                    onDeletePriceChangingActProduct(priceChangingActProductId);
-                })
-            }
-            history.go(0);
+        if (priceChangingActProducts[0]?.priceChangingAct?.approved) {
+            alert(`Price Changing Act is approved. You're not allowed to delete any product.`)
         } else {
-            alert("You didn't select any product(s). Please try again.");
+            if (selectedPriceChangingActProducts !== undefined && selectedPriceChangingActProducts.length > 0) {
+                if (window.confirm(`Are you sure you want to delete selected product?`)) {
+                    selectedPriceChangingActProducts.forEach(priceChangingActProductId => {
+                        onDeletePriceChangingActProduct(priceChangingActProductId);
+                    })
+                }
+                history.go(0);
+            } else {
+                alert("You didn't select any product(s). Please try again.");
+            }
         }
     }
 
     const onUpdateSelectedPriceChangingActProduct = () => {
-        if (selectedPriceChangingActProducts !== undefined && selectedPriceChangingActProducts.length === 1) {
-            selectedPriceChangingActProducts.forEach(priceChangingActProductId => {
-                history.push(`/price-changing-act-products/${priceChangingActId}/product/${priceChangingActProductId}`);
-            })
+        if (priceChangingActProducts[0]?.priceChangingAct?.approved) {
+            alert(`Price Changing Act is approved. You're not allowed to update any product.`)
         } else {
-            alert("You didn't select a product or selected more than one. Please try again.");
+            if (selectedPriceChangingActProducts !== undefined && selectedPriceChangingActProducts.length === 1) {
+                selectedPriceChangingActProducts.forEach(priceChangingActProductId => {
+                    history.push(`/price-changing-act-products/${priceChangingActId}/product/${priceChangingActProductId}`);
+                })
+            } else {
+                alert("You didn't select a product or selected more than one. Please try again.");
+            }
         }
     }
 

@@ -209,8 +209,8 @@ const PriceChangingActs = (props) => {
     const onDeleteSelectedPriceChangingActs = () => {
         if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length > 0) {
             if (window.confirm(`Are you sure you want to delete selected price changing acts?`)) {
-                selectedPriceChangingActs.forEach(invoiceId => {
-                    onDeletePriceChangingAct(invoiceId);
+                selectedPriceChangingActs.forEach(priceChangingActId => {
+                    onDeletePriceChangingAct(priceChangingActId);
                 })
             }
             history.go(0);
@@ -219,20 +219,26 @@ const PriceChangingActs = (props) => {
         }
     }
 
-    const onUpdateSelectedPriceChangingAct = () => {
+    const onUpdateSelectedPriceChangingActHeader = () => {
         if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length === 1) {
-            selectedPriceChangingActs.forEach(priceChangingActId => {
-                history.push(`/price-changing-acts/${priceChangingActId}`);
-            })
+            if (!isPriceChangingActApproved) {
+                selectedPriceChangingActs.forEach(priceChangingActId => {
+                    history.push(`/price-changing-acts/${priceChangingActId}`);
+                })
+            } else
+                alert("Price Changing Act is approved. You're not allowed to update the header.");
+
         } else {
             alert("You didn't select a price changing act or selected more than one. Please try again.");
         }
     }
 
+    const isPriceChangingActApproved = priceChangingActs.find(item => item.id === selectedPriceChangingActs[0])?.approved;
+
     const onUpdateSelectedPriceChangingActProducts = () => {
         if (selectedPriceChangingActs !== undefined && selectedPriceChangingActs.length === 1) {
-            selectedPriceChangingActs.forEach(invoiceId => {
-                history.push(`/price-changing-act-products/${invoiceId}`);
+            selectedPriceChangingActs.forEach(priceChangingActId => {
+                history.push(`/price-changing-act-products/${priceChangingActId}`);
             })
         } else {
             alert("You didn't select a price changing act or selected more than one. Please try again.");
@@ -283,7 +289,7 @@ const PriceChangingActs = (props) => {
                             <ListItem
                                 button
                                 divider
-                            onClick={onUpdateSelectedPriceChangingActProducts}
+                                onClick={onUpdateSelectedPriceChangingActProducts}
                             >
                                 <ListItemIcon>{<UpdateIcon />}</ListItemIcon>
                                 <ListItemText primary={'Update'} />
@@ -291,7 +297,7 @@ const PriceChangingActs = (props) => {
                             <ListItem
                                 button
                                 divider
-                                onClick={onUpdateSelectedPriceChangingAct}
+                                onClick={onUpdateSelectedPriceChangingActHeader}
                             >
                                 <ListItemIcon>{<DescriptionIcon />}</ListItemIcon>
                                 <ListItemText primary={'Update Header'} />
