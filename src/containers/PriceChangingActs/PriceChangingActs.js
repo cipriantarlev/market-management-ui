@@ -212,8 +212,8 @@ const PriceChangingActs = (props) => {
                 selectedPriceChangingActs.forEach(priceChangingActId => {
                     onDeletePriceChangingAct(priceChangingActId);
                 })
+                history.go(0);
             }
-            history.go(0);
         } else {
             alert("You didn't select any price changing act(s). Please try again.");
         }
