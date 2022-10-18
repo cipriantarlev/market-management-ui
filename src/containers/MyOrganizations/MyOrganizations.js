@@ -18,6 +18,7 @@ import {
 
 import DisplayAlert from '../../common/DisplayAlert';
 import ProgressLoading from '../../common/ProgressLoading';
+import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles({
   table: {
@@ -80,71 +81,77 @@ const MyOrganizations = (props) => {
 
   const renderTableContent = () => (
     !isPending ?
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead style={{ backgroundColor: "#808080ad" }}>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell align="center">Name</TableCell>
-            <TableCell align="center">Fiscal Code</TableCell>
-            <TableCell align="center">Bank Account</TableCell>
-            <TableCell align="center">City</TableCell>
-            <TableCell align="center">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {myOrganizations.map((element) => (
-            <TableRow key={element.id}>
-              <TableCell component="th" scope="row">
-                <Link className="no-underline" to={`/my-organizations/${element.id}`}>
-                  {element.id}
-                </Link>
-              </TableCell>
-              <TableCell align="center">
-                <Link className="no-underline" to={`/my-organizations/${element.id}`}>
-                  {element.name}
-                </Link>
-              </TableCell>
-              <TableCell align="center">{element.fiscalCode}</TableCell>
-              <TableCell align="center">{element.bankAccount}</TableCell>
-              <TableCell align="center">{element.city}</TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => removeMyOrg(element.id)}
-                >
-                  Delete
-                </Button>
-              </TableCell>
+      <TableContainer component={Paper}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead style={{ backgroundColor: "#808080ad" }}>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell align="center">Name</TableCell>
+              <TableCell align="center">Fiscal Code</TableCell>
+              <TableCell align="center">Bank Account</TableCell>
+              <TableCell align="center">City</TableCell>
+              <TableCell align="center">Is Default</TableCell>
+              <TableCell align="center">Action</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    :
-    <ProgressLoading />
+          </TableHead>
+          <TableBody>
+            {myOrganizations.map((element) => (
+              <TableRow key={element.id}>
+                <TableCell component="th" scope="row">
+                  <Link className="no-underline" to={`/my-organizations/${element.id}`}>
+                    {element.id}
+                  </Link>
+                </TableCell>
+                <TableCell align="center">
+                  <Link className="no-underline" to={`/my-organizations/${element.id}`}>
+                    {element.name}
+                  </Link>
+                </TableCell>
+                <TableCell align="center">{element.fiscalCode}</TableCell>
+                <TableCell align="center">{element.bankAccount}</TableCell>
+                <TableCell align="center">{element.city}</TableCell>
+                <TableCell align="center">
+                  <Checkbox
+                    checked={element.default}
+                    disabled />
+                </TableCell>
+                <TableCell align="center">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => removeMyOrg(element.id)}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      :
+      <ProgressLoading />
   )
 
   return (
     <div style={{ width: 'auto', margin: 100, }}>
-      {myOrganizations.status === 403 ? history.push("/forbidden") : 
-      <div>
-      <Button
-        variant="contained"
-        className="mb-4"
-        style={{ backgroundColor: '#2aa839', color: 'white' }}
-        onClick={onAddNewUser}
-      >
-        Add new Organization
-      </Button>
-      <DisplayAlert
-        error={error}
-        open={open}
-        setOpen={setOpen}
-      />
-      {renderTableContent()}
-      </div>}
+      {myOrganizations.status === 403 ? history.push("/forbidden") :
+        <div>
+          <Button
+            variant="contained"
+            className="mb-4"
+            style={{ backgroundColor: '#2aa839', color: 'white' }}
+            onClick={onAddNewUser}
+          >
+            Add new Organization
+          </Button>
+          <DisplayAlert
+            error={error}
+            open={open}
+            setOpen={setOpen}
+          />
+          {renderTableContent()}
+        </div>}
     </div>
   );
 }

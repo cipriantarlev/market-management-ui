@@ -102,7 +102,7 @@ const MyOrganizations = (props) => {
     setOpenAlert(false);
     hideNavBar();
     return () => {
-        showNavBar();
+      showNavBar();
     }
     // eslint-disable-next-line
   }, [])
@@ -151,6 +151,9 @@ const MyOrganizations = (props) => {
       case "formGridNote":
         validateInputValue(setInvalidNote, "^[a-zA-Z0-9\\s.,:;-]+$", event);
         setMyOrg({ ...myOrg, note: event.target.value });
+        break;
+      case "formGridIsDefault":
+        setMyOrg({ ...myOrg, default: event.target.checked });
         break;
       default:
         setMyOrg({ ...myOrg });
@@ -329,26 +332,40 @@ const MyOrganizations = (props) => {
             />
           </Form.Group>
         </Form.Row>
-        <Form.Group
-          as={Col}
-          controlId="formGridNote"
-          style={{ padding: 0 }}
-        >
-          <Form.Label>Note</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter note"
-            value={checkForNull(myOrg)}
-            onChange={onChangeOrgValues}
-            isInvalid={invalidNote}
-            aria-describedby={NOTE_HELP_BLOCK}
-          />
-          <InvalidFieldText
-            isInvalid={invalidNote}
-            message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
-            ariaDescribedbyId={NOTE_HELP_BLOCK}
-          />
-        </Form.Group>
+        <Form.Row>
+          <Form.Group
+            as={Col}
+            controlId="formGridNote"
+          >
+            <Form.Label>Note</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter note"
+              value={checkForNull(myOrg)}
+              onChange={onChangeOrgValues}
+              isInvalid={invalidNote}
+              aria-describedby={NOTE_HELP_BLOCK}
+            />
+            <InvalidFieldText
+              isInvalid={invalidNote}
+              message={"Note should contain alphanumeric character, space, dot, comma, colons, semicolons and dash."}
+              ariaDescribedbyId={NOTE_HELP_BLOCK}
+            />
+          </Form.Group>
+          <Form.Group
+            as={Col}
+            controlId="formGridIsDefault"
+          >
+            <Form.Label>Is Default Organization</Form.Label>
+            <Form.Control
+              type="checkbox"
+              as='input'
+              checked={myOrg.default}
+              onChange={onChangeOrgValues}
+              style={{width: '38px'}}
+            />
+          </Form.Group>
+        </Form.Row>
         <div>
           <Button
             className="mr5 w4"

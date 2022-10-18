@@ -224,7 +224,7 @@ const Product = (props) => {
     setOpenAlert(false);
     hideNavBar();
     return () => {
-        showNavBar();
+      showNavBar();
     }
     // eslint-disable-next-line
   }, [])
@@ -311,12 +311,16 @@ const Product = (props) => {
       case "formGridRetailPrice":
         if (validateInputValue(setInvalidRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
           if (product.discountPrice !== null || product.discountPrice !== undefined) {
-            setTradeMargin((event.target.value * 100) / product.discountPrice - 100);
+            setTradeMargin(Number((event.target.value * 100) / product.discountPrice - 100).toFixed(2));
           } else {
             setTradeMargin(0);
           }
         }
-        setProduct({ ...product, retailPrice: event.target.value });
+        setProduct({
+          ...product,
+          retailPrice: event.target.value,
+          oldRetailPrice: checkIfInitialRetailPriceIsNull()
+        });
         break;
       case "formGridDiscountPrice":
         if (validateInputValue(setInvalidDiscountPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
@@ -346,6 +350,13 @@ const Product = (props) => {
         setProduct(product);
         break;
     }
+  }
+
+  const checkIfInitialRetailPriceIsNull = () => {
+    if (initialProduct?.retailPrice !== null && initialProduct?.retailPrice !== undefined)
+      return initialProduct.retailPrice;
+    else
+      return '0.00';
   }
 
   const getDropDownValue = (itemId, itemList, setItem) => {
