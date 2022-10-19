@@ -47,7 +47,8 @@ import InvalidFieldText from '../../common/InvalidFieldText';
 import ProgressLoading from '../../common/ProgressLoading';
 import {
   validateInputValue,
-  preventSubmitIfInvalidInput
+  preventSubmitIfInvalidInput,
+  checkIfInitialRetailPriceIsNull
 } from '../../common/utils';
 
 import {
@@ -301,11 +302,11 @@ const Product = (props) => {
         setInvalidSubcategory(false);
         break;
       case "formGridNameRomanian":
-        validateInputValue(setInvalidRomName, "^[a-zA-Z0-9-\\s]+$", event);
+        validateInputValue(setInvalidRomName, "^[a-zA-Z0-9-\\s.]+$", event);
         setProduct({ ...product, nameRom: event.target.value });
         break;
       case "formGridNameRussian":
-        validateInputValue(setInvalidRusName, "^[a-zA-ZА-Яа-я0-9-\\s]+$", event);
+        validateInputValue(setInvalidRusName, "^[a-zA-ZА-Яа-я0-9-\\s.]+$", event);
         setProduct({ ...product, nameRus: event.target.value });
         break;
       case "formGridRetailPrice":
@@ -319,7 +320,7 @@ const Product = (props) => {
         setProduct({
           ...product,
           retailPrice: event.target.value,
-          oldRetailPrice: checkIfInitialRetailPriceIsNull()
+          oldRetailPrice: checkIfInitialRetailPriceIsNull(initialProduct)
         });
         break;
       case "formGridDiscountPrice":
@@ -350,13 +351,6 @@ const Product = (props) => {
         setProduct(product);
         break;
     }
-  }
-
-  const checkIfInitialRetailPriceIsNull = () => {
-    if (initialProduct?.retailPrice !== null && initialProduct?.retailPrice !== undefined)
-      return initialProduct.retailPrice;
-    else
-      return '0.00';
   }
 
   const getDropDownValue = (itemId, itemList, setItem) => {

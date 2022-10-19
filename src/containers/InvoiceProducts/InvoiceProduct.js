@@ -26,7 +26,8 @@ import InvalidFieldText from '../../common/InvalidFieldText';
 import ProgressLoading from '../../common/ProgressLoading';
 import {
   validateInputValue,
-  preventSubmitIfInvalidInput
+  preventSubmitIfInvalidInput,
+  checkIfInitialRetailPriceIsNull
 } from '../../common/utils';
 
 import './style.css';
@@ -275,6 +276,11 @@ const InvoiceProduct = (props) => {
             setTradeMargin(((event.target.value * 100) / vendorPrice - 100));
           }
         }
+        setProduct({
+          ...product, 
+          oldRetailPrice: checkIfInitialRetailPriceIsNull(product),
+          retailPriceChanged: true
+        })
         setRetailPrice(event.target.value);
         break;
       case "formGridTradeMarginPercent":

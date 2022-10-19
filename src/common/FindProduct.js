@@ -86,7 +86,7 @@ const FindProduct = (props) => {
           id="free-solo-2-demo"
           disableClearable
           onSelect={onFindProduct}
-          options={products?.map((option) => option.id + " | " + option.nameRom + " | " + option.discountPrice)}
+          options={products?.map((option) => option.id + " | " + option.nameRom + " | " + (option.discountPrice !== null ? Number(option.discountPrice).toFixed(2) : '0.00'))}
           renderInput={(params) => (
             <TextField
               {...params}

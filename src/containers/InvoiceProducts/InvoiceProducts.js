@@ -115,7 +115,6 @@ const InvoiceProducts = (props) => {
       return params?.value;
   }
 
-  debugger;
   const renderBarcodes = (params) => {
     if (!invoiceProducts[0]?.invoice?.approved) {
       if (location.pathname.includes('/income-invoice-products')) {
