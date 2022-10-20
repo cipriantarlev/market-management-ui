@@ -287,6 +287,11 @@ const InvoiceProduct = (props) => {
         if (validateInputValue(setInvalidTradeMargin, "^(\\d{1,3}|\\d{0,3}\\.\\d{1,2})$", event)) {
           if (vendorPrice !== null || vendorPrice !== undefined) {
             setRetailPrice(vendorPrice * (event.target.value / 100 + 1));
+            setProduct({
+              ...product, 
+              oldRetailPrice: checkIfInitialRetailPriceIsNull(product),
+              retailPriceChanged: true
+            })
           }
         }
         setTradeMargin(event.target.value);

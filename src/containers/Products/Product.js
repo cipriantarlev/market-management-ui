@@ -467,6 +467,7 @@ const Product = (props) => {
 
     Object.assign(product, product, { barcodes: barcodes })
     Object.assign(product, product, { tradeMargin: tradeMargin })
+    Object.assign(product, product, { vendors: [] })
   }
 
   const onTabPressOrBlur = (event) => {
