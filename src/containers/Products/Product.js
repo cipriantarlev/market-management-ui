@@ -47,7 +47,8 @@ import InvalidFieldText from '../../common/InvalidFieldText';
 import ProgressLoading from '../../common/ProgressLoading';
 import {
   validateInputValue,
-  preventSubmitIfInvalidInput
+  preventSubmitIfInvalidInput,
+  checkIfInitialRetailPriceIsNull
 } from '../../common/utils';
 
 import {
@@ -224,7 +225,7 @@ const Product = (props) => {
     setOpenAlert(false);
     hideNavBar();
     return () => {
-        showNavBar();
+      showNavBar();
     }
     // eslint-disable-next-line
   }, [])
@@ -301,22 +302,26 @@ const Product = (props) => {
         setInvalidSubcategory(false);
         break;
       case "formGridNameRomanian":
-        validateInputValue(setInvalidRomName, "^[a-zA-Z0-9-\\s]+$", event);
+        validateInputValue(setInvalidRomName, "^[a-zA-Z0-9-\\s.]+$", event);
         setProduct({ ...product, nameRom: event.target.value });
         break;
       case "formGridNameRussian":
-        validateInputValue(setInvalidRusName, "^[a-zA-ZА-Яа-я0-9-\\s]+$", event);
+        validateInputValue(setInvalidRusName, "^[a-zA-ZА-Яа-я0-9-\\s.]+$", event);
         setProduct({ ...product, nameRus: event.target.value });
         break;
       case "formGridRetailPrice":
         if (validateInputValue(setInvalidRetailPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
           if (product.discountPrice !== null || product.discountPrice !== undefined) {
-            setTradeMargin((event.target.value * 100) / product.discountPrice - 100);
+            setTradeMargin(Number((event.target.value * 100) / product.discountPrice - 100).toFixed(2));
           } else {
             setTradeMargin(0);
           }
         }
-        setProduct({ ...product, retailPrice: event.target.value });
+        setProduct({
+          ...product,
+          retailPrice: event.target.value,
+          oldRetailPrice: checkIfInitialRetailPriceIsNull(initialProduct)
+        });
         break;
       case "formGridDiscountPrice":
         if (validateInputValue(setInvalidDiscountPrice, "^(\\d{1,5}|\\d{0,5}\\.\\d{1,2})$", event)) {
@@ -462,6 +467,7 @@ const Product = (props) => {
 
     Object.assign(product, product, { barcodes: barcodes })
     Object.assign(product, product, { tradeMargin: tradeMargin })
+    Object.assign(product, product, { vendors: [] })
   }
 
   const onTabPressOrBlur = (event) => {

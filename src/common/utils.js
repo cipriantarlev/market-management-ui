@@ -62,3 +62,10 @@ export const onForbidden = (history, onResetData) => {
   history.push("/forbidden");
   onResetData();
 }
+
+export const checkIfInitialRetailPriceIsNull = (initialProduct) => {
+  if (initialProduct?.retailPrice !== null && initialProduct?.retailPrice !== undefined)
+    return initialProduct.retailPrice;
+  else
+    return '0.00';
+}

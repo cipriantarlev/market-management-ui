@@ -19,14 +19,15 @@ import { fetchProductByBarcode } from '../../actions/productAction';
 import { restStoreData } from '../../actions/restoreDataAction';
 import { hideNavBar, showNavBar } from '../../actions/navBarAction';
 
-import FindProduct from './FindProduct';
+import FindProduct from '../../common/FindProduct';
 
 import DisplayAlert from '../../common/DisplayAlert';
 import InvalidFieldText from '../../common/InvalidFieldText';
 import ProgressLoading from '../../common/ProgressLoading';
 import {
   validateInputValue,
-  preventSubmitIfInvalidInput
+  preventSubmitIfInvalidInput,
+  checkIfInitialRetailPriceIsNull
 } from '../../common/utils';
 
 import './style.css';
@@ -55,6 +56,7 @@ const mapDispatchToProps = (dispatch) => {
     showNavBar: () => dispatch(showNavBar()),
   }
 }
+
 const InvoiceProduct = (props) => {
   const {
     isPending,
@@ -274,12 +276,22 @@ const InvoiceProduct = (props) => {
             setTradeMargin(((event.target.value * 100) / vendorPrice - 100));
           }
         }
+        setProduct({
+          ...product, 
+          oldRetailPrice: checkIfInitialRetailPriceIsNull(product),
+          retailPriceChanged: true
+        })
         setRetailPrice(event.target.value);
         break;
       case "formGridTradeMarginPercent":
         if (validateInputValue(setInvalidTradeMargin, "^(\\d{1,3}|\\d{0,3}\\.\\d{1,2})$", event)) {
           if (vendorPrice !== null || vendorPrice !== undefined) {
             setRetailPrice(vendorPrice * (event.target.value / 100 + 1));
+            setProduct({
+              ...product, 
+              oldRetailPrice: checkIfInitialRetailPriceIsNull(product),
+              retailPriceChanged: true
+            })
           }
         }
         setTradeMargin(event.target.value);
@@ -291,7 +303,7 @@ const InvoiceProduct = (props) => {
   }
 
   const onPressEnterBarcodeField = (event) => {
-    if (Math.ceil(Math.log10(event.target.value + 1)) < 14) {
+    if (event.target.value.length < 14) {
       if (event.keyCode === 13 || event.keyCode === 9) {
         validateInputValue(setInvalidBarcode, "^[0-9]+$", event);
         onFetchProductByBarcode(event.target.value)

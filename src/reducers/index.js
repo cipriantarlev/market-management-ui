@@ -20,6 +20,8 @@ import { manageDocumentTypes } from './documentTypeReducer';
 import { manageInvoices } from './invoiceReducer';
 import { manageInvoiceProducts } from './invoiceProductReducer';
 import { handleNavBar } from './navBarReducer';
+import { managePriceChangingActs } from './priceChangingActReducer';
+import { managePriceChangingActProducts } from './priceChangingActProductReducer';
 
 export const rootReducer = combineReducers({
     requestLogin,
@@ -39,4 +41,6 @@ export const rootReducer = combineReducers({
     manageInvoices,
     manageInvoiceProducts,
     handleNavBar,
+    managePriceChangingActs,
+    managePriceChangingActProducts,
 });

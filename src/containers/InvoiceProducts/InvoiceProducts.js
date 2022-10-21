@@ -72,6 +72,7 @@ const mapDispatchToProps = (dispatch) => {
     showNavBar: () => dispatch(showNavBar()),
   }
 }
+
 const InvoiceProducts = (props) => {
   const {
     isPending,
@@ -100,39 +101,48 @@ const InvoiceProducts = (props) => {
   const [invoiceValues, setInvoiceValue] = useState({});
 
   const addLinkToIdCell = (params) => {
-    if (location.pathname.includes('/income-invoice-products')) {
-      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
-        {params?.value}
-      </Link>
-    } else if (location.pathname.includes('/outcome-invoice-products')) {
-      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
-        {params?.value}
-      </Link>
-    }
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      if (location.pathname.includes('/income-invoice-products')) {
+        return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+          {params?.value}
+        </Link>
+      } else if (location.pathname.includes('/outcome-invoice-products')) {
+        return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+          {params?.value}
+        </Link>
+      }
+    } else
+      return params?.value;
   }
 
   const renderBarcodes = (params) => {
-    if (location.pathname.includes('/income-invoice-products')) {
-      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
-        {params?.value?.barcodes[0].value}
-      </Link>
-    } else if (location.pathname.includes('/outcome-invoice-products')) {
-      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
-        {params?.value?.barcodes[0].value}
-      </Link>
-    }
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      if (location.pathname.includes('/income-invoice-products')) {
+        return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+          {params?.value?.barcodes[0]?.value}
+        </Link>
+      } else if (location.pathname.includes('/outcome-invoice-products')) {
+        return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+          {params?.value?.barcodes[0]?.value}
+        </Link>
+      }
+    } else
+      return params?.value?.barcodes[0]?.value;
   }
 
   const renderProductName = (params) => {
-    if (location.pathname.includes('/income-invoice-products')) {
-      return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
-        {params?.row?.product?.nameRom}
-      </Link>
-    } else if (location.pathname.includes('/outcome-invoice-products')) {
-      return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
-        {params?.row?.product?.nameRom}
-      </Link>
-    }
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      if (location.pathname.includes('/income-invoice-products')) {
+        return <Link className="no-underline" to={`/income-invoice-products/${id}/product/${params.id}`}>
+          {params?.row?.product?.nameRom}
+        </Link>
+      } else if (location.pathname.includes('/outcome-invoice-products')) {
+        return <Link className="no-underline" to={`/outcome-invoice-products/${id}/product/${params.id}`}>
+          {params?.row?.product?.nameRom}
+        </Link>
+      }
+    } else
+      return params?.row?.product?.nameRom
   }
 
   const renderDiscountPrice = (params) => {
@@ -258,7 +268,7 @@ const InvoiceProducts = (props) => {
     setOpen(false);
     hideNavBar();
     return () => {
-        showNavBar();
+      showNavBar();
     }
     // eslint-disable-next-line
   }, [])
@@ -316,7 +326,7 @@ const InvoiceProducts = (props) => {
           retailPrice: '',
           tradeMargin: '',
           vat: '',
-          barcodes: [{ value: '' }],
+          barcodes: [{ value: ' ' }],
           measuringUnit: { id: 0 }
         },
       })
@@ -331,9 +341,12 @@ const InvoiceProducts = (props) => {
   }, [invoiceProducts])
 
   const onAddNewInvoiceProduct = () => {
-    onRestData();
-    pushHistory(`/income-invoice-products/${id}/product/0`,
-      `/outcome-invoice-products/${id}/product/0`);
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      onRestData();
+      pushHistory(`/income-invoice-products/${id}/product/0`,
+        `/outcome-invoice-products/${id}/product/0`);
+    } else
+      alert(`Invoice is approved. You're not allowed to add a new product.`)
   }
 
   const pushHistory = (incomePath, outcomePath) => {
@@ -347,27 +360,33 @@ const InvoiceProducts = (props) => {
   const onSelectInvoiceProduct = (selectedInvoicesArray) => (setSelectedInvoiceProduct(selectedInvoicesArray.selectionModel));
 
   const onDeleteSelectedInvoiceProduct = () => {
-    if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length > 0) {
-      if (window.confirm(`Are you sure you want to delete selected product?`)) {
-        selectedInvoiceProducts.forEach(invoiceProductId => {
-          onDeleteInvoiceProduct(invoiceProductId);
-        })
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length > 0) {
+        if (window.confirm(`Are you sure you want to delete selected product?`)) {
+          selectedInvoiceProducts.forEach(invoiceProductId => {
+            onDeleteInvoiceProduct(invoiceProductId);
+          })
+        }
+        history.go(0);
+      } else {
+        alert("You didn't select any product(s). Please try again.");
       }
-      history.go(0);
-    } else {
-      alert("You didn't select any product(s). Please try again.");
-    }
+    } else
+      alert(`Invoice is approved. You're not allowed to delete any product.`)
   }
 
   const onUpdateSelectedInvoiceProduct = () => {
-    if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
-      selectedInvoiceProducts.forEach(invoiceProductId => {
-        pushHistory(`/income-invoice-products/${id}/product/${invoiceProductId}`,
-          `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
-      })
-    } else {
-      alert("You didn't select a product or selected more than one. Please try again.");
-    }
+    if (!invoiceProducts[0]?.invoice?.approved) {
+      if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length === 1) {
+        selectedInvoiceProducts.forEach(invoiceProductId => {
+          pushHistory(`/income-invoice-products/${id}/product/${invoiceProductId}`,
+            `/outcome-invoice-products/${id}/product/${invoiceProductId}`);
+        })
+      } else {
+        alert("You didn't select a product or selected more than one. Please try again.");
+      }
+    } else
+      alert(`Invoice is approved. You're not allowed to update any product.`)
   }
 
   const onUpdateSelectedInvoiceProductInformation = () => {
@@ -381,16 +400,16 @@ const InvoiceProducts = (props) => {
 
   const onUpdateCheckedProduct = () => {
     if (selectedInvoiceProducts !== undefined && selectedInvoiceProducts.length > 0) {
-        let unchecked = invoiceProducts.filter(element => !selectedInvoiceProducts.includes(element?.id))
+      let unchecked = invoiceProducts.filter(element => !selectedInvoiceProducts.includes(element?.id))
         .map(element => element?.product?.id);
 
-        let checked = invoiceProducts.filter(element => selectedInvoiceProducts.includes(element?.id))
+      let checked = invoiceProducts.filter(element => selectedInvoiceProducts.includes(element?.id))
         .map(element => element?.product?.id);
 
-        onUpdateIsProductChecked({
-          true: checked,
-          false: unchecked
-        });
+      onUpdateIsProductChecked({
+        true: checked,
+        false: unchecked
+      });
     }
   }
 
@@ -413,7 +432,7 @@ const InvoiceProducts = (props) => {
   }
 
   const selectedProducts = () => (invoiceProducts?.filter(element => (element?.product?.checked === true))
-  .map(element => element.id))
+    .map(element => element.id))
 
   return (
     <div style={{ height: '100%', width: '100%' }}>

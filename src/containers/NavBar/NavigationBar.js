@@ -61,7 +61,7 @@ const NavigationBar = (props) => {
         break;
       case "markedProducts":
         history.push("/marked-products");
-        break;  
+        break;
       case "documentTypes":
         history.push("/document-types");
         break;
@@ -70,6 +70,9 @@ const NavigationBar = (props) => {
         break;
       case "outcomeInvoices":
         history.push("/outcome-invoices");
+        break;
+      case "priceChangingActs":
+        history.push("/price-changing-acts");
         break;
       default:
         history.push("/");
@@ -83,9 +86,10 @@ const NavigationBar = (props) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <NavDropdown title="Invoices" id="basic-nav-dropdown" className="white hover-dark-gray">
+          <NavDropdown title="Documents" id="basic-nav-dropdown" className="white hover-dark-gray">
             <NavDropdown.Item id="incomeInvoices" onClick={onClickDropdownList}>Income Invoices</NavDropdown.Item>
             <NavDropdown.Item id="outcomeInvoices" onClick={onClickDropdownList}>Outcome Invoices</NavDropdown.Item>
+            <NavDropdown.Item id="priceChangingActs" onClick={onClickDropdownList}>Price Changing Acts</NavDropdown.Item>
             <NavDropdown.Item id="documentTypes" onClick={onClickDropdownList}>Document Types</NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title="Product Settings" id="basic-nav-dropdown" className="white hover-dark-gray">
