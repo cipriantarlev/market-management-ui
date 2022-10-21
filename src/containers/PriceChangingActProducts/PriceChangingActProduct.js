@@ -197,11 +197,11 @@ const PriceChangingActProduct = (props) => {
 
     const displayNnumberWith2Decimals = (numberTodisplay) => {
         if (isNaN(numberTodisplay)) {
-            return Number(0).toFixed(2);
+            return '0.00'.toLocaleString(undefined, {maximumFractionDigits:2});
         } else if (numberTodisplay === 0) {
-            return Number(0).toFixed(2);
+            return '0.00'.toLocaleString(undefined, {maximumFractionDigits:2});
         } else {
-            return Number(numberTodisplay).toFixed(2);
+            return numberTodisplay.toLocaleString(undefined, {maximumFractionDigits:2})
         }
     }
 
@@ -271,7 +271,8 @@ const PriceChangingActProduct = (props) => {
     const preparePriceChangingActProductForSubmit = () => {
         Object.assign(product, product, {
             retailPrice: Math.round(newRetailPrice * 100) / 100,
-            tradeMargin: Math.round(tradeMarginProduct * 100) / 100
+            tradeMargin: Math.round(tradeMarginProduct * 100) / 100,
+            oldRetailPrice: Math.round(oldRetailPrice * 100) / 100,
         })
 
         Object.assign(priceChangingActProduct, priceChangingActProduct, {
@@ -280,9 +281,6 @@ const PriceChangingActProduct = (props) => {
             oldPrice: Math.round(oldRetailPrice * 100) / 100,
             priceDifference: Math.round(priceDifference * 100) / 100,
         })
-
-        console.log("productTest1", product)
-        console.log("priceChangingActProductTest1", priceChangingActProduct)
     }
 
     const resetAllAndGoBack = () => {
@@ -303,15 +301,15 @@ const PriceChangingActProduct = (props) => {
         !invalidBarcode && !invalidNewRetailPrice &&
         !invalidNewRetailPrice && !invalidOldRetailPrice &&
         !invalidNewPriceSum && !invalidOldPriceSum &&
-        oldRetailPrice > 0 && newRetailPrice > 0 &&
-        oldPriceSum > 0 && newPriceSum > 0
+        oldRetailPrice >= 0 && newRetailPrice > 0 &&
+        oldPriceSum >= 0 && newPriceSum >= 0
     )
 
     const markIvalidFields = () => {
-        setInvalidOldPriceSum(oldPriceSum === 0);
-        setInvalidOldRetailPrice(oldRetailPrice === 0);
-        setInvalidNewPriceSum(newPriceSum === 0);
-        setInvalidNewRetailPrice(newRetailPrice === 0);
+        setInvalidOldPriceSum(oldPriceSum < 0);
+        setInvalidOldRetailPrice(oldRetailPrice < 0);
+        setInvalidNewPriceSum(newPriceSum < 0);
+        setInvalidNewRetailPrice(newRetailPrice <= 0);
     }
 
     const checkIfProductIsAlreadyAdded = () => (
@@ -431,7 +429,7 @@ const PriceChangingActProduct = (props) => {
                                             type="number"
                                             as="input"
                                             size="sm"
-                                            defaultValue={"0.00"}
+                                            defaultValue={"0"}
                                             required={true}
                                             readOnly
                                             style={{
@@ -495,7 +493,7 @@ const PriceChangingActProduct = (props) => {
                                         />
                                         <InvalidFieldText
                                             isInvalid={invalidOldRetailPrice}
-                                            message={"Old Retail Price fromat should have 5 integer digits and 2 digits."}
+                                            message={"Old Retail Price fromat should have 6 integer digits and 2 digits."}
                                             ariaDescribedbyId={OLD_RETAIL_PRICE_HELP_BLOCK}
                                         />
                                     </Col>
@@ -561,7 +559,7 @@ const PriceChangingActProduct = (props) => {
                                         />
                                         <InvalidFieldText
                                             isInvalid={invalidNewRetailPrice}
-                                            message={"New Retail Price fromat should have 5 integer digits and 2 digits."}
+                                            message={"New Retail Price fromat should have 6 integer digits and 2 digits."}
                                             ariaDescribedbyId={NEW_RETAIL_PRICE_HELP_BLOCK}
                                         />
                                     </Col>
