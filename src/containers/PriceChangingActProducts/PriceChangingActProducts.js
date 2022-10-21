@@ -146,35 +146,35 @@ const PriceChangingActProducts = (props) => {
         {
             field: 'product.nameRom',
             headerName: 'Product',
-            width: 260,
+            width: 270,
             renderCell: renderProductName,
             sortable: false
         },
         {
             field: 'product.stock',
             headerName: 'Qty',
-            width: 80,
+            width: 85,
             renderCell: renderQuatity,
             sortable: false
         },
         {
             field: 'oldPrice',
-            headerName: 'OP',
-            width: 95,
+            headerName: 'Old Price',
+            width: 140,
             renderCell: renderFormatedPrice,
             sortable: false
         },
         {
             field: 'product.retailPrice',
-            headerName: 'RP',
-            width: 95,
+            headerName: 'New Price',
+            width: 140,
             renderCell: renderRetailPrice,
             sortable: false
         },
         {
             field: 'priceDifference',
-            headerName: 'PC',
-            width: 90,
+            headerName: 'Price Difference',
+            width: 140,
             renderCell: renderFormatedPrice,
             sortable: false
         },
